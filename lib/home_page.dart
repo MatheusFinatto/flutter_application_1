@@ -38,7 +38,6 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Bem vindo user.name!')),
       body: _screens[_selectedIndex], // Uncomment this line
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
