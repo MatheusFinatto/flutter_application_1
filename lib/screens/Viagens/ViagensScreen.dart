@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'AddTripScreen.dart';
 
 // Custom Trip class to hold trip details
 class Trip {
@@ -23,48 +24,22 @@ class ViagensScreen extends StatefulWidget {
 }
 
 class _ViagensScreenState extends State<ViagensScreen> {
-  // List of mocked ongoing car trips using the Trip class
   List<Trip> ongoingTrips = [
-    Trip(
-      // title: 'Viagem 1: De Erechim para Porto Alegre',
-      carImage: 'assets/images/redcar.jpg',
-      destination: 'Porto Alegre',
-      startDate: '15/09/2023',
-      endDate: '19/09/2023',
-    ),
-    Trip(
-      // title: 'Viagem 2: De Erechim para Gaurama',
-      carImage: 'assets/images/silvercar.jpg',
-      destination: 'Gaurama',
-      startDate: '16/09/2023',
-      endDate: '17/09/2023',
-    ),
-    Trip(
-      // title: 'Viagem 3: De Erechim para Porto Alegre',
-      carImage: 'assets/images/blackcar.jpg',
-      destination: 'Porto Alegre',
-      startDate: '17/09/2023',
-      endDate: '17/09/2023',
-    ),
-    Trip(
-      // title: 'Viagem 4: De Erechim para Viadutos',
-      carImage: 'assets/images/redcar.jpg',
-      destination: 'Viadutos',
-      startDate: '18/09/2023',
-      endDate: '19/09/2023',
-    ),
-    Trip(
-      // title: 'Viagem 5: De Erechim para Porto Alegre',
-      carImage: 'assets/images/blackcar.jpg',
-      destination: 'Porto Alegre',
-      startDate: '19/09/2023',
-      endDate: '28/09/2023',
-    ),
-    // Add more trips here...
+    // ... (your list of trips remains the same)
   ];
 
   // Controller for the search input field
   final TextEditingController _searchController = TextEditingController();
+
+  // List to store the filtered trips
+  List<Trip> filteredTrips = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the filteredTrips list with all the trips initially
+    filteredTrips.addAll(ongoingTrips);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,15 +59,19 @@ class _ViagensScreenState extends State<ViagensScreen> {
                 suffixIcon: IconButton(
                   icon: Icon(Icons.clear),
                   onPressed: () {
-                    // Clear the search input field
+                    // Clear the search input field and reset the filteredTrips list
                     _searchController.clear();
+                    setState(() {
+                      filteredTrips.clear();
+                      filteredTrips.addAll(ongoingTrips);
+                    });
                   },
                 ),
               ),
               onChanged: (query) {
                 // Filter the trips based on the search query
                 setState(() {
-                  ongoingTrips = _filterTrips(query);
+                  filteredTrips = _filterTrips(query);
                 });
               },
             ),
@@ -100,16 +79,16 @@ class _ViagensScreenState extends State<ViagensScreen> {
           // Scrollable list of ongoing car trips
           Expanded(
             child: ListView.builder(
-              itemCount: ongoingTrips.length,
+              itemCount: filteredTrips.length,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   margin: EdgeInsets.all(8.0),
                   child: ListTile(
-                    // title: Text(ongoingTrips[index].title),
+                    // title: Text(filteredTrips[index].title),
                     subtitle: Column(
                       children: [
                         Image.asset(
-                          ongoingTrips[index].carImage,
+                          filteredTrips[index].carImage,
                           width: 150,
                           height: 150,
                         ),
@@ -120,11 +99,11 @@ class _ViagensScreenState extends State<ViagensScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      'Detino: ${ongoingTrips[index].destination}'),
+                                      'Detino: ${filteredTrips[index].destination}'),
                                   Text(
-                                      'Data prevista de saída: ${ongoingTrips[index].startDate}'),
+                                      'Data prevista de saída: ${filteredTrips[index].startDate}'),
                                   Text(
-                                      'Data prevista de retorno: ${ongoingTrips[index].endDate}'),
+                                      'Data prevista de retorno: ${filteredTrips[index].endDate}'),
                                 ],
                               ),
                             ),
@@ -155,9 +134,8 @@ class _ViagensScreenState extends State<ViagensScreen> {
     );
   }
 
-  // Function to filter the trips based on the search query
   List<Trip> _filterTrips(String query) {
-    if (query.isEmpty) {
+    if (query.isEmpty || query == '') {
       // If the query is empty, return all trips
       return ongoingTrips;
     } else {
@@ -166,17 +144,5 @@ class _ViagensScreenState extends State<ViagensScreen> {
         return trip.destination.toLowerCase().contains(query.toLowerCase());
       }).toList();
     }
-  }
-}
-
-class AddTripScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add New Trip'),
-      ),
-      // Add your UI for adding a new trip here
-    );
   }
 }
