@@ -13,6 +13,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Taix",
+      debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
       theme: ThemeData(
         textTheme: GoogleFonts.montserratTextTheme(
