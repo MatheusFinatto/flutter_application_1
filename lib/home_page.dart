@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/ViagensScreen.dart';
-import 'package:flutter_application_1/screens/AtividadesScreen.dart';
-import 'package:flutter_application_1/screens/ContaScreen.dart';
+import 'package:flutter_application_1/screens/Viagens/ViagensScreen.dart';
+import 'package:flutter_application_1/screens/Atividades/AtividadesScreen.dart';
+import 'package:flutter_application_1/screens/Conta/ContaScreen.dart';
 
 void main() {
   runApp(MyApp());
