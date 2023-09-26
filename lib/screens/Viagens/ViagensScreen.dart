@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'AddTripScreen.dart';
 
 // Custom Trip class to hold trip details
 class Trip {
@@ -167,17 +168,5 @@ class _ViagensScreenState extends State<ViagensScreen> {
         return trip.destination.toLowerCase().contains(query.toLowerCase());
       }).toList();
     }
-  }
-}
-
-class AddTripScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add New Trip'),
-      ),
-      // Add your UI for adding a new trip here
-    );
   }
 }
