@@ -471,8 +471,8 @@ class _AddTripScreenState extends State<AddTripScreen> {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: _dataSaida,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      firstDate: DateTime(2022),
+      lastDate: DateTime(2122),
     ) as DateTime;
 
     if (picked != _dataSaida) {
@@ -498,8 +498,8 @@ class _AddTripScreenState extends State<AddTripScreen> {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: _dataRetorno,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      firstDate: DateTime(2022),
+      lastDate: DateTime(2122),
     ) as DateTime;
 
     if (picked != _dataRetorno) {
