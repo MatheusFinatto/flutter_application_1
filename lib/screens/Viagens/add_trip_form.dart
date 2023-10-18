@@ -1,17 +1,29 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/Viagens/pessoas.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
+import 'veiculos.dart';
+import 'viagens.dart';
+import 'components/estados_select.dart';
+import 'components/cidades_select.dart';
+import 'components/pessoas_select.dart';
+
 class AddTripScreen extends StatefulWidget {
-  const AddTripScreen({Key? key}) : super(key: key);
+  final bool isEdit;
+  final Trip? trip;
+
+  const AddTripScreen({Key? key, this.isEdit = false, this.trip})
+      : super(key: key);
 
   @override
-  _AddTripScreenState createState() => _AddTripScreenState();
+  AddTripScreenState createState() => AddTripScreenState();
 }
 
-class _AddTripScreenState extends State<AddTripScreen> {
+class AddTripScreenState extends State<AddTripScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   String _estadoSelecionadoOrigem = '';
   String _cidadeSelecionadaOrigem = '';
 
@@ -23,6 +35,9 @@ class _AddTripScreenState extends State<AddTripScreen> {
 
   DateTime _dataRetorno = DateTime.now();
   TimeOfDay _horaRetorno = TimeOfDay.now();
+
+  Veiculo _selectedVeiculo = veiculosList.first;
+  Pessoa _selectedPessoa = pessoasList.first;
 
   int _assentosUtilizados = 1;
 
@@ -67,7 +82,9 @@ class _AddTripScreenState extends State<AddTripScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Adicionar Nova Viagem'),
+        title: widget.isEdit
+            ? const Text('Editar Viagem')
+            : const Text('Adicionar Viagem'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -77,7 +94,20 @@ class _AddTripScreenState extends State<AddTripScreen> {
             children: <Widget>[
               Column(
                 children: [
-                  // "Origem" section
+                  const SizedBox(height: 16),
+
+                  PessoasSelect(
+                    defaultValue: widget.trip?.responsavel,
+                    pessoas: pessoasList,
+                    pessoaSelecionada: _selectedPessoa,
+                    onPessoaChanged: (newPessoa) {
+                      setState(() {
+                        _selectedPessoa = newPessoa;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
                   Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
@@ -86,7 +116,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     ),
                     child: Column(
                       children: [
-                        Text(
+                        const Text(
                           'Origem',
                           style: TextStyle(
                             fontSize: 16.0,
@@ -94,98 +124,28 @@ class _AddTripScreenState extends State<AddTripScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const SizedBox(height: 16),
-                        StatefulBuilder(
-                          builder:
-                              (BuildContext context, StateSetter setState) {
-                            final uniqueEstados = estados.toSet().toList();
-
-                            if (uniqueEstados.isEmpty) {
-                              // Display a loading indicator or message, or disable the DropdownButtonFormField
-                              return Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  child:
-                                      CircularProgressIndicator(), // or another loading widget
-                                ),
-                              );
-                            }
-
-                            return DropdownButtonFormField<String>(
-                              value: _estadoSelecionadoOrigem.isNotEmpty
-                                  ? _estadoSelecionadoOrigem
-                                  : uniqueEstados.first,
-                              onChanged: (value) {
-                                setState(() {
-                                  _estadoSelecionadoOrigem = value!;
-                                  _cidadeSelecionadaOrigem = '';
-                                  _fetchCidadesFromAPI(value);
-                                });
-                              },
-                              items: uniqueEstados.map((estado) {
-                                return DropdownMenuItem<String>(
-                                  value: estado,
-                                  child: Text(estado),
-                                );
-                              }).toList(),
-                              decoration: const InputDecoration(
-                                labelText: 'Estado',
-                                border: OutlineInputBorder(),
-                              ),
-                            );
+                        EstadosSelect(
+                          defaultValue: widget.trip?.originState,
+                          estados: estados,
+                          estadoSelecionadoOrigem: _estadoSelecionadoOrigem,
+                          onEstadoChanged: (value) {
+                            setState(() {
+                              _estadoSelecionadoOrigem = value;
+                              _cidadeSelecionadaOrigem = '';
+                              _fetchCidadesFromAPI(value);
+                            });
                           },
                         ),
                         const SizedBox(height: 16),
-                        StatefulBuilder(
-                          builder:
-                              (BuildContext context, StateSetter setState) {
-                            final cidadesEstado =
-                                cidades[_estadoSelecionadoOrigem] ?? [];
-                            final uniqueCidades =
-                                cidadesEstado.toSet().toList();
-
-                            if (uniqueCidades.isEmpty) {
-                              if (_estadoSelecionadoOrigem.isNotEmpty) {
-                                return Container(
-                                  width: 40,
-                                  height: 40,
-                                  child:
-                                      CircularProgressIndicator(), // or another loading widget
-                                );
-                              }
-                              return TextFormField(
-                                decoration: const InputDecoration(
-                                  labelText: 'Cidade',
-                                  border: OutlineInputBorder(),
-                                ),
-                                enabled: false,
-                                initialValue: "Por favor, selecione um estado",
-                              );
-                              // Display a loading indicator or message, or disable the DropdownButtonFormField
-                            }
-
-                            return DropdownButtonFormField<String>(
-                              value: _cidadeSelecionadaOrigem.isNotEmpty
-                                  ? _cidadeSelecionadaOrigem
-                                  : uniqueCidades.first,
-                              onChanged: (value) {
-                                setState(() {
-                                  _cidadeSelecionadaOrigem = value!;
-                                });
-                              },
-                              items: uniqueCidades.map((cidade) {
-                                return DropdownMenuItem<String>(
-                                  value: cidade,
-                                  child: Text(cidade),
-                                );
-                              }).toList(),
-                              decoration: const InputDecoration(
-                                labelText: 'Cidade',
-                                border: OutlineInputBorder(),
-                              ),
-                            );
+                        CidadesSelect(
+                          defaultValue: widget.trip?.originCity,
+                          cityList: cidades[_estadoSelecionadoOrigem] ??
+                              [], // List of cities for the selected state
+                          selectedCity: _cidadeSelecionadaOrigem,
+                          onCityChanged: (value) {
+                            setState(() {
+                              _cidadeSelecionadaOrigem = value;
+                            });
                           },
                         ),
                       ],
@@ -203,7 +163,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     ),
                     child: Column(
                       children: [
-                        Text(
+                        const Text(
                           'Destino',
                           style: TextStyle(
                             fontSize: 16.0,
@@ -211,99 +171,28 @@ class _AddTripScreenState extends State<AddTripScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const SizedBox(height: 16),
-                        StatefulBuilder(
-                          builder:
-                              (BuildContext context, StateSetter setState) {
-                            final uniqueEstados = estados.toSet().toList();
-
-                            if (uniqueEstados.isEmpty) {
-                              // Display a loading indicator or message, or disable the DropdownButtonFormField
-                              return Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  child:
-                                      CircularProgressIndicator(), // or another loading widget
-                                ),
-                              );
-                            }
-
-                            return DropdownButtonFormField<String>(
-                              value: _estadoSelecionadoDestino.isNotEmpty
-                                  ? _estadoSelecionadoDestino
-                                  : uniqueEstados.first,
-                              onChanged: (value) {
-                                setState(() {
-                                  _estadoSelecionadoDestino = value!;
-                                  _cidadeSelecionadaDestino = '';
-                                  _fetchCidadesFromAPI(value);
-                                });
-                              },
-                              items: uniqueEstados.map((estado) {
-                                return DropdownMenuItem<String>(
-                                  value: estado,
-                                  child: Text(estado),
-                                );
-                              }).toList(),
-                              decoration: const InputDecoration(
-                                labelText: 'Estado',
-                                border: OutlineInputBorder(),
-                              ),
-                            );
+                        EstadosSelect(
+                          defaultValue: widget.trip?.destinationState,
+                          estados: estados,
+                          estadoSelecionadoOrigem: _estadoSelecionadoDestino,
+                          onEstadoChanged: (value) {
+                            setState(() {
+                              _estadoSelecionadoDestino = value;
+                              _cidadeSelecionadaDestino = '';
+                              _fetchCidadesFromAPI(value);
+                            });
                           },
                         ),
                         const SizedBox(height: 16),
-                        StatefulBuilder(
-                          builder:
-                              (BuildContext context, StateSetter setState) {
-                            final cidadesEstado =
-                                cidades[_estadoSelecionadoDestino] ?? [];
-                            final uniqueCidades =
-                                cidadesEstado.toSet().toList();
-
-                            if (uniqueCidades.isEmpty) {
-                              if (_estadoSelecionadoDestino.isNotEmpty) {
-                                return Container(
-                                  width: 40, // Set the desired width here
-                                  child:
-                                      CircularProgressIndicator(), // or another loading widget
-                                );
-                              }
-                              return TextFormField(
-                                decoration: const InputDecoration(
-                                  labelText: 'Cidade',
-                                  border: OutlineInputBorder(),
-                                ),
-                                enabled: false,
-                                initialValue: "Por favor, selecione um estado",
-                              );
-                              // Display a loading indicator or message, or disable the DropdownButtonFormField
-                            }
-
-                            return DropdownButtonFormField<String>(
-                              value: _cidadeSelecionadaDestino.isNotEmpty
-                                  ? _cidadeSelecionadaDestino
-                                  : uniqueCidades.first,
-                              onChanged: (value) {
-                                setState(() {
-                                  _cidadeSelecionadaDestino = value!;
-                                });
-                              },
-                              items: uniqueCidades.map((cidade) {
-                                return DropdownMenuItem<String>(
-                                  value: cidade,
-                                  child: Text(cidade),
-                                );
-                              }).toList(),
-                              decoration: const InputDecoration(
-                                labelText: 'Cidade',
-                                border: OutlineInputBorder(),
-                              ),
-                            );
-                          },
-                        ),
+                        CidadesSelect(
+                            defaultValue: widget.trip?.destinationCity,
+                            cityList: cidades[_estadoSelecionadoDestino] ?? [],
+                            selectedCity: _cidadeSelecionadaDestino,
+                            onCityChanged: (value) {
+                              setState(() {
+                                _cidadeSelecionadaDestino = value;
+                              });
+                            })
                       ],
                     ),
                   ),
@@ -318,7 +207,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     ),
                     child: Column(
                       children: [
-                        Text(
+                        const Text(
                           'Saída',
                           style: TextStyle(
                             fontSize: 16.0,
@@ -335,7 +224,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                 style: const TextStyle(fontSize: 18),
                               ),
                             ),
-                            SizedBox(width: 16),
+                            const SizedBox(width: 16),
                             ElevatedButton(
                               onPressed: () {
                                 _setDataSaida(context);
@@ -353,7 +242,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                 style: const TextStyle(fontSize: 18),
                               ),
                             ),
-                            SizedBox(width: 16),
+                            const SizedBox(width: 16),
                             ElevatedButton(
                               onPressed: () {
                                 _setHoraSaida(context);
@@ -377,14 +266,13 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     ),
                     child: Column(
                       children: [
-                        Text(
+                        const Text(
                           'Retorno',
                           style: TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 16),
                         const SizedBox(height: 16),
                         Row(
                           children: <Widget>[
@@ -394,7 +282,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                 style: const TextStyle(fontSize: 18),
                               ),
                             ),
-                            SizedBox(width: 16),
+                            const SizedBox(width: 16),
                             ElevatedButton(
                               onPressed: () {
                                 _setDataRetorno(context);
@@ -412,7 +300,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                 style: const TextStyle(fontSize: 18),
                               ),
                             ),
-                            SizedBox(width: 16),
+                            const SizedBox(width: 16),
                             ElevatedButton(
                               onPressed: () {
                                 _setHoraRetorno(context);
@@ -422,6 +310,29 @@ class _AddTripScreenState extends State<AddTripScreen> {
                           ],
                         ),
                       ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<Veiculo>(
+                    value: _selectedVeiculo,
+                    onChanged: (veiculo) {
+                      setState(() {
+                        _selectedVeiculo = veiculo ?? veiculosList.first;
+                      });
+                    },
+                    items: veiculosList.map((veiculo) {
+                      return DropdownMenuItem<Veiculo>(
+                        value:
+                            veiculo, // Set the value to the complete Veiculo object
+                        child: Text(
+                          '${veiculo.marca} ${veiculo.modelo}, ${veiculo.ano} - ${veiculo.placa}',
+                        ),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(
+                      labelText: 'Veículo',
+                      border: OutlineInputBorder(),
                     ),
                   ),
 
@@ -438,8 +349,8 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       }
                       return null;
                     },
-                    onSaved: (value) {
-                      _assentosUtilizados = int.parse(value!);
+                    onChanged: (value) => {
+                      _assentosUtilizados = int.parse(value),
                     },
                   ),
                   const SizedBox(height: 16),
@@ -464,13 +375,30 @@ class _AddTripScreenState extends State<AddTripScreen> {
   }
 
   void _salvarDadosNoFirebase() {
-    // Implement your Firebase database saving logic here
+    // Validate the form fields before saving data
+    if (_formKey.currentState!.validate()) {
+      // Create a new Trip instance with data from the form
+      Veiculo selectedVeiculo = _selectedVeiculo;
+      Trip newTrip = Trip(
+        carImage: selectedVeiculo.imageUrl,
+        originState: _estadoSelecionadoOrigem,
+        originCity: _cidadeSelecionadaOrigem,
+        destinationState: _estadoSelecionadoDestino,
+        destinationCity: _cidadeSelecionadaDestino,
+        startDate: _dataSaida,
+        endDate: _dataRetorno,
+        assentosUtilizados: _assentosUtilizados,
+        responsavel: _selectedPessoa,
+      );
+      Trip.ongoingTrips.add(newTrip);
+      Navigator.pop(context);
+    }
   }
 
   Future<void> _setDataSaida(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
-      initialDate: _dataSaida,
+      initialDate: widget.trip?.startDate ?? _dataSaida,
       firstDate: DateTime(2022),
       lastDate: DateTime(2122),
     ) as DateTime;

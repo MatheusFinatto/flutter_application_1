@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/Viagens/ViagensScreen.dart';
+import 'package:flutter_application_1/screens/Viagens/viagens_screen.dart';
 import 'package:flutter_application_1/screens/Atividades/AtividadesScreen.dart';
 import 'package:flutter_application_1/screens/Conta/ContaScreen.dart';
 
