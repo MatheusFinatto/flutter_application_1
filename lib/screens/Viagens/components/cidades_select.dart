@@ -6,7 +6,8 @@ class CidadesSelect extends StatefulWidget {
   final Function(String) onCityChanged;
   final String? defaultValue;
 
-  CidadesSelect({
+  const CidadesSelect({
+    super.key,
     required this.cityList,
     required this.selectedCity,
     required this.onCityChanged,
@@ -21,7 +22,6 @@ class CidadesSelectState extends State<CidadesSelect> {
   @override
   Widget build(BuildContext context) {
     final uniqueCidades = widget.cityList.toSet().toList();
-    print(uniqueCidades);
 
     if (uniqueCidades.isEmpty) {
       if (widget.selectedCity.isNotEmpty) {

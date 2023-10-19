@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-class ContaScreen extends StatelessWidget {
-  const ContaScreen({super.key});
+class AtividadesScreen extends StatelessWidget {
+  const AtividadesScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Conta'),
+        title: const Text('Atividades'),
       ),
-      body: Column(
+      body: const Column(
         children: [
           // Search input field
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
           ),
         ],
       ),

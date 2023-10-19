@@ -6,7 +6,8 @@ class EstadosSelect extends StatefulWidget {
   final Function(String) onEstadoChanged;
   final String? defaultValue;
 
-  EstadosSelect({
+  const EstadosSelect({
+    super.key,
     required this.estados,
     required this.estadoSelecionadoOrigem,
     required this.onEstadoChanged,

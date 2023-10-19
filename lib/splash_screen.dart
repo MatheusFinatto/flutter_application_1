@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (context) => HomePage()), // Tela principal do app
+          builder: (context) => const HomePage()), // Tela principal do app
     );
   }
 

@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/Viagens/viagens_screen.dart';
-import 'package:flutter_application_1/screens/Atividades/AtividadesScreen.dart';
-import 'package:flutter_application_1/screens/Conta/ContaScreen.dart';
+import 'package:flutter_application_1/screens/Atividades/atividades_screen.dart';
+import 'package:flutter_application_1/screens/Conta/conta_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   State<HomePage> createState() => HomePageState();
 }

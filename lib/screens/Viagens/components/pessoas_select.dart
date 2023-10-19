@@ -7,7 +7,8 @@ class PessoasSelect extends StatefulWidget {
   final Function(Pessoa) onPessoaChanged;
   final Pessoa? defaultValue;
 
-  PessoasSelect({
+  const PessoasSelect({
+    super.key,
     required this.pessoas,
     required this.pessoaSelecionada,
     required this.onPessoaChanged,
@@ -15,10 +16,10 @@ class PessoasSelect extends StatefulWidget {
   });
 
   @override
-  _PessoasSelectState createState() => _PessoasSelectState();
+  PessoasSelectState createState() => PessoasSelectState();
 }
 
-class _PessoasSelectState extends State<PessoasSelect> {
+class PessoasSelectState extends State<PessoasSelect> {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<Pessoa>(

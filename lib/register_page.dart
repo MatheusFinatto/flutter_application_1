@@ -3,6 +3,8 @@ import 'package:flutter_application_1/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
   @override
   State<RegisterPage> createState() => RegisterPageState();
 }
@@ -34,16 +36,14 @@ class RegisterPageState extends State<RegisterPage> {
           key: _formKey,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 100, 10, 50),
-            child: Container(
-              child: Column(
-                children: [
-                  _buildHeaderText(),
-                  SizedBox(height: 30),
-                  _buildInputs(),
-                  SizedBox(height: 70),
-                  _buildRegisterButton(),
-                ],
-              ),
+            child: Column(
+              children: [
+                _buildHeaderText(),
+                const SizedBox(height: 30),
+                _buildInputs(),
+                const SizedBox(height: 70),
+                _buildRegisterButton(),
+              ],
             ),
           ),
         ),
@@ -63,7 +63,7 @@ class RegisterPageState extends State<RegisterPage> {
             decoration: TextDecoration.none,
           ),
         ),
-        SizedBox(height: 2),
+        const SizedBox(height: 2),
         Text(
           "Vamos começar nos conhecendo :)",
           style: GoogleFonts.inter(
@@ -87,8 +87,7 @@ class RegisterPageState extends State<RegisterPage> {
             decoration: InputDecoration(
               labelText: "Nome Completo",
               border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(50.0), // Adjust the radius as needed
+                borderRadius: BorderRadius.circular(50.0),
               ),
             ),
             validator: (value) {
@@ -186,20 +185,20 @@ class RegisterPageState extends State<RegisterPage> {
       children: [
         ElevatedButton(
           style: ButtonStyle(
-            fixedSize: MaterialStateProperty.all(Size(380, 50)),
+            fixedSize: MaterialStateProperty.all(const Size(380, 50)),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             )),
           ),
           onPressed: _onRegisterPressed,
-          child: Text('Cadastrar', style: TextStyle(fontSize: 16)),
+          child: const Text('Cadastrar', style: TextStyle(fontSize: 16)),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Text(
           "Já possuo uma conta",
           style: GoogleFonts.inter(
             fontSize: 14,
-            color: Color(0xFF0000EE),
+            color: const Color(0xFF0000EE),
             fontWeight: FontWeight.normal,
             decoration: TextDecoration.underline,
           ),
@@ -213,7 +212,7 @@ class RegisterPageState extends State<RegisterPage> {
       // Form is valid, perform registration
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => const HomePage(),
         ),
       );
     }

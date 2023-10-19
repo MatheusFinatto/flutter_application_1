@@ -6,6 +6,7 @@ import 'viagens.dart';
 class ViagensScreen extends StatefulWidget {
   const ViagensScreen({Key? key}) : super(key: key);
 
+  @override
   ViagensScreenState createState() => ViagensScreenState();
 }
 
@@ -18,21 +19,21 @@ class ViagensScreenState extends State<ViagensScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
+    final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
 
     void showDeleteConfirmationDialog(BuildContext context, int index) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Delete Trip'),
-            content: Text('Are you sure you want to delete this trip?'),
+            title: const Text('Delete Trip'),
+            content: const Text('Are you sure you want to delete this trip?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () {
@@ -41,7 +42,7 @@ class ViagensScreenState extends State<ViagensScreen> {
                   Navigator.of(context).pop();
                   updateTripsList();
                 },
-                child: Text('Delete'),
+                child: const Text('Delete'),
               ),
             ],
           );
@@ -65,9 +66,7 @@ class ViagensScreenState extends State<ViagensScreen> {
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.clear),
                   onPressed: () {
-                    // Clear the search input field
                     _searchController.clear();
-                    // Reset the trips to the originCityal list
                     setState(() {
                       ongoingTrips = Trip.ongoingTrips;
                     });
@@ -122,9 +121,9 @@ class ViagensScreenState extends State<ViagensScreen> {
                                     Text(
                                         'Responsável: ${ongoingTrips[index].responsavel}'),
                                     Text(
-                                        'Data prevista de saída: ${_dateFormatter.format(ongoingTrips[index].startDate)}'),
+                                        'Data prevista de saída: ${dateFormatter.format(ongoingTrips[index].startDate)}'),
                                     Text(
-                                        'Data prevista de retorno: ${_dateFormatter.format(ongoingTrips[index].endDate)}'),
+                                        'Data prevista de retorno: ${dateFormatter.format(ongoingTrips[index].endDate)}'),
                                     Text(
                                         'Assentos utilizados: ${ongoingTrips[index].assentosUtilizados}'),
                                   ],
@@ -136,8 +135,6 @@ class ViagensScreenState extends State<ViagensScreen> {
                                   IconButton(
                                     icon: const Icon(Icons.edit),
                                     onPressed: () {
-                                      print(
-                                          "viage ${ongoingTrips[index].responsavel}");
                                       Navigator.of(context)
                                           .push(
                                             MaterialPageRoute(
@@ -191,14 +188,12 @@ class ViagensScreenState extends State<ViagensScreen> {
 
   void updateTripsList() {
     setState(() {
-      print("updateTripsList");
       ongoingTrips = Trip.ongoingTrips;
     });
   }
 
   // Function to filter the trips based on the search query
   void _filterTrips(String query) {
-    print('Filtering trips with query: $query');
     if (query.isEmpty || query == '') {
       // If the query is empty, return all trips
       setState(() {
@@ -207,7 +202,6 @@ class ViagensScreenState extends State<ViagensScreen> {
     } else {
       setState(() {
         ongoingTrips = Trip.ongoingTrips.where((trip) {
-          print(trip);
           return trip.destinationCity
               .toLowerCase()
               .contains(query.toLowerCase());
