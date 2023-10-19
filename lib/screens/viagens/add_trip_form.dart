@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/database/pessoas.dart';
+import 'package:flutter_application_1/database/veiculos.dart';
+import 'package:flutter_application_1/database/viagens.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:flutter_application_1/models/veiculos.dart';
 import 'package:flutter_application_1/models/viagens.dart';
-import 'package:flutter_application_1/widgets/selects/cidades_select.dart';
-import 'package:flutter_application_1/widgets/selects/estados_select.dart';
-import 'package:flutter_application_1/widgets/selects/pessoas_select.dart';
+import 'package:flutter_application_1/screens/viagens/widgets/selects/cidades_select.dart';
+import 'package:flutter_application_1/screens/viagens/widgets/selects/estados_select.dart';
+import 'package:flutter_application_1/screens/viagens/widgets/selects/pessoas_select.dart';
 
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -36,10 +39,8 @@ class AddTripScreenState extends State<AddTripScreen> {
   DateTime _dataRetorno = DateTime.now();
   TimeOfDay _horaRetorno = TimeOfDay.now();
 
-  Veiculo _selectedVeiculo = veiculosList.first;
-  Pessoa _selectedPessoa = pessoasList.first;
-
-  int _assentosUtilizados = 1;
+  Veiculo _selectedVeiculo = veiculosList[0];
+  Pessoa _selectedPessoa = pessoasList[0];
 
   final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
   final List<String> estados = [];
@@ -337,23 +338,6 @@ class AddTripScreenState extends State<AddTripScreen> {
                   ),
 
                   const SizedBox(height: 16),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Assentos ocupados',
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, insira o número de assentos que serão ocupados';
-                      }
-                      return null;
-                    },
-                    onChanged: (value) => {
-                      _assentosUtilizados = int.parse(value),
-                    },
-                  ),
-                  const SizedBox(height: 16),
 
                   const SizedBox(height: 32),
                   ElevatedButton(
@@ -375,22 +359,20 @@ class AddTripScreenState extends State<AddTripScreen> {
   }
 
   void _salvarDadosNoFirebase() {
-    // Validate the form fields before saving data
     if (_formKey.currentState!.validate()) {
-      // Create a new Trip instance with data from the form
       Veiculo selectedVeiculo = _selectedVeiculo;
       Trip newTrip = Trip(
-        carImage: selectedVeiculo.imageUrl,
+        vehicle: selectedVeiculo,
         originState: _estadoSelecionadoOrigem,
         originCity: _cidadeSelecionadaOrigem,
         destinationState: _estadoSelecionadoDestino,
         destinationCity: _cidadeSelecionadaDestino,
         startDate: _dataSaida,
         endDate: _dataRetorno,
-        assentosUtilizados: _assentosUtilizados,
         responsavel: _selectedPessoa,
+        participantes: [],
       );
-      Trip.ongoingTrips.add(newTrip);
+      viagensList.add(newTrip);
       Navigator.pop(context);
     }
   }
