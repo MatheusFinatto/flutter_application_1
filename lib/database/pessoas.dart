@@ -8,6 +8,7 @@ List<Pessoa> pessoasList = [
     endereco: '123 Main St, City',
     telefone: '555-555-5555',
     email: 'ednaldo@example.com',
+    imageUrl: '',
   ),
   Pessoa(
     id: '2',
@@ -16,6 +17,7 @@ List<Pessoa> pessoasList = [
     endereco: '456 Elm St, Town',
     telefone: '555-123-4567',
     email: 'irineu@example.com',
+    imageUrl: '',
   ),
   Pessoa(
     id: '3',
@@ -24,5 +26,6 @@ List<Pessoa> pessoasList = [
     endereco: '101 Pine St, Hamlet',
     telefone: '555-111-3333',
     email: 'vin@example.com',
+    imageUrl: 'assets/images/vinDieselBr.png',
   ),
 ];

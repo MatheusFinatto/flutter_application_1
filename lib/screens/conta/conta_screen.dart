@@ -24,26 +24,31 @@ class ContaScreenState extends State<ContaScreen> {
       body: Column(
         children: [
           // Search input field
-          const Padding(
-            padding: EdgeInsets.only(bottom: 20, left: 20, top: 16, right: 16),
+          Padding(
+            padding:
+                const EdgeInsets.only(bottom: 20, left: 40, top: 16, right: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
+                const Column(
                   children: [
                     Text(
-                      'Nome do Funcionario',
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.w900),
+                      'Vin Diesel Brasileiro',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
                     ),
                     Text(
                       '#12313213',
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w500),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
-                Icon(Icons.person, size: 50),
+                Image.asset(
+                  'assets/images/vinDieselBr.png',
+                  width: 100,
+                  height: 200,
+                ),
               ],
             ),
           ),

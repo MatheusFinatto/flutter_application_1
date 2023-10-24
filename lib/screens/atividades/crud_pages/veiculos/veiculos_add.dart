@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/database/veiculos.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
+import 'package:flutter_application_1/models/veiculos.dart';
 import 'package:image_picker/image_picker.dart';
 
 class VeiculosAdd extends StatefulWidget {
@@ -12,29 +14,37 @@ class VeiculosAdd extends StatefulWidget {
 }
 
 class _VeiculosAddState extends State<VeiculosAdd> {
-  String _id = "1";
-  String _marca = "";
-  String _modelo = "";
-  String _placa = "";
-  String _ano = "";
+  final int _id = 10;
+  final String _marca = "";
+  final String _modelo = "";
+  final String _placa = "";
+  final String _ano = "";
   int capacidade = 5;
   String _imageUrl = "";
 
-  TextEditingController _idController = TextEditingController();
-  TextEditingController _marcaController = TextEditingController();
-  TextEditingController _modeloController = TextEditingController();
-  TextEditingController _placaController = TextEditingController();
-  TextEditingController _anoController = TextEditingController();
-  TextEditingController _capacidadeController = TextEditingController();
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _marcaController = TextEditingController();
+  final TextEditingController _modeloController = TextEditingController();
+  final TextEditingController _placaController = TextEditingController();
+  final TextEditingController _anoController = TextEditingController();
+  final TextEditingController _capacidadeController = TextEditingController();
 
-  ImagePicker _picker = new ImagePicker();
+  final ImagePicker _picker = new ImagePicker();
 
   File? _selectedImage;
 
-
   void _addVeiculo(String id, String marca, String modelo, String placa,
       String ano, int capacidade) {
-    // Funcão de Add no Firebase
+    Veiculo veiculo = Veiculo(
+      id: _id,
+      marca: _marca,
+      modelo: _modelo,
+      placa: _placa,
+      ano: _ano,
+      capacidade: capacidade,
+      imageUrl: _imageUrl,
+    );
+    veiculosList.add(veiculo);
   }
 
   @override
@@ -77,23 +87,28 @@ class _VeiculosAddState extends State<VeiculosAdd> {
                 controller: _capacidadeController,
                 decoration: const InputDecoration(
                   labelText: "Capacidade",
-                  
                 ),
                 keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 20.0,),
+              const SizedBox(
+                height: 20.0,
+              ),
               ElevatedButton(
                 onPressed: () {
                   _pickImageFromGallery();
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 83, 245, 159)),
-                child:  const Row(
+                child: const Row(
                   children: [Text("Selecionar Imagem")],
                 ),
               ),
-              const SizedBox(height: 20.0,),
-              _selectedImage != null ? Image.file(_selectedImage!) : const Text("Por favor selecione uma imagem."),
+              const SizedBox(
+                height: 20.0,
+              ),
+              _selectedImage != null
+                  ? Image.file(_selectedImage!)
+                  : const Text("Por favor selecione uma imagem."),
               const SizedBox(height: 40), // Espaço entre os campos
               ElevatedButton(
                   onPressed: () {
@@ -103,8 +118,7 @@ class _VeiculosAddState extends State<VeiculosAdd> {
                         _modeloController.text,
                         _placaController.text,
                         _anoController.text,
-                        int.parse(_capacidadeController.text)
-                        );
+                        int.parse(_capacidadeController.text));
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 83, 245, 159)),
@@ -112,7 +126,6 @@ class _VeiculosAddState extends State<VeiculosAdd> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [Text("Criar Veículo")],
                   )),
-                  
             ],
           ),
         ),
@@ -123,7 +136,7 @@ class _VeiculosAddState extends State<VeiculosAdd> {
   Future _pickImageFromGallery() async {
     final imagem = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if(imagem == null) return;
+    if (imagem == null) return;
     setState(() {
       _selectedImage = File(imagem.path);
       _imageUrl = imagem.path.toString();

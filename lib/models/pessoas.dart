@@ -5,6 +5,7 @@ class Pessoa {
   final String endereco;
   final String telefone;
   final String email;
+  final String imageUrl;
 
   Pessoa({
     required this.id,
@@ -13,5 +14,6 @@ class Pessoa {
     required this.endereco,
     required this.telefone,
     required this.email,
+    required this.imageUrl,
   });
 }

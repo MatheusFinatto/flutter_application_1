@@ -16,6 +16,7 @@ class _UsersAddState extends State<UsersAdd> {
   String _endereco = "";
   String _telefone = "";
   String _email = "";
+  String _imageUrl = "";
 
   TextEditingController _idController = TextEditingController();
   TextEditingController _cpfController = TextEditingController();
@@ -37,9 +38,9 @@ class _UsersAddState extends State<UsersAdd> {
         nome: nome,
         endereco: endereco,
         telefone: telefone,
-        email: email);
+        email: email,
+        imageUrl: _imageUrl);
     print(p1.nome + p1.id);
-    
   }
 
   @override
