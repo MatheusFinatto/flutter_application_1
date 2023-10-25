@@ -269,7 +269,8 @@ class ViagensScreenState extends State<ViagensScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(
+          Navigator.pushReplacement(
+            context,
             MaterialPageRoute(
               builder: (context) => const AddTripScreen(),
             ),

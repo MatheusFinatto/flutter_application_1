@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/database/veiculos.dart';
-import 'package:flutter_application_1/screens/atividades/crud_pages/veiculos/veiculos_update.dart';
+import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_update.dart';
 
 class VeiculosShow extends StatefulWidget {
   const VeiculosShow({super.key});

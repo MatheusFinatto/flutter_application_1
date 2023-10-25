@@ -194,13 +194,18 @@ class RegisterPageState extends State<RegisterPage> {
           child: const Text('Cadastrar', style: TextStyle(fontSize: 16)),
         ),
         const SizedBox(height: 20),
-        Text(
-          "Já possuo uma conta",
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            color: const Color(0xFF0000EE),
-            fontWeight: FontWeight.normal,
-            decoration: TextDecoration.underline,
+        GestureDetector(
+          onTap: () {
+            Navigator.pushReplacementNamed(context, '/home');
+          },
+          child: const Text(
+            "Já possuo uma conta",
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF0000EE),
+              fontWeight: FontWeight.normal,
+              decoration: TextDecoration.underline,
+            ),
           ),
         ),
       ],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/atividades/crud_pages/empresas/empresas_add.dart';
-import 'package:flutter_application_1/screens/atividades/crud_pages/empresas/empresas_update.dart';
-import 'package:flutter_application_1/screens/atividades/crud_pages/empresas/empresas_delete.dart';
+import 'package:flutter_application_1/screens/atividades/empresas/empresas_add.dart';
+import 'package:flutter_application_1/screens/atividades/empresas/empresas_update.dart';
+import 'package:flutter_application_1/screens/atividades/empresas/empresas_delete.dart';
+
 class Empresas extends StatefulWidget {
   const Empresas({super.key});
 
@@ -28,9 +29,9 @@ class _EmpresasState extends State<Empresas> {
                     child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EmpresasAdd()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const EmpresasAdd()));
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -70,9 +71,10 @@ class _EmpresasState extends State<Empresas> {
                     child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EmpresasUpdate()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const EmpresasUpdate()));
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -112,9 +114,10 @@ class _EmpresasState extends State<Empresas> {
                     child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EmpresasDelete()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const EmpresasDelete()));
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor:
