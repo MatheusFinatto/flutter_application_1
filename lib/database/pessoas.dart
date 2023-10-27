@@ -28,4 +28,13 @@ List<Pessoa> pessoasList = [
     email: 'vin@example.com',
     imageUrl: 'assets/images/vinDieselBr.png',
   ),
+  Pessoa(
+    id: '3',
+    cpf: '555.555.555-55',
+    nome: 'Rick Astley',
+    endereco: '987 Never Gonna Give You Up St',
+    telefone: "9555-3456",
+    email: "rickastley@example.com",
+    imageUrl: 'assets/images/vinDieselBr.png',
+  ),
 ];

@@ -22,7 +22,7 @@ List<Empresa> empresas = [
     cnpj: "321654987",
     nome: "Rickroll Co.",
     enderecoMatriz: "987 Never Gonna Give You Up St",
-    telefone: "555-3456",
+    telefone: "9555-3456",
     email: "rickastley@example.com",
   ),
 ];
