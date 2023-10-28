@@ -49,7 +49,7 @@ class _VeiculosShowState extends State<VeiculosShow> {
                               // Replace 'imageUrl' with the actual field name in your Firestore document
                               Image.network(
                                 veiculoData['imageUrl'] as String? ??
-                                    'https://s7d1.scene7.com/is/image/hyundai/compare-vehicle-1225x619?wid=600&fmt=webp',
+                                    'https://s7d1.scene7.com/is/image/hyundai/compare-veiculo-1225x619?wid=600&fmt=webp',
                                 width: MediaQuery.of(context).size.width,
                                 height: 200,
                               ),
