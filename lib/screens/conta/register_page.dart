@@ -64,7 +64,7 @@ class RegisterPageState extends State<RegisterPage> {
                 .then((firebaseUser) => {
                       //gravar no banco usando o UID
                       db
-                          .collection('usuarios')
+                          .collection('pessoas')
                           .doc(firebaseUser.user!.uid)
                           .set(dadosUser),
                       _msgErro = "Sucesso ao logar",

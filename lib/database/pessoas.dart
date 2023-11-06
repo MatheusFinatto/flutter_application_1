@@ -9,7 +9,7 @@ class Pessoas {
     final user = await auth.currentUser;
 
     DocumentSnapshot snapshot =
-        await db.collection("usuarios").doc(user!.uid).get();
+        await db.collection("pessoas").doc(user!.uid).get();
     Map<String, dynamic>? dado = snapshot.data() as Map<String, dynamic>?;
 
     String endereco = '';
