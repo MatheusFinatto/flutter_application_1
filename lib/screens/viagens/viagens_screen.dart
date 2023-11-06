@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_application_1/models/pessoas.dart';
+import 'package:flutter_application_1/screens/viagens/add_trip_form.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/database/pessoas.dart';
@@ -17,7 +19,7 @@ class ViagensScreen extends StatefulWidget {
 class ViagensScreenState extends State<ViagensScreen> {
   final TextEditingController _searchController = TextEditingController();
   final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
-  String currentUser = pessoasList[2].nome;
+  Pessoa currentUser = pessoasList[0];
   late List<Trip> filteredViagens;
   late List<bool> isParticipatingList;
 
@@ -27,6 +29,15 @@ class ViagensScreenState extends State<ViagensScreen> {
     filteredViagens = List.from(viagensList);
     isParticipatingList =
         List.generate(filteredViagens.length, (index) => false);
+    getDados();
+  }
+
+  void getDados() async {
+    Pessoas pessoas = Pessoas(); // Crie uma instância da classe Pessoas
+    Pessoa pessoa = await pessoas.getUserSession();
+    setState(() {
+      currentUser = pessoa;
+    });
   }
 
   void onPressedButton(int index) {
@@ -414,7 +425,12 @@ class ViagensScreenState extends State<ViagensScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add your navigation logic for adding a new trip here
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTripScreen(),
+            ),
+          );
         },
         child: const Icon(Icons.add),
       ),

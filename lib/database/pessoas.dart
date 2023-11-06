@@ -1,4 +1,51 @@
 import 'package:flutter_application_1/models/pessoas.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class Pessoas {
+  Future<Pessoa> getUserSession() async {
+    print("iniciaindo");
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    FirebaseAuth auth = FirebaseAuth.instance;
+    final user = await auth.currentUser;
+
+    DocumentSnapshot snapshot =
+        await db.collection("pessoas").doc(user!.uid).get();
+
+    Map<String, dynamic>? dado = snapshot.data() as Map<String, dynamic>?;
+    print(dado);
+
+    String endereco = '';
+    String telefone = '';
+    String imageUrl = '';
+    if (dado != null) {
+      String id = user.uid;
+      String cpf = dado['cpf'];
+      String nome = dado['nome'];
+      String email = dado['email'];
+      if (dado['endereco'] != null) {
+        endereco = dado['endereco'];
+      }
+      if (dado['telefone'] != null) {
+        telefone = dado['telefone'];
+      }
+      if (dado['imageUrl'] != null) {
+        imageUrl = dado['imageUrl'];
+      }
+      return Pessoa(
+        id: id,
+        cpf: cpf,
+        nome: nome,
+        endereco: endereco,
+        telefone: telefone,
+        email: email,
+        imageUrl: imageUrl,
+      );
+    } else {
+      throw Exception('Dados não encontrados no Firestore.');
+    }
+  }
+}
 
 List<Pessoa> pessoasList = [
   Pessoa(

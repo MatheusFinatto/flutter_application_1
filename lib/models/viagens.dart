@@ -51,13 +51,20 @@ class Trip {
     }
   }
 
-  static void addNewTrip(Trip newTrip) {
-    viagensList.add(newTrip);
-  }
-
-  static void removeTrip(int index) {
-    if (index >= 0 && index < viagensList.length) {
-      viagensList.removeAt(index);
-    }
+  // Define the toJson method to convert the Trip object to a JSON format.
+  Map<String, dynamic> toJson() {
+    return {
+      'veiculo': veiculo
+          .toJson(), // You should define a toJson method for Veiculo as well.
+      'estadoOrigem': estadoOrigem,
+      'cidadeOrigem': cidadeOrigem,
+      'estadoDestino': estadoDestino,
+      'cidadeDestino': cidadeDestino,
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String(),
+      'responsavel': responsavel
+          .toJson(), // You should define a toJson method for Pessoa as well.
+      'participantes': participantes,
+    };
   }
 }

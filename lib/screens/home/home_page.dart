@@ -1,9 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/viagens/viagens_screen.dart';
 import 'package:flutter_application_1/screens/atividades/atividades_screen.dart';
 import 'package:flutter_application_1/screens/conta/conta_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp();
   runApp(const MyApp());
 }
 

@@ -28,4 +28,16 @@ class Pessoa {
       imageUrl: map['imageUrl'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'cpf': cpf,
+      'nome': nome,
+      'endereco': endereco,
+      'telefone': telefone,
+      'email': email,
+      'imageUrl': imageUrl,
+    };
+  }
 }

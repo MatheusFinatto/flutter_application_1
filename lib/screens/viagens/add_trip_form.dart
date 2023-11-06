@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/database/pessoas.dart';
 import 'package:flutter_application_1/database/veiculos.dart';
@@ -50,6 +52,15 @@ class AddTripScreenState extends State<AddTripScreen> {
   void initState() {
     super.initState();
     _fetchEstadosFromAPI();
+    getDados();
+  }
+
+  void getDados() async {
+    Pessoas pessoas = Pessoas(); // Crie uma instância da classe Pessoas
+    Pessoa pessoa = await pessoas.getUserSession();
+    setState(() {
+      _selectedPessoa = pessoa;
+    });
   }
 
   Future<void> _fetchEstadosFromAPI() async {
@@ -95,18 +106,6 @@ class AddTripScreenState extends State<AddTripScreen> {
             children: <Widget>[
               Column(
                 children: [
-                  const SizedBox(height: 16),
-
-                  PessoasSelect(
-                    defaultValue: widget.trip?.responsavel,
-                    pessoas: pessoasList,
-                    pessoaSelecionada: _selectedPessoa,
-                    onPessoaChanged: (newPessoa) {
-                      setState(() {
-                        _selectedPessoa = newPessoa;
-                      });
-                    },
-                  ),
                   const SizedBox(height: 16),
 
                   Container(
@@ -372,7 +371,17 @@ class AddTripScreenState extends State<AddTripScreen> {
         responsavel: _selectedPessoa,
         participantes: [],
       );
-      viagensList.add(newTrip);
+
+      // Replace 'YOUR_EMPRESA_ID' with the actual ID of the empresa.
+      String empresaId = 'UywGfjmMyYNRHFyx5hUN';
+
+      // Get a reference to the empresa's 'viagens' collection.
+      CollectionReference viagensCollection =
+          FirebaseFirestore.instance.collection('empresas/$empresaId/viagens');
+
+      // Add the new trip document to the 'viagens' collection.
+      viagensCollection.add(newTrip.toJson());
+
       Navigator.pushReplacementNamed(context, '/home');
     }
   }

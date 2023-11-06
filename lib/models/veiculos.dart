@@ -28,4 +28,17 @@ class Veiculo {
       imageUrl: map['imageUrl'],
     );
   }
+
+  // Define the toJson method to convert the Veiculo object to a JSON format.
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'marca': marca,
+      'modelo': modelo,
+      'placa': placa,
+      'ano': ano,
+      'capacidade': capacidade,
+      'imageUrl': imageUrl,
+    };
+  }
 }
