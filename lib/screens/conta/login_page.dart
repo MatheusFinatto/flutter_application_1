@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_application_1/screens/conta/register_page.dart';
 import 'package:flutter_application_1/screens/home/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -204,14 +202,14 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _onRegisterPressed() {
-    if (_formKey.currentState!.validate()) {
-      // Form is valid, perform registration
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
-      );
-    }
-  }
+  // void _onRegisterPressed() {
+  //   if (_formKey.currentState!.validate()) {
+  //     // Form is valid, perform registration
+  //     Navigator.of(context).push(
+  //       MaterialPageRoute(
+  //         builder: (context) => const HomePage(),
+  //       ),
+  //     );
+  //   }
+  // }
 }

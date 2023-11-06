@@ -21,13 +21,13 @@ class Pessoas {
       String nome = dado['nome'];
       String email = dado['email'];
       if (dado['endereco'] != null) {
-        String endereco = dado['endereco'];
+        endereco = dado['endereco'];
       }
       if (dado['telefone'] != null) {
-        String telefone = dado['telefone'];
+        telefone = dado['telefone'];
       }
       if (dado['imageUrl'] != null) {
-        String imageUrl = dado['imageUrl'];
+        imageUrl = dado['imageUrl'];
       }
       return Pessoa(
         id: id,

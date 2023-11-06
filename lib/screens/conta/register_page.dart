@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_application_1/screens/conta/login_page.dart';
 import 'package:flutter_application_1/screens/home/home_page.dart';
@@ -37,15 +36,15 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   _createAccount() {
-    String _email = _emailController.text;
-    String _password = _passwordController.text;
-    String _nome = _nameController.text;
-    String _cpf = _cpfController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    String nome = _nameController.text;
+    String cpf = _cpfController.text;
 
-    if (_email.isNotEmpty && _email.contains("@")) {
-      if (_password.isNotEmpty && _password.length >= 6) {
-        if (_cpf.length >= 11) {
-          if (_nome.isNotEmpty) {
+    if (email.isNotEmpty && email.contains("@")) {
+      if (password.isNotEmpty && password.length >= 6) {
+        if (cpf.length >= 11) {
+          if (nome.isNotEmpty) {
             //instancia do auth
             FirebaseAuth auth = FirebaseAuth.instance;
             //instancia do bd
@@ -53,14 +52,14 @@ class RegisterPageState extends State<RegisterPage> {
 
             //gravar no banco
             Map<String, dynamic> dadosUser = {
-              'nome': _nome,
-              'email': _email,
-              'cpf': _cpf
+              'nome': nome,
+              'email': email,
+              'cpf': cpf
             };
 
             auth
                 .createUserWithEmailAndPassword(
-                    email: _email, password: _password)
+                    email: email, password: password)
                 .then((firebaseUser) => {
                       //gravar no banco usando o UID
                       db
@@ -265,7 +264,7 @@ class RegisterPageState extends State<RegisterPage> {
           onPressed: _createAccount,
           child: const Text('Cadastrar', style: TextStyle(fontSize: 16)),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         GestureDetector(
           onTap: () {
             Navigator.of(context).push(
@@ -289,14 +288,14 @@ class RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _onRegisterPressed() {
-    if (_formKey.currentState!.validate()) {
-      // Form is valid, perform registration
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
-      );
-    }
-  }
+  // void _onRegisterPressed() {
+  //   if (_formKey.currentState!.validate()) {
+  //     // Form is valid, perform registration
+  //     Navigator.of(context).push(
+  //       MaterialPageRoute(
+  //         builder: (context) => const HomePage(),
+  //       ),
+  //     );
+  //   }
+  // }
 }
