@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/database/pessoas.dart';
@@ -357,32 +358,55 @@ class AddTripScreenState extends State<AddTripScreen> {
     );
   }
 
-  void _salvarDadosNoFirebase() {
+  void _salvarDadosNoFirebase() async {
     if (_formKey.currentState!.validate()) {
       Veiculo selectedVeiculo = _selectedVeiculo;
-      Trip newTrip = Trip(
-        veiculo: selectedVeiculo,
-        estadoOrigem: _estadoSelecionadoOrigem,
-        cidadeOrigem: _cidadeSelecionadaOrigem,
-        estadoDestino: _estadoSelecionadoDestino,
-        cidadeDestino: _cidadeSelecionadaDestino,
-        startDate: _dataSaida,
-        endDate: _dataRetorno,
-        responsavel: _selectedPessoa,
-        participantes: [],
-      );
 
-      // Replace 'YOUR_EMPRESA_ID' with the actual ID of the empresa.
-      String empresaId = 'UywGfjmMyYNRHFyx5hUN';
+      // Get the current user's UID from Firebase Authentication
+      User? currentUser = FirebaseAuth.instance.currentUser;
 
-      // Get a reference to the empresa's 'viagens' collection.
-      CollectionReference viagensCollection =
-          FirebaseFirestore.instance.collection('empresas/$empresaId/viagens');
+      if (currentUser != null) {
+        String currentUserId = currentUser.uid;
+        Trip newTrip = Trip(
+          veiculo:
+              selectedVeiculo, // Assuming _selectedVeiculo is a Veiculo object
+          estadoOrigem: _estadoSelecionadoOrigem,
+          cidadeOrigem: _cidadeSelecionadaOrigem,
+          estadoDestino: _estadoSelecionadoDestino,
+          cidadeDestino: _cidadeSelecionadaDestino,
+          startDate: _dataSaida,
+          endDate: _dataRetorno,
+          responsavel: pessoasList[0],
+          participantes: [], // Initialize with an empty list
+        );
 
-      // Add the new trip document to the 'viagens' collection.
-      viagensCollection.add(newTrip.toJson());
+        // Replace 'YOUR_EMPRESA_ID' with the actual ID of the empresa.
+        String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
-      Navigator.pushReplacementNamed(context, '/home');
+        // Get a reference to the empresa's 'viagens' collection.
+        CollectionReference viagensCollection = FirebaseFirestore.instance
+            .collection('empresas/$empresaId/viagens');
+
+        // Add the new trip document to the 'viagens' collection.
+        await viagensCollection.add({
+          'veiculo': FirebaseFirestore.instance
+              .doc('your_veiculo_collection/your_veiculo_document_id'),
+          'estadoOrigem': newTrip.estadoOrigem,
+          'cidadeOrigem': newTrip.cidadeOrigem,
+          'estadoDestino': newTrip.estadoDestino,
+          'cidadeDestino': newTrip.cidadeDestino,
+          'startDate': newTrip.startDate,
+          'endDate': newTrip.endDate,
+          'responsavel':
+              FirebaseFirestore.instance.doc('pessoas/$currentUserId'),
+          'participantes': newTrip.participantes
+              .map((participant) => FirebaseFirestore.instance
+                  .doc('your_participant_collection/participant_document_id'))
+              .toList(),
+        });
+
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     }
   }
 
