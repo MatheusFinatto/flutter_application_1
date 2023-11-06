@@ -16,4 +16,16 @@ class Pessoa {
     required this.email,
     required this.imageUrl,
   });
+
+  factory Pessoa.fromMap(Map<String, dynamic> map) {
+    return Pessoa(
+      id: map['id'],
+      cpf: map['cpf'],
+      nome: map['nome'],
+      endereco: map['endereco'],
+      telefone: map['telefone'],
+      email: map['email'],
+      imageUrl: map['imageUrl'],
+    );
+  }
 }
