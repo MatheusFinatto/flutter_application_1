@@ -45,6 +45,7 @@ class RegisterPageState extends State<RegisterPage> {
       if (password.isNotEmpty && password.length >= 6) {
         if (cpf.length >= 11) {
           if (nome.isNotEmpty) {
+            _msgErro = "";
             //instancia do auth
             FirebaseAuth auth = FirebaseAuth.instance;
             //instancia do bd
@@ -75,22 +76,22 @@ class RegisterPageState extends State<RegisterPage> {
                 .onError((error, stackTrace) => {_msgErro = error.toString()});
           } else {
             setState(() {
-              _msgErro = "Dados Invalidos";
+              _msgErro = "Nome não pode ser vazio";
             });
           }
         } else {
           setState(() {
-            _msgErro = "Dados Invalidos";
+            _msgErro = "CPF Invalido";
           });
         }
       } else {
         setState(() {
-          _msgErro = "Dados Invalidos";
+          _msgErro = "A senha deve ter pelo menos 6 caracteres";
         });
       }
     } else {
       setState(() {
-        _msgErro = "Dados Invalidos";
+        _msgErro = "Email invalido";
       });
     }
   }

@@ -87,16 +87,16 @@ class ContaScreenState extends State<ContaScreen> {
                         ),
                       ],
                     ),
-                    ClipOval(
-                      clipBehavior: Clip.antiAlias,
-                      child: Image.network(
-                        pessoaData['imagemUrl'] ??
-                            'https://ojasyog.com/wp-content/uploads/2022/02/421-4212617_person-placeholder-image-transparent-hd-png-download.png',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.fill,
-                      ),
-                    )
+                    // ClipOval(
+                    //   clipBehavior: Clip.antiAlias,
+                    //   child: Image.network(
+                    //     pessoaData['imagemUrl'] ??
+                    //         'https://ojasyog.com/wp-content/uploads/2022/02/421-4212617_person-placeholder-image-transparent-hd-png-download.png',
+                    //     width: 100,
+                    //     height: 100,
+                    //     fit: BoxFit.fill,
+                    //   ),
+                    // )
                   ],
                 ),
               ),
