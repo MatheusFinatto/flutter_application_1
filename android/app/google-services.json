@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "120491661707",
+    "project_id": "taixdb",
+    "storage_bucket": "taixdb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120491661707:android:3ab70c6811d08ece4bf78e",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120491661707-v3d7v4m6npofcn2ka9d8id40ddn1892l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBClbZ_eKfUgXzkYmnsGA0ISVCTKWl5nlk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120491661707-v3d7v4m6npofcn2ka9d8id40ddn1892l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "120491661707-9ro1dbsj1ctmrgg6ph6nucdjs3e9l64f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterApplication1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

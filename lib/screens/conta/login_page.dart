@@ -2,25 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_application_1/screens/conta/login_page.dart';
+import 'package:flutter_application_1/screens/conta/register_page.dart';
 import 'package:flutter_application_1/screens/home/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<RegisterPage> createState() => RegisterPageState();
+  State<LoginPage> createState() => LoginPageState();
 }
 
-class RegisterPageState extends State<RegisterPage> {
+class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
+
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _cpfController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
 
   bool state = false;
 
@@ -28,70 +26,44 @@ class RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
-    _cpfController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
+
     super.dispose();
   }
 
-  _createAccount() {
-    String _email = _emailController.text;
-    String _password = _passwordController.text;
-    String _nome = _nameController.text;
-    String _cpf = _cpfController.text;
+  _validaCampos() {
+    String email = _emailController.text;
+    String password = _passwordController.text;
 
-    if (_email.isNotEmpty && _email.contains("@")) {
-      if (_password.isNotEmpty && _password.length >= 6) {
-        if (_cpf.length >= 11) {
-          if (_nome.isNotEmpty) {
-            //instancia do auth
-            FirebaseAuth auth = FirebaseAuth.instance;
-            //instancia do bd
-            FirebaseFirestore db = FirebaseFirestore.instance;
+    if (email.isNotEmpty && email.contains("@")) {
+      if (password.isNotEmpty && password.length >= 6) {
+        FirebaseAuth auth = FirebaseAuth.instance;
+        auth.signInWithEmailAndPassword(email: email, password: password).then(
+          (value) {
+            // Sucesso
+            _msgErro = "Sucesso ao logar";
 
-            //gravar no banco
-            Map<String, dynamic> dadosUser = {
-              'nome': _nome,
-              'email': _email,
-              'cpf': _cpf
-            };
-
-            auth
-                .createUserWithEmailAndPassword(
-                    email: _email, password: _password)
-                .then((firebaseUser) => {
-                      //gravar no banco usando o UID
-                      db
-                          .collection('usuarios')
-                          .doc(firebaseUser.user!.uid)
-                          .set(dadosUser),
-                      _msgErro = "Sucesso ao logar",
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
-                          (route) => false)
-                    })
-                .onError((error, stackTrace) => {_msgErro = error.toString()});
-          } else {
-            setState(() {
-              _msgErro = "Dados Invalidos";
-            });
-          }
-        } else {
-          setState(() {
-            _msgErro = "Dados Invalidos";
-          });
-        }
+            // Navegar para a tela inicial e remover esta página para não poder voltar
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+              (route) => false,
+            );
+          },
+          onError: (error, stackTrace) {
+            // Se houver um erro
+            _msgErro = 'Usuário ou senha incorretos';
+          },
+        );
       } else {
         setState(() {
-          _msgErro = "Dados Invalidos";
+          _msgErro = 'Usuario ou senha incorreto';
         });
       }
     } else {
       setState(() {
-        _msgErro = "Dados Invalidos";
+        _msgErro = 'Usuario ou senha incorreto';
       });
     }
   }
@@ -133,7 +105,7 @@ class RegisterPageState extends State<RegisterPage> {
         ),
         const SizedBox(height: 2),
         Text(
-          "Vamos começar nos conhecendo :)",
+          "Faça o seu login",
           style: GoogleFonts.inter(
             fontSize: 16,
             color: Colors.black,
@@ -151,24 +123,6 @@ class RegisterPageState extends State<RegisterPage> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: "Nome Completo",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(50.0),
-              ),
-            ),
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Insira seu nome completo';
-              }
-              return null;
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextFormField(
             controller: _emailController,
             decoration: InputDecoration(
               labelText: "Email",
@@ -180,25 +134,6 @@ class RegisterPageState extends State<RegisterPage> {
             validator: (value) {
               if (value!.isEmpty || !value.contains('@')) {
                 return 'Insira um email válido';
-              }
-              return null;
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextFormField(
-            controller: _cpfController,
-            decoration: InputDecoration(
-              labelText: "CPF",
-              border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(50.0), // Adjust the radius as needed
-              ),
-            ),
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Insira seu CPF';
               }
               return null;
             },
@@ -225,26 +160,6 @@ class RegisterPageState extends State<RegisterPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextFormField(
-            controller: _confirmPasswordController,
-            obscureText: true,
-            decoration: InputDecoration(
-              labelText: "Digite novamente sua senha",
-              border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(50.0), // Adjust the radius as needed
-              ),
-            ),
-            validator: (value) {
-              if (value != _passwordController.text) {
-                return 'As senhas não correspondem';
-              }
-              return null;
-            },
-          ),
-        ),
-        Padding(
           padding: const EdgeInsets.only(top: 12.0),
           child: Text(_msgErro),
         )
@@ -262,21 +177,21 @@ class RegisterPageState extends State<RegisterPage> {
               borderRadius: BorderRadius.circular(10),
             )),
           ),
-          onPressed: _createAccount,
-          child: const Text('Cadastrar', style: TextStyle(fontSize: 16)),
+          onPressed: _validaCampos,
+          child: const Text('Entrar', style: TextStyle(fontSize: 16)),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         GestureDetector(
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const LoginPage(),
+                builder: (context) => const RegisterPage(),
               ),
             );
             //Navigator.pushReplacementNamed(context, '/login');
           },
           child: const Text(
-            "Já possuo uma conta",
+            "Não possuo uma conta",
             style: TextStyle(
               fontSize: 14,
               color: Color(0xFF0000EE),

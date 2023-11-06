@@ -1,4 +1,48 @@
 import 'package:flutter_application_1/models/pessoas.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class Pessoas {
+  Future<Pessoa> getUserSession() async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    FirebaseAuth auth = FirebaseAuth.instance;
+    final user = await auth.currentUser;
+
+    DocumentSnapshot snapshot =
+        await db.collection("usuarios").doc(user!.uid).get();
+    Map<String, dynamic>? dado = snapshot.data() as Map<String, dynamic>?;
+
+    String endereco = '';
+    String telefone = '';
+    String imageUrl = '';
+    if (dado != null) {
+      String id = user.uid;
+      String cpf = dado['cpf'];
+      String nome = dado['nome'];
+      String email = dado['email'];
+      if (dado['endereco'] != null) {
+        String endereco = dado['endereco'];
+      }
+      if (dado['telefone'] != null) {
+        String telefone = dado['telefone'];
+      }
+      if (dado['imageUrl'] != null) {
+        String imageUrl = dado['imageUrl'];
+      }
+      return Pessoa(
+        id: id,
+        cpf: cpf,
+        nome: nome,
+        endereco: endereco,
+        telefone: telefone,
+        email: email,
+        imageUrl: imageUrl,
+      );
+    } else {
+      throw Exception('Dados não encontrados no Firestore.');
+    }
+  }
+}
 
 List<Pessoa> pessoasList = [
   Pessoa(
@@ -8,6 +52,7 @@ List<Pessoa> pessoasList = [
     endereco: '123 Main St, City',
     telefone: '555-555-5555',
     email: 'ednaldo@example.com',
+    imageUrl: '',
   ),
   Pessoa(
     id: '2',
@@ -16,6 +61,7 @@ List<Pessoa> pessoasList = [
     endereco: '456 Elm St, Town',
     telefone: '555-123-4567',
     email: 'irineu@example.com',
+    imageUrl: '',
   ),
   Pessoa(
     id: '3',
@@ -24,5 +70,15 @@ List<Pessoa> pessoasList = [
     endereco: '101 Pine St, Hamlet',
     telefone: '555-111-3333',
     email: 'vin@example.com',
+    imageUrl: 'assets/images/vinDieselBr.png',
+  ),
+  Pessoa(
+    id: '3',
+    cpf: '555.555.555-55',
+    nome: 'Rick Astley',
+    endereco: '987 Never Gonna Give You Up St',
+    telefone: "9555-3456",
+    email: "rickastley@example.com",
+    imageUrl: 'assets/images/vinDieselBr.png',
   ),
 ];

@@ -12,6 +12,10 @@ dependencies:
   google_fonts: ^4.0.4
   intl: ^0.18.1
   http: ^0.13.4
+  image_picker: ^1.0.4
+  firebase_core: ^2.20.0
+  cloud_firestore: ^4.12.1
+  firebase_auth: ^4.11.1
 
 dev_dependencies:
   flutter_test:

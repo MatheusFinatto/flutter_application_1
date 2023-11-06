@@ -373,7 +373,7 @@ class AddTripScreenState extends State<AddTripScreen> {
         participantes: [],
       );
       viagensList.add(newTrip);
-      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
