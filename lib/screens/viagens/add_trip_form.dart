@@ -126,7 +126,7 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         EstadosSelect(
-                          defaultValue: widget.trip?.originState,
+                          defaultValue: widget.trip?.estadoOrigem,
                           estados: estados,
                           estadoSelecionadoOrigem: _estadoSelecionadoOrigem,
                           onEstadoChanged: (value) {
@@ -139,7 +139,7 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         CidadesSelect(
-                          defaultValue: widget.trip?.originCity,
+                          defaultValue: widget.trip?.cidadeOrigem,
                           cityList: cidades[_estadoSelecionadoOrigem] ??
                               [], // List of cities for the selected state
                           selectedCity: _cidadeSelecionadaOrigem,
@@ -173,7 +173,7 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         EstadosSelect(
-                          defaultValue: widget.trip?.destinationState,
+                          defaultValue: widget.trip?.estadoDestino,
                           estados: estados,
                           estadoSelecionadoOrigem: _estadoSelecionadoDestino,
                           onEstadoChanged: (value) {
@@ -186,7 +186,7 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         CidadesSelect(
-                            defaultValue: widget.trip?.destinationCity,
+                            defaultValue: widget.trip?.cidadeDestino,
                             cityList: cidades[_estadoSelecionadoDestino] ?? [],
                             selectedCity: _cidadeSelecionadaDestino,
                             onCityChanged: (value) {
@@ -362,18 +362,18 @@ class AddTripScreenState extends State<AddTripScreen> {
     if (_formKey.currentState!.validate()) {
       Veiculo selectedVeiculo = _selectedVeiculo;
       Trip newTrip = Trip(
-        vehicle: selectedVeiculo,
-        originState: _estadoSelecionadoOrigem,
-        originCity: _cidadeSelecionadaOrigem,
-        destinationState: _estadoSelecionadoDestino,
-        destinationCity: _cidadeSelecionadaDestino,
+        veiculo: selectedVeiculo,
+        estadoOrigem: _estadoSelecionadoOrigem,
+        cidadeOrigem: _cidadeSelecionadaOrigem,
+        estadoDestino: _estadoSelecionadoDestino,
+        cidadeDestino: _cidadeSelecionadaDestino,
         startDate: _dataSaida,
         endDate: _dataRetorno,
         responsavel: _selectedPessoa,
         participantes: [],
       );
       viagensList.add(newTrip);
-      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 

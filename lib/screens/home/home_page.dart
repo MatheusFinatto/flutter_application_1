@@ -27,10 +27,10 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  static const List<Widget> _screens = [
-    ViagensScreen(),
-    AtividadesScreen(),
-    ContaScreen(),
+  static final List<Widget> _screens = [
+    const ViagensScreen(),
+    const AtividadesScreen(),
+    const ContaScreen(),
   ];
 
   void _onItemTapped(int index) {

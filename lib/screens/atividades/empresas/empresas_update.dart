@@ -1,31 +1,52 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class EmpresasUpdate extends StatefulWidget {
-  const EmpresasUpdate({super.key});
-
+  final String empresaId;
+  const EmpresasUpdate({super.key, required this.empresaId});
   @override
   State<EmpresasUpdate> createState() => _EmpresasUpdateState();
 }
 
 class _EmpresasUpdateState extends State<EmpresasUpdate> {
-  String _id = "0";
-  String _cnpj = "";
-  String _nome = "";
-  String _enderecoMatriz = "";
-  String _telefone = "";
-  String _email = "";
-
-  TextEditingController _idController = TextEditingController();
-  TextEditingController _cnpjController = TextEditingController();
-  TextEditingController _nomeController = TextEditingController();
-  TextEditingController _enderecoController = TextEditingController();
-  TextEditingController _telefoneController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
+  final TextEditingController _cnpjController = TextEditingController();
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _enderecoController = TextEditingController();
+  final TextEditingController _telefoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   void _updateEmpresa(String cnpj, String nome, String endereco,
       String telefone, String email) {
-        // Funcão para atualizar a Empresa no banco
-      }
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    DocumentReference empresaRef =
+        db.collection("empresas").doc(widget.empresaId);
+
+    Map<String, dynamic> dataAtualizada = {};
+    if (cnpj.isNotEmpty) {
+      dataAtualizada["cnpj"] = cnpj;
+    }
+
+    if (nome.isNotEmpty) {
+      dataAtualizada["nome"] = nome;
+    }
+
+    if (endereco.isNotEmpty) {
+      dataAtualizada["endereco"] = endereco;
+    }
+
+    if (telefone.isNotEmpty) {
+      dataAtualizada["telefone"] = telefone;
+    }
+
+    if (email.isNotEmpty) {
+      dataAtualizada["email"] = email;
+    }
+
+    empresaRef.update(dataAtualizada).then((value) {
+    }).catchError((error) {
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +98,9 @@ class _EmpresasUpdateState extends State<EmpresasUpdate> {
                         _enderecoController.text,
                         _telefoneController.text,
                         _emailController.text);
+
+                    Navigator.pop(context);
+                    Navigator.pop(context);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

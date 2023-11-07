@@ -5,6 +5,7 @@ class Pessoa {
   final String endereco;
   final String telefone;
   final String email;
+  final String imageUrl;
 
   Pessoa({
     required this.id,
@@ -13,5 +14,18 @@ class Pessoa {
     required this.endereco,
     required this.telefone,
     required this.email,
+    required this.imageUrl,
   });
+
+  factory Pessoa.fromMap(Map<String, dynamic> map) {
+    return Pessoa(
+      id: map['id'],
+      cpf: map['cpf'],
+      nome: map['nome'],
+      endereco: map['endereco'],
+      telefone: map['telefone'],
+      email: map['email'],
+      imageUrl: map['imageUrl'],
+    );
+  }
 }

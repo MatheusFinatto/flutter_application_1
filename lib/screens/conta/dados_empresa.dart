@@ -1,0 +1,27 @@
+// ignore_for_file: camel_case_types
+
+import 'package:flutter/material.dart';
+
+class Dados_EmpresaScreen extends StatefulWidget {
+  const Dados_EmpresaScreen({Key? key}) : super(key: key);
+
+  @override
+  Dados_EmpresaScreenState createState() => Dados_EmpresaScreenState();
+}
+
+class Dados_EmpresaScreenState extends State<Dados_EmpresaScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Empresa'),
+      ),
+      body: const Column(children: [Text('Hello world')]),
+    );
+  }
+}

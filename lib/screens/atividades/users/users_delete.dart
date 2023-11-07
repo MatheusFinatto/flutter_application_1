@@ -1,39 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/pessoas.dart';
 
-class UsersUpdate extends StatefulWidget {
-  const UsersUpdate({super.key});
+class UsersDelete extends StatefulWidget {
+  const UsersDelete({super.key});
 
   @override
-  State<UsersUpdate> createState() => _UsersUpdateState();
+  State<UsersDelete> createState() => _UsersDeleteState();
 }
 
-class _UsersUpdateState extends State<UsersUpdate> {
-  String _id = "1";
-  String _cpf = "";
-  String _nome = "";
-  String _endereco = "";
-  String _telefone = "";
-  String _email = "";
+class _UsersDeleteState extends State<UsersDelete> {
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _cpfController = TextEditingController();
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _enderecoController = TextEditingController();
+  final TextEditingController _telefoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
-  TextEditingController _idController = TextEditingController();
-  TextEditingController _cpfController = TextEditingController();
-  TextEditingController _nomeController = TextEditingController();
-  TextEditingController _enderecoController = TextEditingController();
-  TextEditingController _telefoneController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-
-  void _updateUser(String id, String cpf, String nome, String endereco,
+  void _deleteUser(String id, String cpf, String nome, String endereco,
       String telefone, String email) {
-    // Funcão de update no Firebase
+    // Funcão de delete no Firebase
+    // if(o CPF retornou os campos -> deleta)
+    // else(pede para o usuário digitar novamente)
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Atualizar Usuário"),
-        backgroundColor: const Color.fromARGB(255, 88, 150, 237),
+        title: const Text("Deletar Usuário"),
+        backgroundColor: const Color.fromARGB(255, 232, 60, 60),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -48,24 +42,28 @@ class _UsersUpdateState extends State<UsersUpdate> {
               ),
               TextFormField(
                 controller: _nomeController,
+                enabled: false,
                 decoration: const InputDecoration(
                   labelText: "Nome",
                 ),
               ),
               TextFormField(
                 controller: _enderecoController,
+                enabled: false,
                 decoration: const InputDecoration(
                   labelText: "Endereço",
                 ),
               ),
               TextFormField(
                 controller: _telefoneController,
+                enabled: false,
                 decoration: const InputDecoration(
                   labelText: "Telefone",
                 ),
               ),
               TextFormField(
                 controller: _emailController,
+                enabled: false,
                 decoration: const InputDecoration(
                   labelText: "Email",
                 ),
@@ -73,7 +71,7 @@ class _UsersUpdateState extends State<UsersUpdate> {
               const SizedBox(height: 20), // Espaço entre os campos
               ElevatedButton(
                   onPressed: () {
-                    _updateUser(
+                    _deleteUser(
                         _idController.text,
                         _cpfController.text,
                         _nomeController.text,
@@ -82,10 +80,11 @@ class _UsersUpdateState extends State<UsersUpdate> {
                         _emailController.text);
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 88, 150, 237)),
+                    backgroundColor: const Color.fromARGB(255, 232, 60, 60),
+                  ),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [Text("Atualizar Usuário")],
+                    children: [Text("Deletar Usuário")],
                   ))
             ],
           ),

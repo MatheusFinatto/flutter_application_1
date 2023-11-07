@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/atividades/crud_pages/empresas/empresas_home.dart';
-import 'package:flutter_application_1/screens/atividades/veiculos.dart';
+import 'empresas/empresas_home.dart';
 
 class AtividadesScreen extends StatefulWidget {
   const AtividadesScreen({super.key});
@@ -10,12 +9,13 @@ class AtividadesScreen extends StatefulWidget {
 }
 
 class _ServicesHomeState extends State<AtividadesScreen> {
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Atividades"),
-        backgroundColor: const Color.fromARGB(255, 33, 150, 243),
       ),
       body: SafeArea(
           child: SingleChildScrollView(
@@ -37,22 +37,21 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                 ),
               ),
               Column(
-                mainAxisAlignment: MainAxisAlignment
-                    .spaceBetween, 
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   /*Padding(
                     padding: const EdgeInsets.only(bottom: 50.0),
                     child: SizedBox(
                       width: 250,
-                      height: 80, 
+                      height: 80,
                       child: ElevatedButton(
                         // Usuários
                         onPressed: () {
                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Users()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Users()));
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -70,7 +69,7 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                               size: 50,
                             ),
                             SizedBox(
-                              width: 8, 
+                              width: 8,
                             ),
                             Text(
                               "Usuários",
@@ -86,17 +85,15 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                       ),
                     ),
                   ),*/
-                  Padding(
+                  /*Padding(
                     padding: const EdgeInsets.only(bottom: 50.0),
                     child: SizedBox(
                       width: 250,
-                      height: 80, 
+                      height: 80,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Veiculos()));
+                          _getData();
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> VeiculosShow(empresaId: _empresaID,)));
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -129,7 +126,7 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                         ),
                       ),
                     ),
-                  ),
+                    ),*/
                   Padding(
                     padding: const EdgeInsets.only(bottom: 30),
                     child: SizedBox(

@@ -16,4 +16,16 @@ class Veiculo {
     required this.capacidade,
     required this.imageUrl,
   });
+
+  factory Veiculo.fromMap(Map<String, dynamic> map) {
+    return Veiculo(
+      id: map['id'],
+      marca: map['marca'],
+      modelo: map['modelo'],
+      placa: map['placa'],
+      ano: map['ano'],
+      capacidade: map['capacidade'],
+      imageUrl: map['imageUrl'],
+    );
+  }
 }

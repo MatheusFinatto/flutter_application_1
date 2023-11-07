@@ -1,48 +1,50 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:image_picker/image_picker.dart';
 
-class VeiculosUpdate extends StatefulWidget {
-  const VeiculosUpdate({super.key});
+class VeiculosAdd extends StatefulWidget {
+  final String empresaID;
+  const VeiculosAdd({super.key, required this.empresaID});
 
   @override
-  State<VeiculosUpdate> createState() => _VeiculosUpdateState();
+  State<VeiculosAdd> createState() => _VeiculosAddState();
 }
 
-class _VeiculosUpdateState extends State<VeiculosUpdate> {
-  String _id = "1";
-  String _marca = "";
-  String _modelo = "";
-  String _placa = "";
-  String _ano = "";
-  int capacidade = 5;
-  String _imageUrl = "";
+class _VeiculosAddState extends State<VeiculosAdd> {
+  int capacidade = 0;
 
-  TextEditingController _idController = TextEditingController();
-  TextEditingController _marcaController = TextEditingController();
-  TextEditingController _modeloController = TextEditingController();
-  TextEditingController _placaController = TextEditingController();
-  TextEditingController _anoController = TextEditingController();
-  TextEditingController _capacidadeController = TextEditingController();
+  final TextEditingController _marcaController = TextEditingController();
+  final TextEditingController _modeloController = TextEditingController();
+  final TextEditingController _placaController = TextEditingController();
+  final TextEditingController _anoController = TextEditingController();
+  final TextEditingController _capacidadeController = TextEditingController();
 
-  ImagePicker _picker = new ImagePicker();
 
   File? _selectedImage;
 
+  
 
-  void _updateVeiculo(String id, String marca, String modelo, String placa,
-      String ano, int capacidade) {
-    // Funcão de Add no Firebase
+  void _addVeiculo(String marca, String modelo, String placa, String ano,
+      String capacidade) async{
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    db.collection("empresas").doc(widget.empresaID).collection("veiculos").add({
+      "marca": marca,
+      "modelo": modelo,
+      "placa": placa,
+      "ano": ano,
+      "capacidade": capacidade,
+      "imageUrl": "https://s7d1.scene7.com/is/image/hyundai/compare-vehicle-1225x619?wid=276&hei=156&fmt=webp-alpha",
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Atualizar Veículo"),
-        backgroundColor: const Color.fromARGB(255, 88, 150, 237),
+        title: const Text("Criar Veículo"),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -77,42 +79,40 @@ class _VeiculosUpdateState extends State<VeiculosUpdate> {
                 controller: _capacidadeController,
                 decoration: const InputDecoration(
                   labelText: "Capacidade",
-                  
                 ),
                 keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 20.0,),
+              const SizedBox(
+                height: 20.0,
+              ),
               ElevatedButton(
                 onPressed: () {
                   _pickImageFromGallery();
                 },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 88, 150, 237)),
-                child:  const Row(
+                child: const Row(
                   children: [Text("Selecionar Imagem")],
                 ),
               ),
-              const SizedBox(height: 20.0,),
-              _selectedImage != null ? Image.file(_selectedImage!) : const Text("Por favor selecione uma imagem."),
+              const SizedBox(
+                height: 20.0,
+              ),
+              _selectedImage != null
+                  ? Image.file(_selectedImage!)
+                  : const Text("Por favor selecione uma imagem."),
               const SizedBox(height: 40), // Espaço entre os campos
               ElevatedButton(
                   onPressed: () {
-                    _updateVeiculo(
-                        _idController.text,
+                    _addVeiculo(
                         _marcaController.text,
                         _modeloController.text,
                         _placaController.text,
                         _anoController.text,
-                        int.parse(_capacidadeController.text)
-                        );
+                        _capacidadeController.text);
                   },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 88, 150, 237)),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [Text("Atualizar Veículo")],
+                    children: [Text("Criar Veículo")],
                   )),
-                  
             ],
           ),
         ),
@@ -123,11 +123,9 @@ class _VeiculosUpdateState extends State<VeiculosUpdate> {
   Future _pickImageFromGallery() async {
     final imagem = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if(imagem == null) return;
+    if (imagem == null) return;
     setState(() {
       _selectedImage = File(imagem.path);
-      _imageUrl = imagem.path.toString();
-      print(_imageUrl);
     });
   }
 }

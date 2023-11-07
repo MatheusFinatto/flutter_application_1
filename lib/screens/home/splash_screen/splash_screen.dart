@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/home/home_page.dart';
+import 'package:flutter_application_1/screens/conta/register_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (context) => const HomePage()), // Tela principal do app
+          builder: (context) => const RegisterPage()), // Tela principal do app
     );
   }
 

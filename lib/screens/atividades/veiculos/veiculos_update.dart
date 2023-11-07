@@ -1,48 +1,72 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:image_picker/image_picker.dart';
 
-class VeiculosAdd extends StatefulWidget {
-  const VeiculosAdd({super.key});
+class VeiculosUpdate extends StatefulWidget {
+  final String empresaID;
+  final String? veiculoID;
+  const VeiculosUpdate({super.key, required this.empresaID, this.veiculoID});
 
   @override
-  State<VeiculosAdd> createState() => _VeiculosAddState();
+  State<VeiculosUpdate> createState() => _VeiculosUpdateState();
 }
 
-class _VeiculosAddState extends State<VeiculosAdd> {
-  String _id = "1";
-  String _marca = "";
-  String _modelo = "";
-  String _placa = "";
-  String _ano = "";
+class _VeiculosUpdateState extends State<VeiculosUpdate> {
   int capacidade = 5;
-  String _imageUrl = "";
 
-  TextEditingController _idController = TextEditingController();
-  TextEditingController _marcaController = TextEditingController();
-  TextEditingController _modeloController = TextEditingController();
-  TextEditingController _placaController = TextEditingController();
-  TextEditingController _anoController = TextEditingController();
-  TextEditingController _capacidadeController = TextEditingController();
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _marcaController = TextEditingController();
+  final TextEditingController _modeloController = TextEditingController();
+  final TextEditingController _placaController = TextEditingController();
+  final TextEditingController _anoController = TextEditingController();
+  final TextEditingController _capacidadeController = TextEditingController();
 
-  ImagePicker _picker = new ImagePicker();
 
   File? _selectedImage;
 
+  void _updateVeiculo(String id, String marca, String modelo, String placa,
+      String ano, String capacidade) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
 
-  void _addVeiculo(String id, String marca, String modelo, String placa,
-      String ano, int capacidade) {
-    // Funcão de Add no Firebase
+    DocumentReference veiculoRef = db
+        .collection("empresas")
+        .doc(widget.empresaID)
+        .collection("veiculos")
+        .doc(widget.veiculoID);
+    
+    
+    Map<String, dynamic> dataAtualizada = {
+      "imageUrl":
+          "https://s7d1.scene7.com/is/image/hyundai/compare-vehicle-1225x619?wid=276&hei=156&fmt=webp-alpha",
+    };
+    if (marca.isNotEmpty) {
+      dataAtualizada["marca"] = marca;
+    }
+    if (modelo.isNotEmpty) {
+      dataAtualizada["modelo"] = modelo;
+    }
+    if (placa.isNotEmpty) {
+      dataAtualizada["placa"] = placa;
+    }
+    if (ano.isNotEmpty) {
+      dataAtualizada["ano"] = ano;
+    }
+    if (capacidade.isNotEmpty) {
+      dataAtualizada["capacidade"] = capacidade;
+    }
+
+    veiculoRef.update(dataAtualizada).then((value) {
+    }).catchError((error) {
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Criar Veículo"),
-        backgroundColor: const Color.fromARGB(255, 83, 245, 159),
+        title: const Text("Atualizar Veículo"),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -77,42 +101,41 @@ class _VeiculosAddState extends State<VeiculosAdd> {
                 controller: _capacidadeController,
                 decoration: const InputDecoration(
                   labelText: "Capacidade",
-                  
                 ),
                 keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 20.0,),
+              const SizedBox(
+                height: 20.0,
+              ),
               ElevatedButton(
                 onPressed: () {
                   _pickImageFromGallery();
                 },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 83, 245, 159)),
-                child:  const Row(
+                child: const Row(
                   children: [Text("Selecionar Imagem")],
                 ),
               ),
-              const SizedBox(height: 20.0,),
-              _selectedImage != null ? Image.file(_selectedImage!) : const Text("Por favor selecione uma imagem."),
+              const SizedBox(
+                height: 20.0,
+              ),
+              _selectedImage != null
+                  ? Image.file(_selectedImage!)
+                  : const Text("Por favor selecione uma imagem."),
               const SizedBox(height: 40), // Espaço entre os campos
               ElevatedButton(
                   onPressed: () {
-                    _addVeiculo(
+                    _updateVeiculo(
                         _idController.text,
                         _marcaController.text,
                         _modeloController.text,
                         _placaController.text,
                         _anoController.text,
-                        int.parse(_capacidadeController.text)
-                        );
+                        _capacidadeController.text);
                   },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 83, 245, 159)),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [Text("Criar Veículo")],
+                    children: [Text("Atualizar Veículo")],
                   )),
-                  
             ],
           ),
         ),
@@ -123,11 +146,10 @@ class _VeiculosAddState extends State<VeiculosAdd> {
   Future _pickImageFromGallery() async {
     final imagem = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if(imagem == null) return;
+    if (imagem == null) return;
     setState(() {
       _selectedImage = File(imagem.path);
-      _imageUrl = imagem.path.toString();
-      print(_imageUrl);
+      //_imageUrl = imagem.path.toString();
     });
   }
 }

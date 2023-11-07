@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/atividades/crud_pages/users/users_add.dart';
-import 'package:flutter_application_1/screens/atividades/crud_pages/users/users_update.dart';
-import 'package:flutter_application_1/screens/atividades/crud_pages/users/users_delete.dart';
+import 'package:flutter_application_1/screens/atividades/users/users_add.dart';
+import 'package:flutter_application_1/screens/atividades/users/users_update.dart';
+import 'package:flutter_application_1/screens/atividades/users/users_delete.dart';
 
 class Users extends StatefulWidget {
   const Users({super.key});
@@ -29,9 +29,9 @@ class _UsersState extends State<Users> {
                     child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const UsersAdd()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const UsersAdd()));
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -71,9 +71,9 @@ class _UsersState extends State<Users> {
                     child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const UsersUpdate()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const UsersUpdate()));
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -113,9 +113,9 @@ class _UsersState extends State<Users> {
                     child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const UsersDelete()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const UsersDelete()));
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor:

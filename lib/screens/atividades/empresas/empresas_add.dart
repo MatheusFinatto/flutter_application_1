@@ -1,42 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EmpresasAdd extends StatefulWidget {
-  const EmpresasAdd({super.key});
-
+  final String userId;
+  const EmpresasAdd({super.key, required this.userId});
   @override
   State<EmpresasAdd> createState() => _EmpresasAddState();
 }
 
 class _EmpresasAddState extends State<EmpresasAdd> {
-  String _cnpj = "";
-  String _nome = "";
-  String _enderecoMatriz = "";
-  String _telefone = "";
-  String _email = "";
 
-  TextEditingController _cnpjController = TextEditingController();
-  TextEditingController _nomeController = TextEditingController();
-  TextEditingController _enderecoController = TextEditingController();
-  TextEditingController _telefoneController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
+  final TextEditingController _cnpjController = TextEditingController();
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _enderecoController = TextEditingController();
+  final TextEditingController _telefoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   bool _isLoading = false;
+  
 
   void _createEmpresa(String cnpj, String nome, String endereco,
-      String telefone, String email) async {
+      String telefone, String email, String userId) async {
     if ((cnpj.length >= 14) && (nome.isNotEmpty)) {
       FirebaseFirestore db = FirebaseFirestore.instance;
+
+      DocumentReference empresaRef = db.collection("pessoas").doc(userId);
+
       var data = {
         "nome": nome,
         "cnpj": cnpj,
-        "endereco": endereco,
+        "enderecoMatriz": endereco,
         "telefone": telefone,
-        "email": email
-        
+        "email": email,
+        "funcionarios": [empresaRef]
       };
       await db.collection("empresas").add(data);
+
+      CollectionReference veiculosRef = empresaRef.collection("veiculos");
+
+      veiculosRef.add({
+      "marca": "",
+      "modelo": "",
+      // Adicione outros campos do veículo
+    });
+      
     }
     _isLoading = false;
   }
@@ -93,7 +100,8 @@ class _EmpresasAddState extends State<EmpresasAdd> {
                           _nomeController.text,
                           _enderecoController.text,
                           _telefoneController.text,
-                          _emailController.text);
+                          _emailController.text,
+                          widget.userId);
                     },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
