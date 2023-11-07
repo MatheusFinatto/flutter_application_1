@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'users.dart';
-import 'veiculos.dart';
-import 'empresas.dart';
+import 'package:flutter_application_1/screens/atividades/crud_pages/empresas/empresas_home.dart';
+import 'package:flutter_application_1/screens/atividades/veiculos.dart';
 
 class AtividadesScreen extends StatefulWidget {
   const AtividadesScreen({super.key});
@@ -42,7 +41,7 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                     .spaceBetween, 
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Padding(
+                  /*Padding(
                     padding: const EdgeInsets.only(bottom: 50.0),
                     child: SizedBox(
                       width: 250,
@@ -86,7 +85,7 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                         ),
                       ),
                     ),
-                  ),
+                  ),*/
                   Padding(
                     padding: const EdgeInsets.only(bottom: 50.0),
                     child: SizedBox(
@@ -139,9 +138,9 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Empresas()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const EmpresasHome()));
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:

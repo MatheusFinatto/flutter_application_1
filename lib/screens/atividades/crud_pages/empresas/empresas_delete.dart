@@ -31,7 +31,6 @@ class _EmpresasDeleteState extends State<EmpresasDelete> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Deletar Empresa"),
-        backgroundColor: const Color.fromARGB(255, 232, 60, 60),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -78,8 +77,6 @@ class _EmpresasDeleteState extends State<EmpresasDelete> {
                     _deleteEmpresa(
                         _cnpjController.text);
                   },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 232, 60, 60)),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [Text("Deletar Empresa")],

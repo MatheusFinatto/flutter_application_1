@@ -32,7 +32,6 @@ class _EmpresasUpdateState extends State<EmpresasUpdate> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Atualizar Empresa"),
-        backgroundColor: const Color.fromARGB(255, 88, 150, 237),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -79,8 +78,6 @@ class _EmpresasUpdateState extends State<EmpresasUpdate> {
                         _telefoneController.text,
                         _emailController.text);
                   },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 88, 150, 237)),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [Text("Atualizar Empresa")],

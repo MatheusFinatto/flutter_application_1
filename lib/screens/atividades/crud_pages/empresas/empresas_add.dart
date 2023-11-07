@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EmpresasAdd extends StatefulWidget {
   const EmpresasAdd({super.key});
@@ -8,32 +10,42 @@ class EmpresasAdd extends StatefulWidget {
 }
 
 class _EmpresasAddState extends State<EmpresasAdd> {
-  // o id vai vir do proximo id do firebase, por enquanto é só um mock
-  String _id = "0";
   String _cnpj = "";
   String _nome = "";
   String _enderecoMatriz = "";
   String _telefone = "";
   String _email = "";
 
-  TextEditingController _idController = TextEditingController();
   TextEditingController _cnpjController = TextEditingController();
   TextEditingController _nomeController = TextEditingController();
   TextEditingController _enderecoController = TextEditingController();
   TextEditingController _telefoneController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
 
+  bool _isLoading = false;
+
   void _createEmpresa(String cnpj, String nome, String endereco,
-      String telefone, String email) {
-        // Funcão para criar a Empresa no banco
-      }
+      String telefone, String email) async {
+    if ((cnpj.length >= 14) && (nome.isNotEmpty)) {
+      FirebaseFirestore db = FirebaseFirestore.instance;
+      var data = {
+        "nome": nome,
+        "cnpj": cnpj,
+        "endereco": endereco,
+        "telefone": telefone,
+        "email": email
+        
+      };
+      await db.collection("empresas").add(data);
+    }
+    _isLoading = false;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Criar Empresa"),
-        backgroundColor: const Color.fromARGB(255, 83, 245, 159),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -71,21 +83,22 @@ class _EmpresasAddState extends State<EmpresasAdd> {
                 ),
               ),
               const SizedBox(height: 20), // Espaço entre os campos
-              ElevatedButton(
-                  onPressed: () {
-                    _createEmpresa(
-                        _cnpjController.text,
-                        _nomeController.text,
-                        _enderecoController.text,
-                        _telefoneController.text,
-                        _emailController.text);
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 83, 245, 159)),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [Text("Criar Empresa")],
-                  )),
+              if (_isLoading) const CircularProgressIndicator(),
+              if (!_isLoading)
+                ElevatedButton(
+                    onPressed: () {
+                      _isLoading = true;
+                      _createEmpresa(
+                          _cnpjController.text,
+                          _nomeController.text,
+                          _enderecoController.text,
+                          _telefoneController.text,
+                          _emailController.text);
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Text("Criar Empresa")],
+                    )),
             ],
           ),
         ),
