@@ -1,4 +1,3 @@
-import 'package:flutter_application_1/database/viagens.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:flutter_application_1/models/veiculos.dart';
 

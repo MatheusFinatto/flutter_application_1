@@ -167,8 +167,18 @@ class ViagensScreenState extends State<ViagensScreen> {
                         as Map<String, dynamic>;
 
                     // Fetch and convert the 'veiculo' document reference
+
                     DocumentReference? veiculoReference =
                         viagemData['veiculo'] as DocumentReference?;
+                    print("Veiculo Ref: $veiculoReference");
+                    print("Data fim: $viagemData['dataFim']");
+
+                    var dataFim = viagemData['dataFim'] as Timestamp?;
+                    print("Data fim2333: $dataFim");
+
+                    if (dataFim != null) {
+                      // viagemData['dataFim'] = dataFim.toDate();
+                    }
 
                     DocumentReference? responsavelReference =
                         viagemData['responsavel'] as DocumentReference?;
@@ -187,13 +197,18 @@ class ViagensScreenState extends State<ViagensScreen> {
                             return const CircularProgressIndicator();
                           }
 
+                          Map<String, dynamic> veiculoData;
                           if (!veiculoSnapshot.hasData ||
                               !veiculoSnapshot.data!.exists) {
-                            return const Text("No veiculo found.");
+                            veiculoData = {
+                              'imageUrl':
+                                  'https://www.slazzer.com/static/images/design_templates/car_design_template/car_placeholder.png',
+                              // Add other placeholder data here
+                            };
+                          } else {
+                            veiculoData = veiculoSnapshot.data!.data()
+                                as Map<String, dynamic>;
                           }
-
-                          final veiculoData = veiculoSnapshot.data!.data()
-                              as Map<String, dynamic>;
 
                           return FutureBuilder<DocumentSnapshot>(
                             future: responsavelReference?.get(),
@@ -229,10 +244,8 @@ class ViagensScreenState extends State<ViagensScreen> {
                                   // Get the data for each participant
                                   for (DocumentSnapshot snapshot
                                       in participantesSnapshots.data!) {
-                                    print(snapshot.data());
+                                    // print(snapshot.data());
                                   }
-
-                                  print(viagemData['responsavel']);
 
                                   return ListTile(
                                     subtitle: Column(

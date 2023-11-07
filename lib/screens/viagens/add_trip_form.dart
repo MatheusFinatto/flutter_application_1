@@ -1,17 +1,12 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/database/pessoas.dart';
 import 'package:flutter_application_1/database/veiculos.dart';
-import 'package:flutter_application_1/database/viagens.dart';
-import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:flutter_application_1/models/veiculos.dart';
 import 'package:flutter_application_1/models/viagens.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/selects/cidades_select.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/selects/estados_select.dart';
-import 'package:flutter_application_1/screens/viagens/widgets/selects/pessoas_select.dart';
 
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -43,7 +38,6 @@ class AddTripScreenState extends State<AddTripScreen> {
   TimeOfDay _horaRetorno = TimeOfDay.now();
 
   Veiculo _selectedVeiculo = veiculosList[0];
-  Pessoa _selectedPessoa = pessoasList[0];
 
   final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
   final List<String> estados = [];
@@ -53,15 +47,6 @@ class AddTripScreenState extends State<AddTripScreen> {
   void initState() {
     super.initState();
     _fetchEstadosFromAPI();
-    getDados();
-  }
-
-  void getDados() async {
-    Pessoas pessoas = Pessoas(); // Crie uma instância da classe Pessoas
-    Pessoa pessoa = await pessoas.getUserSession();
-    setState(() {
-      _selectedPessoa = pessoa;
-    });
   }
 
   Future<void> _fetchEstadosFromAPI() async {
@@ -88,6 +73,128 @@ class AddTripScreenState extends State<AddTripScreen> {
       }
       cidades[estado] = cidadesEstado;
       setState(() {});
+    }
+  }
+
+  void _salvarDadosNoFirebase() async {
+    if (_formKey.currentState!.validate()) {
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+      print("currentUser: $currentUser");
+
+      if (currentUser != null) {
+        final String currentUserId = currentUser.uid;
+        const String empresaId = 'UywGfjmMyYNRHFyx5hUN';
+
+        final Veiculo selectedVeiculo = _selectedVeiculo;
+        final DateTime startDateTime =
+            _combineDateAndTime(_dataSaida, _horaSaida);
+        final DateTime endDateTime =
+            _combineDateAndTime(_dataRetorno, _horaRetorno);
+        final Timestamp startTimestamp = _convertToTimestamp(startDateTime);
+        final Timestamp endTimestamp = _convertToTimestamp(endDateTime);
+        final DocumentReference responsavelRef =
+            FirebaseFirestore.instance.doc('pessoas/$currentUserId');
+
+        final List<DocumentReference> participantesRefs =
+            _prepareParticipantesRefs(currentUserId);
+
+        final Map<String, dynamic> tripData = {
+          'veiculo': FirebaseFirestore.instance
+              .doc('empresas/$empresaId/veiculos/$currentUserId'),
+          'estadoOrigem': _estadoSelecionadoOrigem,
+          'cidadeOrigem': _cidadeSelecionadaOrigem,
+          'estadoDestino': _estadoSelecionadoDestino,
+          'cidadeDestino': _cidadeSelecionadaDestino,
+          'dataInicio': startTimestamp,
+          'dataFim': endTimestamp,
+          'responsavel': responsavelRef,
+          'participantes': participantesRefs,
+        };
+
+        await _addTripToFirestore(empresaId, tripData);
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    }
+  }
+
+  DateTime _combineDateAndTime(DateTime date, TimeOfDay time) {
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
+  }
+
+  Timestamp _convertToTimestamp(DateTime dateTime) {
+    return Timestamp.fromDate(dateTime);
+  }
+
+  List<DocumentReference> _prepareParticipantesRefs(String currentUserId) {
+    return <DocumentReference>[
+      FirebaseFirestore.instance.doc('pessoas/$currentUserId'),
+    ];
+  }
+
+  Future<void> _addTripToFirestore(
+      String empresaId, Map<String, dynamic> tripData) async {
+    final CollectionReference viagensCollection =
+        FirebaseFirestore.instance.collection('empresas/$empresaId/viagens');
+    await viagensCollection.add(tripData);
+  }
+
+  Future<void> _setDataSaida(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: widget.trip?.startDate ?? _dataSaida,
+      firstDate: DateTime(2022),
+      lastDate: DateTime(2122),
+    ) as DateTime;
+
+    if (picked != _dataSaida) {
+      setState(() {
+        _dataSaida = picked;
+      });
+    }
+  }
+
+  Future<void> _setHoraSaida(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _horaSaida,
+    ) as TimeOfDay;
+    if (picked != _horaSaida) {
+      setState(() {
+        _horaSaida = picked;
+      });
+    }
+  }
+
+  Future<void> _setDataRetorno(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _dataRetorno,
+      firstDate: DateTime(2022),
+      lastDate: DateTime(2122),
+    ) as DateTime;
+
+    if (picked != _dataRetorno) {
+      setState(() {
+        _dataRetorno = picked;
+      });
+    }
+  }
+
+  Future<void> _setHoraRetorno(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _horaRetorno,
+    ) as TimeOfDay;
+    if (picked != _horaRetorno) {
+      setState(() {
+        _horaRetorno = picked;
+      });
     }
   }
 
@@ -356,111 +463,5 @@ class AddTripScreenState extends State<AddTripScreen> {
         ),
       ),
     );
-  }
-
-  void _salvarDadosNoFirebase() async {
-    if (_formKey.currentState!.validate()) {
-      Veiculo selectedVeiculo = _selectedVeiculo;
-
-      // Get the current user's UID from Firebase Authentication
-      User? currentUser = FirebaseAuth.instance.currentUser;
-
-      if (currentUser != null) {
-        String currentUserId = currentUser.uid;
-        Trip newTrip = Trip(
-          veiculo:
-              selectedVeiculo, // Assuming _selectedVeiculo is a Veiculo object
-          estadoOrigem: _estadoSelecionadoOrigem,
-          cidadeOrigem: _cidadeSelecionadaOrigem,
-          estadoDestino: _estadoSelecionadoDestino,
-          cidadeDestino: _cidadeSelecionadaDestino,
-          startDate: _dataSaida,
-          endDate: _dataRetorno,
-          responsavel: pessoasList[0],
-          participantes: [], // Initialize with an empty list
-        );
-
-        // Replace 'YOUR_EMPRESA_ID' with the actual ID of the empresa.
-        String empresaId = 'UywGfjmMyYNRHFyx5hUN';
-
-        // Get a reference to the empresa's 'viagens' collection.
-        CollectionReference viagensCollection = FirebaseFirestore.instance
-            .collection('empresas/$empresaId/viagens');
-
-        // Add the new trip document to the 'viagens' collection.
-        await viagensCollection.add({
-          'veiculo': FirebaseFirestore.instance
-              .doc('your_veiculo_collection/your_veiculo_document_id'),
-          'estadoOrigem': newTrip.estadoOrigem,
-          'cidadeOrigem': newTrip.cidadeOrigem,
-          'estadoDestino': newTrip.estadoDestino,
-          'cidadeDestino': newTrip.cidadeDestino,
-          'startDate': newTrip.startDate,
-          'endDate': newTrip.endDate,
-          'responsavel':
-              FirebaseFirestore.instance.doc('pessoas/$currentUserId'),
-          'participantes': newTrip.participantes
-              .map((participant) => FirebaseFirestore.instance
-                  .doc('your_participant_collection/participant_document_id'))
-              .toList(),
-        });
-
-        Navigator.pushReplacementNamed(context, '/home');
-      }
-    }
-  }
-
-  Future<void> _setDataSaida(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: widget.trip?.startDate ?? _dataSaida,
-      firstDate: DateTime(2022),
-      lastDate: DateTime(2122),
-    ) as DateTime;
-
-    if (picked != _dataSaida) {
-      setState(() {
-        _dataSaida = picked;
-      });
-    }
-  }
-
-  Future<void> _setHoraSaida(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(
-      context: context,
-      initialTime: _horaSaida,
-    ) as TimeOfDay;
-    if (picked != _horaSaida) {
-      setState(() {
-        _horaSaida = picked;
-      });
-    }
-  }
-
-  Future<void> _setDataRetorno(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: _dataRetorno,
-      firstDate: DateTime(2022),
-      lastDate: DateTime(2122),
-    ) as DateTime;
-
-    if (picked != _dataRetorno) {
-      setState(() {
-        _dataRetorno = picked;
-      });
-    }
-  }
-
-  Future<void> _setHoraRetorno(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(
-      context: context,
-      initialTime: _horaRetorno,
-    ) as TimeOfDay;
-    if (picked != _horaRetorno) {
-      setState(() {
-        _horaRetorno = picked;
-      });
-    }
   }
 }

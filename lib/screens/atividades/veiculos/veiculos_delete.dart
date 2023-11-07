@@ -8,31 +8,21 @@ class VeiculosDelete extends StatefulWidget {
 }
 
 class _VeiculosDeleteState extends State<VeiculosDelete> {
-  
-  String _placa = "";
-  String _id = "1";
-  String _marca = "";
-  String _modelo = "";
-  String _ano = "";
   int capacidade = 5;
-  String _imageUrl = "";
+  final String _imageUrl = "";
 
-
-  TextEditingController _placaController = TextEditingController();
-  TextEditingController _idController = TextEditingController();
-  TextEditingController _marcaController = TextEditingController();
-  TextEditingController _modeloController = TextEditingController();
-  TextEditingController _anoController = TextEditingController();
-  TextEditingController _capacidadeController = TextEditingController();
+  final TextEditingController _placaController = TextEditingController();
+  final TextEditingController _marcaController = TextEditingController();
+  final TextEditingController _modeloController = TextEditingController();
+  final TextEditingController _anoController = TextEditingController();
+  final TextEditingController _capacidadeController = TextEditingController();
 
   void _DeleteVeiculo(String placa) {
     // Funcão de Delete no Firebase
-    if(_imageUrl != null){
-      imagemCarregada == Image.asset(_imageUrl);
-    }
+    imagemCarregada == Image.asset(_imageUrl);
   }
 
-  Widget imagemCarregada = Text("");
+  Widget imagemCarregada = const Text("");
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +67,6 @@ class _VeiculosDeleteState extends State<VeiculosDelete> {
                 controller: _capacidadeController,
                 decoration: const InputDecoration(
                   labelText: "Capacidade",
-                  
                 ),
                 enabled: false,
                 keyboardType: TextInputType.number,
@@ -88,8 +77,8 @@ class _VeiculosDeleteState extends State<VeiculosDelete> {
               ElevatedButton(
                   onPressed: () {
                     _DeleteVeiculo(
-                        _placaController.text,
-                        );
+                      _placaController.text,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 232, 60, 60)),
