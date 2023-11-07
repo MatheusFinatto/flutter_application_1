@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/screens/conta/register_page.dart';
+import 'package:flutter_application_1/models/pessoas.dart';
+import 'package:flutter_application_1/database/pessoas.dart';
 
 class ContaScreen extends StatefulWidget {
   const ContaScreen({Key? key}) : super(key: key);
@@ -9,7 +13,33 @@ class ContaScreen extends StatefulWidget {
 }
 
 class ContaScreenState extends State<ContaScreen> {
-  // ...
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  String nome = "", cpf = "";
+  //instancia para autenticacao
+  FirebaseAuth auth = FirebaseAuth.instance;
+  void getDados() async {
+    Pessoas pessoas = Pessoas(); // Crie uma instância da classe Pessoas
+    Pessoa pessoa = await pessoas.getUserSession();
+    setState(() {
+      nome = pessoa.nome;
+      cpf = pessoa.cpf;
+    });
+  }
+
+  void deslogar() async {
+    await auth.signOut().then((value) => {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const RegisterPage()),
+              (route) => false)
+        });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDados();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +65,7 @@ class ContaScreenState extends State<ContaScreen> {
           final pessoaData = snapshot.data!.data() as Map<String, dynamic>;
           return Column(
             children: [
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(
                     bottom: 20, left: 40, top: 16, right: 40),
@@ -46,27 +76,27 @@ class ContaScreenState extends State<ContaScreen> {
                     Column(
                       children: [
                         Text(
-                          pessoaData['nome'],
+                          nome,
                           style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.w900),
                         ),
                         Text(
-                          pessoaData['cpf'],
+                          cpf,
                           style: const TextStyle(
                               fontSize: 15, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
-                    ClipOval(
-                      clipBehavior: Clip.antiAlias,
-                      child: Image.network(
-                        pessoaData['imagemUrl'] ??
-                            'https://ojasyog.com/wp-content/uploads/2022/02/421-4212617_person-placeholder-image-transparent-hd-png-download.png',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.fill,
-                      ),
-                    )
+                    // ClipOval(
+                    //   clipBehavior: Clip.antiAlias,
+                    //   child: Image.network(
+                    //     pessoaData['imagemUrl'] ??
+                    //         'https://ojasyog.com/wp-content/uploads/2022/02/421-4212617_person-placeholder-image-transparent-hd-png-download.png',
+                    //     width: 100,
+                    //     height: 100,
+                    //     fit: BoxFit.fill,
+                    //   ),
+                    // )
                   ],
                 ),
               ),
@@ -74,8 +104,8 @@ class ContaScreenState extends State<ContaScreen> {
               // Rest of your UI elements
               ListView(
                 shrinkWrap: true,
-                children: const <Widget>[
-                  ListTile(
+                children: <Widget>[
+                  const ListTile(
                     leading: Icon(Icons.corporate_fare_sharp),
                     title: Text(
                       'Empresa',
@@ -83,7 +113,7 @@ class ContaScreenState extends State<ContaScreen> {
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                     ),
                   ),
-                  ListTile(
+                  const ListTile(
                     leading: Icon(Icons.person),
                     title: Text(
                       'Alterar dados',
@@ -91,7 +121,7 @@ class ContaScreenState extends State<ContaScreen> {
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                     ),
                   ),
-                  ListTile(
+                  const ListTile(
                     leading: Icon(Icons.settings),
                     title: Text(
                       'Configurações',
@@ -102,7 +132,10 @@ class ContaScreenState extends State<ContaScreen> {
                   Padding(
                     padding: EdgeInsets.only(top: 40, left: 10),
                     child: ListTile(
-                      title: Text(
+                      onTap: () {
+                        deslogar();
+                      },
+                      title: const Text(
                         'Encerrar sessão',
                         style: TextStyle(
                           color: Colors.red,

@@ -4,16 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class Pessoas {
   Future<Pessoa> getUserSession() async {
-    print("iniciaindo");
     FirebaseFirestore db = FirebaseFirestore.instance;
     FirebaseAuth auth = FirebaseAuth.instance;
     final user = await auth.currentUser;
 
     DocumentSnapshot snapshot =
         await db.collection("pessoas").doc(user!.uid).get();
-
     Map<String, dynamic>? dado = snapshot.data() as Map<String, dynamic>?;
-    print(dado);
 
     String endereco = '';
     String telefone = '';

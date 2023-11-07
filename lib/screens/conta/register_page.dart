@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_application_1/screens/conta/login_page.dart';
 import 'package:flutter_application_1/screens/home/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -18,6 +21,10 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  bool state = false;
+
+  String _msgErro = "";
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -26,6 +33,67 @@ class RegisterPageState extends State<RegisterPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  _createAccount() {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    String nome = _nameController.text;
+    String cpf = _cpfController.text;
+
+    if (email.isNotEmpty && email.contains("@")) {
+      if (password.isNotEmpty && password.length >= 6) {
+        if (cpf.length >= 11) {
+          if (nome.isNotEmpty) {
+            _msgErro = "";
+            //instancia do auth
+            FirebaseAuth auth = FirebaseAuth.instance;
+            //instancia do bd
+            FirebaseFirestore db = FirebaseFirestore.instance;
+
+            //gravar no banco
+            Map<String, dynamic> dadosUser = {
+              'nome': nome,
+              'email': email,
+              'cpf': cpf
+            };
+
+            auth
+                .createUserWithEmailAndPassword(
+                    email: email, password: password)
+                .then((firebaseUser) => {
+                      //gravar no banco usando o UID
+                      db
+                          .collection('pessoas')
+                          .doc(firebaseUser.user!.uid)
+                          .set(dadosUser),
+                      _msgErro = "Sucesso ao logar",
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                          (route) => false)
+                    })
+                .onError((error, stackTrace) => {_msgErro = error.toString()});
+          } else {
+            setState(() {
+              _msgErro = "Nome não pode ser vazio";
+            });
+          }
+        } else {
+          setState(() {
+            _msgErro = "CPF Invalido";
+          });
+        }
+      } else {
+        setState(() {
+          _msgErro = "A senha deve ter pelo menos 6 caracteres";
+        });
+      }
+    } else {
+      setState(() {
+        _msgErro = "Email invalido";
+      });
+    }
   }
 
   @override
@@ -176,6 +244,10 @@ class RegisterPageState extends State<RegisterPage> {
             },
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.only(top: 12.0),
+          child: Text(_msgErro),
+        )
       ],
     );
   }
@@ -190,13 +262,18 @@ class RegisterPageState extends State<RegisterPage> {
               borderRadius: BorderRadius.circular(10),
             )),
           ),
-          onPressed: _onRegisterPressed,
+          onPressed: _createAccount,
           child: const Text('Cadastrar', style: TextStyle(fontSize: 16)),
         ),
         const SizedBox(height: 20),
         GestureDetector(
           onTap: () {
-            Navigator.pushReplacementNamed(context, '/home');
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const LoginPage(),
+              ),
+            );
+            //Navigator.pushReplacementNamed(context, '/login');
           },
           child: const Text(
             "Já possuo uma conta",
@@ -212,14 +289,14 @@ class RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _onRegisterPressed() {
-    if (_formKey.currentState!.validate()) {
-      // Form is valid, perform registration
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
-      );
-    }
-  }
+  // void _onRegisterPressed() {
+  //   if (_formKey.currentState!.validate()) {
+  //     // Form is valid, perform registration
+  //     Navigator.of(context).push(
+  //       MaterialPageRoute(
+  //         builder: (context) => const HomePage(),
+  //       ),
+  //     );
+  //   }
+  // }
 }

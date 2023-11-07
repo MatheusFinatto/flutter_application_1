@@ -207,6 +207,7 @@ class LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
+        const SizedBox(height: 10),
         GestureDetector(
           onTap: () {
             desenv = true;
