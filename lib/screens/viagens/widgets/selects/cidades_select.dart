@@ -5,6 +5,7 @@ class CidadesSelect extends StatefulWidget {
   final String selectedCity;
   final Function(String) onCityChanged;
   final String? defaultValue;
+  final bool isEstadoSelected;
 
   const CidadesSelect({
     super.key,
@@ -12,6 +13,7 @@ class CidadesSelect extends StatefulWidget {
     required this.selectedCity,
     required this.onCityChanged,
     this.defaultValue,
+    this.isEstadoSelected = false,
   });
 
   @override
@@ -36,8 +38,12 @@ class CidadesSelectState extends State<CidadesSelect> {
           labelText: 'Cidade',
           border: OutlineInputBorder(),
         ),
-        enabled: false,
-        initialValue: widget.defaultValue ?? "Selecione uma cidade",
+        enabled: (widget.isEstadoSelected ||
+                widget.defaultValue != null ||
+                widget.selectedCity.isNotEmpty)
+            ? true
+            : false,
+        initialValue: "Selecione uma cidade",
       );
     }
 
@@ -51,10 +57,9 @@ class CidadesSelectState extends State<CidadesSelect> {
         });
       },
       items: [
-        DropdownMenuItem<String>(
+        const DropdownMenuItem<String>(
           value: null,
-          child: Text(widget.defaultValue ??
-              'Selecione uma cidade'), // Placeholder text
+          child: Text('Selecione uma cidade'),
         ),
         ...uniqueCidades.map((cidade) {
           return DropdownMenuItem<String>(

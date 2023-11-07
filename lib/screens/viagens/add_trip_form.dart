@@ -1,14 +1,12 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/database/pessoas.dart';
 import 'package:flutter_application_1/database/veiculos.dart';
-import 'package:flutter_application_1/database/viagens.dart';
-import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:flutter_application_1/models/veiculos.dart';
 import 'package:flutter_application_1/models/viagens.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/selects/cidades_select.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/selects/estados_select.dart';
-import 'package:flutter_application_1/screens/viagens/widgets/selects/pessoas_select.dart';
 
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -38,9 +36,9 @@ class AddTripScreenState extends State<AddTripScreen> {
 
   DateTime _dataRetorno = DateTime.now();
   TimeOfDay _horaRetorno = TimeOfDay.now();
+  String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
-  Veiculo _selectedVeiculo = veiculosList[0];
-  Pessoa _selectedPessoa = pessoasList[0];
+  Veiculo? _selectedVeiculo;
 
   final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
   final List<String> estados = [];
@@ -75,7 +73,143 @@ class AddTripScreenState extends State<AddTripScreen> {
         cidadesEstado.add(cidade['nome']);
       }
       cidades[estado] = cidadesEstado;
-      setState(() {});
+    }
+  }
+
+  Stream<List<Veiculo>> veiculosStream() {
+    return FirebaseFirestore.instance
+        .collection('empresas')
+        .doc(empresaId)
+        .collection('veiculos')
+        .snapshots()
+        .map((querySnapshot) {
+      return querySnapshot.docs.map((doc) {
+        Veiculo veiculo = Veiculo.fromMap(doc.data());
+        veiculo.uid = doc.reference.id;
+        _selectedVeiculo = veiculo;
+        return veiculo;
+      }).toList();
+    });
+  }
+
+  void _salvarDadosNoFirebase() async {
+    if (_formKey.currentState!.validate()) {
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+
+      if (currentUser != null) {
+        final String currentUserId = currentUser.uid;
+
+        final DateTime startDateTime =
+            _combineDateAndTime(_dataSaida, _horaSaida);
+        final DateTime endDateTime =
+            _combineDateAndTime(_dataRetorno, _horaRetorno);
+        final Timestamp startTimestamp = _convertToTimestamp(startDateTime);
+        final Timestamp endTimestamp = _convertToTimestamp(endDateTime);
+        final DocumentReference responsavelRef =
+            FirebaseFirestore.instance.doc('pessoas/$currentUserId');
+
+        final DocumentReference veiculoRef = FirebaseFirestore.instance
+            .doc('empresas/$empresaId/veiculos/${_selectedVeiculo?.uid}');
+
+        final List<DocumentReference> participantesRefs =
+            _prepareParticipantesRefs(currentUserId);
+
+        final Map<String, dynamic> tripData = {
+          'veiculo': veiculoRef,
+          'estadoOrigem': _estadoSelecionadoOrigem,
+          'cidadeOrigem': _cidadeSelecionadaOrigem,
+          'estadoDestino': _estadoSelecionadoDestino,
+          'cidadeDestino': _cidadeSelecionadaDestino,
+          'dataInicio': startTimestamp,
+          'dataFim': endTimestamp,
+          'responsavel': responsavelRef,
+          'participantes': participantesRefs,
+        };
+
+        await _addTripToFirestore(empresaId, tripData);
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    }
+  }
+
+  DateTime _combineDateAndTime(DateTime date, TimeOfDay time) {
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
+  }
+
+  Timestamp _convertToTimestamp(DateTime dateTime) {
+    return Timestamp.fromDate(dateTime);
+  }
+
+  List<DocumentReference> _prepareParticipantesRefs(String currentUserId) {
+    return <DocumentReference>[
+      FirebaseFirestore.instance.doc('pessoas/$currentUserId'),
+    ];
+  }
+
+  Future<void> _addTripToFirestore(
+      String empresaId, Map<String, dynamic> tripData) async {
+    final CollectionReference viagensCollection =
+        FirebaseFirestore.instance.collection('empresas/$empresaId/viagens');
+    await viagensCollection.add(tripData);
+  }
+
+  Future<void> _setDataSaida(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _dataSaida,
+      firstDate: DateTime(2022),
+      lastDate: DateTime(2122),
+    ) as DateTime;
+
+    if (picked != _dataSaida) {
+      setState(() {
+        _dataSaida = picked;
+      });
+    }
+  }
+
+  Future<void> _setHoraSaida(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _horaSaida,
+    ) as TimeOfDay;
+    if (picked != _horaSaida) {
+      setState(() {
+        _horaSaida = picked;
+      });
+    }
+  }
+
+  Future<void> _setDataRetorno(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _dataRetorno,
+      firstDate: DateTime(2022),
+      lastDate: DateTime(2122),
+    ) as DateTime;
+
+    if (picked != _dataRetorno) {
+      setState(() {
+        _dataRetorno = picked;
+      });
+    }
+  }
+
+  Future<void> _setHoraRetorno(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _horaRetorno,
+    ) as TimeOfDay;
+    if (picked != _horaRetorno) {
+      setState(() {
+        _horaRetorno = picked;
+      });
     }
   }
 
@@ -97,18 +231,6 @@ class AddTripScreenState extends State<AddTripScreen> {
                 children: [
                   const SizedBox(height: 16),
 
-                  PessoasSelect(
-                    defaultValue: widget.trip?.responsavel,
-                    pessoas: pessoasList,
-                    pessoaSelecionada: _selectedPessoa,
-                    onPessoaChanged: (newPessoa) {
-                      setState(() {
-                        _selectedPessoa = newPessoa;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
                   Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
@@ -126,7 +248,6 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         EstadosSelect(
-                          defaultValue: widget.trip?.estadoOrigem,
                           estados: estados,
                           estadoSelecionadoOrigem: _estadoSelecionadoOrigem,
                           onEstadoChanged: (value) {
@@ -139,9 +260,8 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         CidadesSelect(
-                          defaultValue: widget.trip?.cidadeOrigem,
-                          cityList: cidades[_estadoSelecionadoOrigem] ??
-                              [], // List of cities for the selected state
+                          isEstadoSelected: _estadoSelecionadoOrigem != '',
+                          cityList: cidades[_estadoSelecionadoOrigem] ?? [],
                           selectedCity: _cidadeSelecionadaOrigem,
                           onCityChanged: (value) {
                             setState(() {
@@ -173,7 +293,6 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         EstadosSelect(
-                          defaultValue: widget.trip?.estadoDestino,
                           estados: estados,
                           estadoSelecionadoOrigem: _estadoSelecionadoDestino,
                           onEstadoChanged: (value) {
@@ -186,7 +305,6 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         CidadesSelect(
-                            defaultValue: widget.trip?.cidadeDestino,
                             cityList: cidades[_estadoSelecionadoDestino] ?? [],
                             selectedCity: _cidadeSelecionadaDestino,
                             onCityChanged: (value) {
@@ -315,29 +433,44 @@ class AddTripScreenState extends State<AddTripScreen> {
                   ),
 
                   const SizedBox(height: 16),
-                  DropdownButtonFormField<Veiculo>(
-                    value: _selectedVeiculo,
-                    onChanged: (veiculo) {
-                      setState(() {
-                        _selectedVeiculo = veiculo ?? veiculosList.first;
-                      });
-                    },
-                    items: veiculosList.map((veiculo) {
-                      return DropdownMenuItem<Veiculo>(
-                        value:
-                            veiculo, // Set the value to the complete Veiculo object
-                        child: Text(
-                          '${veiculo.marca} ${veiculo.modelo}, ${veiculo.ano} - ${veiculo.placa}',
+                  StreamBuilder<List<Veiculo>>(
+                    stream: veiculosStream(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+
+                      if (snapshot.hasError) {
+                        return Text("Error: ${snapshot.error}");
+                      }
+
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Text("No veiculos found.");
+                      }
+
+                      return DropdownButtonFormField<Veiculo>(
+                        value: _selectedVeiculo ?? snapshot.data?.first,
+                        onChanged: (veiculo) {
+                          setState(() {
+                            _selectedVeiculo = veiculo;
+                          });
+                        },
+                        items: snapshot.data?.map((veiculo) {
+                          return DropdownMenuItem<Veiculo>(
+                            value: _selectedVeiculo ?? snapshot.data?.first,
+                            key: Key('key-${veiculo.ano}-${veiculo.placa}'),
+                            child: Text(
+                              '${veiculo.marca} ${veiculo.modelo}, ${veiculo.ano} - ${veiculo.placa}',
+                            ),
+                          );
+                        }).toList(),
+                        decoration: const InputDecoration(
+                          labelText: 'Veículo',
+                          border: OutlineInputBorder(),
                         ),
                       );
-                    }).toList(),
-                    decoration: const InputDecoration(
-                      labelText: 'Veículo',
-                      border: OutlineInputBorder(),
-                    ),
+                    },
                   ),
-
-                  const SizedBox(height: 16),
 
                   const SizedBox(height: 32),
                   ElevatedButton(
@@ -356,78 +489,5 @@ class AddTripScreenState extends State<AddTripScreen> {
         ),
       ),
     );
-  }
-
-  void _salvarDadosNoFirebase() {
-    if (_formKey.currentState!.validate()) {
-      Veiculo selectedVeiculo = _selectedVeiculo;
-      Trip newTrip = Trip(
-        veiculo: selectedVeiculo,
-        estadoOrigem: _estadoSelecionadoOrigem,
-        cidadeOrigem: _cidadeSelecionadaOrigem,
-        estadoDestino: _estadoSelecionadoDestino,
-        cidadeDestino: _cidadeSelecionadaDestino,
-        startDate: _dataSaida,
-        endDate: _dataRetorno,
-        responsavel: _selectedPessoa,
-        participantes: [],
-      );
-      viagensList.add(newTrip);
-      Navigator.pushReplacementNamed(context, '/home');
-    }
-  }
-
-  Future<void> _setDataSaida(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: widget.trip?.startDate ?? _dataSaida,
-      firstDate: DateTime(2022),
-      lastDate: DateTime(2122),
-    ) as DateTime;
-
-    if (picked != _dataSaida) {
-      setState(() {
-        _dataSaida = picked;
-      });
-    }
-  }
-
-  Future<void> _setHoraSaida(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(
-      context: context,
-      initialTime: _horaSaida,
-    ) as TimeOfDay;
-    if (picked != _horaSaida) {
-      setState(() {
-        _horaSaida = picked;
-      });
-    }
-  }
-
-  Future<void> _setDataRetorno(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: _dataRetorno,
-      firstDate: DateTime(2022),
-      lastDate: DateTime(2122),
-    ) as DateTime;
-
-    if (picked != _dataRetorno) {
-      setState(() {
-        _dataRetorno = picked;
-      });
-    }
-  }
-
-  Future<void> _setHoraRetorno(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(
-      context: context,
-      initialTime: _horaRetorno,
-    ) as TimeOfDay;
-    if (picked != _horaRetorno) {
-      setState(() {
-        _horaRetorno = picked;
-      });
-    }
   }
 }

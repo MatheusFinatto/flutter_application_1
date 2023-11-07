@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'empresas/empresas_home.dart';
+import 'users/users.dart';
+import 'veiculos/veiculos.dart';
+import 'empresas/empresas.dart';
 
 class AtividadesScreen extends StatefulWidget {
   const AtividadesScreen({super.key});
@@ -16,6 +19,7 @@ class _ServicesHomeState extends State<AtividadesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Atividades"),
+        backgroundColor: const Color.fromARGB(255, 33, 150, 243),
       ),
       body: SafeArea(
           child: SingleChildScrollView(
@@ -40,7 +44,7 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  /*Padding(
+                  Padding(
                     padding: const EdgeInsets.only(bottom: 50.0),
                     child: SizedBox(
                       width: 250,
@@ -84,8 +88,8 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                         ),
                       ),
                     ),
-                  ),*/
-                  /*Padding(
+                  ),
+                  Padding(
                     padding: const EdgeInsets.only(bottom: 50.0),
                     child: SizedBox(
                       width: 250,
@@ -126,7 +130,7 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                         ),
                       ),
                     ),
-                    ),*/
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 30),
                     child: SizedBox(

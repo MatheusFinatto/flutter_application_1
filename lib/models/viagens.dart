@@ -1,4 +1,3 @@
-import 'package:flutter_application_1/database/viagens.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:flutter_application_1/models/veiculos.dart';
 
@@ -10,7 +9,7 @@ class Trip {
   final String cidadeDestino;
   final Pessoa responsavel;
   final DateTime startDate;
-  final DateTime endDate;
+  final DateTime dataFim;
   final List<Pessoa> participantes;
 
   Trip({
@@ -21,7 +20,7 @@ class Trip {
     required this.cidadeDestino,
     required this.startDate,
     required this.responsavel,
-    required this.endDate,
+    required this.dataFim,
     required this.participantes,
   });
 
@@ -57,9 +56,44 @@ class Trip {
     viagensList.add(newTrip);
   }
 
-  static void removeTrip(int index) {
-    if (index >= 0 && index < viagensList.length) {
-      viagensList.removeAt(index);
+  factory Trip.fromMap(Map<String, dynamic> map) {
+    try {
+      // Parse the data from the map and create a Trip object
+      return Trip(
+        veiculo: Veiculo.fromMap(map['veiculo']),
+        estadoOrigem: map['estadoOrigem'],
+        cidadeOrigem: map['cidadeOrigem'],
+        estadoDestino: map['estadoDestino'],
+        cidadeDestino: map['cidadeDestino'],
+        startDate: DateTime.parse(map['startDate']),
+        responsavel: Pessoa.fromMap(map['responsavel']),
+        dataFim: DateTime.parse(map['dataFim']),
+        participantes: (map['participantes'] as List)
+            .map((participant) => Pessoa.fromMap(participant))
+            .toList(),
+      );
+    } catch (e) {
+      // Handle any errors or exceptions, and log the data for debugging
+      print('Error creating Trip from map: $e');
+      print('Data: $map');
+      throw Exception('Error creating Trip from map: $e');
     }
+  }
+
+  // Define the toJson method to convert the Trip object to a JSON format.
+  Map<String, dynamic> toJson() {
+    return {
+      'veiculo': veiculo
+          .toJson(), // You should define a toJson method for Veiculo as well.
+      'estadoOrigem': estadoOrigem,
+      'cidadeOrigem': cidadeOrigem,
+      'estadoDestino': estadoDestino,
+      'cidadeDestino': cidadeDestino,
+      'startDate': startDate.toIso8601String(),
+      'dataFim': dataFim.toIso8601String(),
+      'responsavel': responsavel
+          .toJson(), // You should define a toJson method for Pessoa as well.
+      'participantes': participantes,
+    };
   }
 }

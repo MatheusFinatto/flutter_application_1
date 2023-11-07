@@ -1,5 +1,5 @@
 class Veiculo {
-  final int id;
+  String? uid;
   final String marca;
   final String modelo;
   final String placa;
@@ -8,7 +8,7 @@ class Veiculo {
   final String imageUrl;
 
   Veiculo({
-    required this.id,
+    this.uid,
     required this.marca,
     required this.modelo,
     required this.placa,
@@ -18,8 +18,9 @@ class Veiculo {
   });
 
   factory Veiculo.fromMap(Map<String, dynamic> map) {
+    print("Veiculo.fromMap - Received data: $map");
     return Veiculo(
-      id: map['id'],
+      uid: map['uid'],
       marca: map['marca'],
       modelo: map['modelo'],
       placa: map['placa'],
@@ -27,5 +28,18 @@ class Veiculo {
       capacidade: map['capacidade'],
       imageUrl: map['imageUrl'],
     );
+  }
+
+  // Define the toJson method to convert the Veiculo object to a JSON format.
+  Map<String, dynamic> toJson() {
+    return {
+      'uid': uid,
+      'marca': marca,
+      'modelo': modelo,
+      'placa': placa,
+      'ano': ano,
+      'capacidade': capacidade,
+      'imageUrl': imageUrl,
+    };
   }
 }

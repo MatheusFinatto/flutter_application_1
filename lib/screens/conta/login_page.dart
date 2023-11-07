@@ -19,6 +19,7 @@ class LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool state = false;
+  bool desenv = false;
 
   String _msgErro = "";
 
@@ -31,8 +32,16 @@ class LoginPageState extends State<LoginPage> {
   }
 
   _validaCampos() {
-    String email = _emailController.text;
-    String password = _passwordController.text;
+    String email = '';
+    String password = '';
+
+    if (desenv) {
+      email = 'matheus@gmail.com';
+      password = '123456';
+    } else {
+      email = _emailController.text;
+      password = _passwordController.text;
+    }
 
     if (email.isNotEmpty && email.contains("@")) {
       if (password.isNotEmpty && password.length >= 6) {
@@ -190,6 +199,22 @@ class LoginPageState extends State<LoginPage> {
           },
           child: const Text(
             "Não possuo uma conta",
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF0000EE),
+              fontWeight: FontWeight.normal,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: () {
+            desenv = true;
+            _validaCampos();
+          },
+          child: const Text(
+            "Desenv login",
             style: TextStyle(
               fontSize: 14,
               color: Color(0xFF0000EE),

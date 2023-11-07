@@ -51,7 +51,7 @@ class ContaScreenState extends State<ContaScreen> {
         future: _fetchPessoaData(), // Fetch pessoa data
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
@@ -62,9 +62,10 @@ class ContaScreenState extends State<ContaScreen> {
             return const Text('No pessoa data found.');
           }
 
+          final pessoaData = snapshot.data!.data() as Map<String, dynamic>;
           return Column(
             children: [
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(
                     bottom: 20, left: 40, top: 16, right: 40),
@@ -129,7 +130,7 @@ class ContaScreenState extends State<ContaScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 40, left: 10),
+                    padding: EdgeInsets.only(top: 40, left: 10),
                     child: ListTile(
                       onTap: () {
                         deslogar();
@@ -159,9 +160,8 @@ class ContaScreenState extends State<ContaScreen> {
           .doc('pessoas/rKS4uej8PQwbIkxRLjWD')
           .get();
     } catch (e) {
-      // ignore: avoid_print
       print('Error fetching pessoa data: $e');
-      rethrow;
+      throw e;
     }
   }
 }
