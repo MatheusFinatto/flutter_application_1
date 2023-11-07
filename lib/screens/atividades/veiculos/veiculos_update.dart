@@ -23,7 +23,6 @@ class _VeiculosUpdateState extends State<VeiculosUpdate> {
   final TextEditingController _anoController = TextEditingController();
   final TextEditingController _capacidadeController = TextEditingController();
 
-
   File? _selectedImage;
 
   void _updateVeiculo(String id, String marca, String modelo, String placa,
@@ -35,8 +34,7 @@ class _VeiculosUpdateState extends State<VeiculosUpdate> {
         .doc(widget.empresaID)
         .collection("veiculos")
         .doc(widget.veiculoID);
-    
-    
+
     Map<String, dynamic> dataAtualizada = {
       "imageUrl":
           "https://s7d1.scene7.com/is/image/hyundai/compare-vehicle-1225x619?wid=276&hei=156&fmt=webp-alpha",
@@ -57,9 +55,7 @@ class _VeiculosUpdateState extends State<VeiculosUpdate> {
       dataAtualizada["capacidade"] = capacidade;
     }
 
-    veiculoRef.update(dataAtualizada).then((value) {
-    }).catchError((error) {
-    });
+    veiculoRef.update(dataAtualizada).then((value) {}).catchError((error) {});
   }
 
   @override

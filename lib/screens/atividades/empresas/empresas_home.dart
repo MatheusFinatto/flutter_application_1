@@ -86,7 +86,7 @@ class _EmpresasHomeState extends State<EmpresasHome> {
     super.initState();
     _getDados();
     _getEmpresas();
-     // Chama a função ao entrar na tela
+    // Chama a função ao entrar na tela
   }
 
   @override

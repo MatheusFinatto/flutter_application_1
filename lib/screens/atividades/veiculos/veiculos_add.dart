@@ -21,13 +21,10 @@ class _VeiculosAddState extends State<VeiculosAdd> {
   final TextEditingController _anoController = TextEditingController();
   final TextEditingController _capacidadeController = TextEditingController();
 
-
   File? _selectedImage;
 
-  
-
   void _addVeiculo(String marca, String modelo, String placa, String ano,
-      String capacidade) async{
+      String capacidade) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
 
     db.collection("empresas").doc(widget.empresaID).collection("veiculos").add({
@@ -36,7 +33,8 @@ class _VeiculosAddState extends State<VeiculosAdd> {
       "placa": placa,
       "ano": ano,
       "capacidade": capacidade,
-      "imageUrl": "https://s7d1.scene7.com/is/image/hyundai/compare-vehicle-1225x619?wid=276&hei=156&fmt=webp-alpha",
+      "imageUrl":
+          "https://s7d1.scene7.com/is/image/hyundai/compare-vehicle-1225x619?wid=276&hei=156&fmt=webp-alpha",
     });
   }
 

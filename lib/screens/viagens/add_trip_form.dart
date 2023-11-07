@@ -99,12 +99,12 @@ class AddTripScreenState extends State<AddTripScreen> {
       if (currentUser != null) {
         final String currentUserId = currentUser.uid;
 
-        final DateTime startDateTime =
+        final DateTime dataInicioTime =
             _combineDateAndTime(_dataSaida, _horaSaida);
-        final DateTime endDateTime =
+        final DateTime dataFimTime =
             _combineDateAndTime(_dataRetorno, _horaRetorno);
-        final Timestamp startTimestamp = _convertToTimestamp(startDateTime);
-        final Timestamp endTimestamp = _convertToTimestamp(endDateTime);
+        final Timestamp startTimestamp = _convertToTimestamp(dataInicioTime);
+        final Timestamp endTimestamp = _convertToTimestamp(dataFimTime);
         final DocumentReference responsavelRef =
             FirebaseFirestore.instance.doc('pessoas/$currentUserId');
 

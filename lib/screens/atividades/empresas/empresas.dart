@@ -175,12 +175,11 @@ class _EmpresasState extends State<Empresas> {
                           TextButton(
                             child: const Text('Excluir'),
                             onPressed: () {
-                              FirebaseFirestore db =
-                                  FirebaseFirestore.instance;
+                              FirebaseFirestore db = FirebaseFirestore.instance;
                               DocumentReference empresasRef = db
                                   .collection("empresas")
                                   .doc(widget.empresaUid);
-                                  empresasRef.delete();
+                              empresasRef.delete();
                               Navigator.of(context).pop();
                             },
                           ),

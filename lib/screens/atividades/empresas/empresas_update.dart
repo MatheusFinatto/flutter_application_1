@@ -43,9 +43,7 @@ class _EmpresasUpdateState extends State<EmpresasUpdate> {
       dataAtualizada["email"] = email;
     }
 
-    empresaRef.update(dataAtualizada).then((value) {
-    }).catchError((error) {
-    });
+    empresaRef.update(dataAtualizada).then((value) {}).catchError((error) {});
   }
 
   @override

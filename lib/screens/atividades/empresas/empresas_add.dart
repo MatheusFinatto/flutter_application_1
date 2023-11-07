@@ -9,7 +9,6 @@ class EmpresasAdd extends StatefulWidget {
 }
 
 class _EmpresasAddState extends State<EmpresasAdd> {
-
   final TextEditingController _cnpjController = TextEditingController();
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _enderecoController = TextEditingController();
@@ -17,7 +16,6 @@ class _EmpresasAddState extends State<EmpresasAdd> {
   final TextEditingController _emailController = TextEditingController();
 
   bool _isLoading = false;
-  
 
   void _createEmpresa(String cnpj, String nome, String endereco,
       String telefone, String email, String userId) async {
@@ -39,11 +37,10 @@ class _EmpresasAddState extends State<EmpresasAdd> {
       CollectionReference veiculosRef = empresaRef.collection("veiculos");
 
       veiculosRef.add({
-      "marca": "",
-      "modelo": "",
-      // Adicione outros campos do veículo
-    });
-      
+        "marca": "",
+        "modelo": "",
+        // Adicione outros campos do veículo
+      });
     }
     _isLoading = false;
   }

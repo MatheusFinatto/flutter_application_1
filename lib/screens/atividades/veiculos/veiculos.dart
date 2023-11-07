@@ -1,202 +1,45 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_add.dart';
-import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_show.dart';
-import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_update.dart';
-import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_delete.dart';
+class Veiculo {
+  String? uid;
+  final String marca;
+  final String modelo;
+  final String placa;
+  final String ano;
+  final int capacidade;
+  final String imageUrl;
 
-class Veiculos extends StatefulWidget {
-  const Veiculos({super.key});
+  Veiculo({
+    this.uid,
+    required this.marca,
+    required this.modelo,
+    required this.placa,
+    required this.ano,
+    required this.capacidade,
+    required this.imageUrl,
+  });
 
-  @override
-  State<Veiculos> createState() => _VeiculosState();
-}
-
-class _VeiculosState extends State<Veiculos> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Veículos")),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 100.0, left: 20.0, right: 20.0, bottom: 25.0),
-                  child: SizedBox(
-                    width: 270,
-                    height: 80,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const VeiculosShow()));
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 217, 217, 217),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20))),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Icon(
-                            Icons.directions_car,
-                            size: 50,
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            "Ver veículos",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontFamily: "Montserrat",
-                              fontWeight: FontWeight.w500,
-                              color: Color.fromARGB(255, 0, 0, 0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 25.0, left: 20.0, right: 20.0, bottom: 25.0),
-                  child: SizedBox(
-                    width: 270,
-                    height: 80,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const VeiculosAdd()));
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 217, 217, 217),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20))),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Icon(
-                              Icons.add,
-                              size: 50,
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              "Novo Veículo",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontFamily: "Montserrat",
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 0, 0, 0),
-                              ),
-                            ),
-                          ],
-                        )),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 25.0, left: 20.0, right: 20.0, bottom: 25.0),
-                  child: SizedBox(
-                    width: 270,
-                    height: 80,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const VeiculosUpdate()));
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 217, 217, 217),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20))),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Icon(
-                              Icons.update,
-                              size: 50,
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              "Atualizar Veículo",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontFamily: "Montserrat",
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 0, 0, 0),
-                              ),
-                            ),
-                          ],
-                        )),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 25.0, left: 20.0, right: 20.0, bottom: 25.0),
-                  child: SizedBox(
-                    width: 270,
-                    height: 80,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const VeiculosDelete()));
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 217, 217, 217),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20))),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Icon(
-                              Icons.delete,
-                              size: 50,
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              "Deletar Veículo",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontFamily: "Montserrat",
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 0, 0, 0),
-                              ),
-                            ),
-                          ],
-                        )),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+  factory Veiculo.fromMap(Map<String, dynamic> map) {
+    print("Veiculo.fromMap - Received data: $map");
+    return Veiculo(
+      uid: map['uid'],
+      marca: map['marca'],
+      modelo: map['modelo'],
+      placa: map['placa'],
+      ano: map['ano'],
+      capacidade: map['capacidade'],
+      imageUrl: map['imageUrl'],
     );
+  }
+
+  // Define the toJson method to convert the Veiculo object to a JSON format.
+  Map<String, dynamic> toJson() {
+    return {
+      'uid': uid,
+      'marca': marca,
+      'modelo': modelo,
+      'placa': placa,
+      'ano': ano,
+      'capacidade': capacidade,
+      'imageUrl': imageUrl,
+    };
   }
 }

@@ -100,8 +100,8 @@ class _VeiculosShowState extends State<VeiculosShow> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => VeiculosAdd(
-                              empresaID: widget.empresaId,
-                        )));
+                                empresaID: widget.empresaId,
+                              )));
                 },
                 child: const Icon(Icons.add)),
           ),
@@ -118,8 +118,10 @@ class _VeiculosShowState extends State<VeiculosShow> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      VeiculosUpdate(empresaID: widget.empresaId, veiculoID: veiculoID,)));
+                  builder: (context) => VeiculosUpdate(
+                        empresaID: widget.empresaId,
+                        veiculoID: veiculoID,
+                      )));
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color.fromARGB(255, 60, 141, 130),
@@ -137,46 +139,51 @@ class _VeiculosShowState extends State<VeiculosShow> {
   }
 
   Widget buildDeleteButton(BuildContext context) {
-  return ElevatedButton(
-    onPressed: () {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Confirmação de Exclusão'),
-            content: const Text('Tem certeza de que deseja excluir este item?'),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Cancelar'),
-                onPressed: () {
-                  Navigator.of(context).pop(); 
-                },
-              ),
-              TextButton(
-                child: const Text('Excluir'),
-                onPressed: () {
-                  FirebaseFirestore db = FirebaseFirestore.instance;
-                  DocumentReference veiculosRef = db.collection("empresas").doc(widget.empresaId).collection("veiculos").doc(veiculoID);
-                  veiculosRef.delete();
-                  Navigator.of(context).pop(); 
-                },
-              ),
-            ],
-          );
-        },
-      );
-    },
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.red,
-    ),
-    child: const Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text('Excluir'),
-        SizedBox(width: 2),
-        Icon(Icons.delete, size: 14),
-      ],
-    ),
-  );
-}
+    return ElevatedButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Confirmação de Exclusão'),
+              content:
+                  const Text('Tem certeza de que deseja excluir este item?'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancelar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Excluir'),
+                  onPressed: () {
+                    FirebaseFirestore db = FirebaseFirestore.instance;
+                    DocumentReference veiculosRef = db
+                        .collection("empresas")
+                        .doc(widget.empresaId)
+                        .collection("veiculos")
+                        .doc(veiculoID);
+                    veiculosRef.delete();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.red,
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('Excluir'),
+          SizedBox(width: 2),
+          Icon(Icons.delete, size: 14),
+        ],
+      ),
+    );
+  }
 }
