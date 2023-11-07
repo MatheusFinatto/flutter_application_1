@@ -3,7 +3,7 @@ import 'package:flutter_application_1/models/viagens.dart';
 import 'package:flutter_application_1/screens/viagens/add_trip_form.dart';
 
 class EditTripButton extends StatelessWidget {
-  final Trip trip;
+  final Map<String, dynamic> trip;
 
   const EditTripButton({
     super.key,
@@ -18,7 +18,7 @@ class EditTripButton extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => AddTripScreen(isEdit: true, trip: trip),
+              builder: (context) => const AddTripScreen(isEdit: true),
             ),
           );
         },

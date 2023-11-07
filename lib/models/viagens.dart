@@ -8,7 +8,7 @@ class Trip {
   final String estadoDestino;
   final String cidadeDestino;
   final Pessoa responsavel;
-  final DateTime dataIncio;
+  final DateTime startDate;
   final DateTime dataFim;
   final List<Pessoa> participantes;
 
@@ -18,7 +18,7 @@ class Trip {
     required this.cidadeOrigem,
     required this.estadoDestino,
     required this.cidadeDestino,
-    required this.dataIncio,
+    required this.startDate,
     required this.responsavel,
     required this.dataFim,
     required this.participantes,
@@ -35,7 +35,7 @@ class Trip {
         cidadeOrigem: map['cidadeOrigem'],
         estadoDestino: map['estadoDestino'],
         cidadeDestino: map['cidadeDestino'],
-        dataIncio: DateTime.parse(map['dataIncio']),
+        startDate: DateTime.parse(map['startDate']),
         responsavel: Pessoa.fromMap(map['responsavel']),
         dataFim: DateTime.parse(map['dataFim']),
         participantes: (map['participantes'] as List)
@@ -59,7 +59,7 @@ class Trip {
       'cidadeOrigem': cidadeOrigem,
       'estadoDestino': estadoDestino,
       'cidadeDestino': cidadeDestino,
-      'dataIncio': dataIncio.toIso8601String(),
+      'startDate': startDate.toIso8601String(),
       'dataFim': dataFim.toIso8601String(),
       'responsavel': responsavel
           .toJson(), // You should define a toJson method for Pessoa as well.

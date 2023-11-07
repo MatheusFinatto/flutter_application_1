@@ -51,7 +51,7 @@ class ContaScreenState extends State<ContaScreen> {
         future: _fetchPessoaData(), // Fetch pessoa data
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {

@@ -77,23 +77,19 @@ class AddTripScreenState extends State<AddTripScreen> {
   }
 
   Stream<List<Veiculo>> veiculosStream() {
-    var veiculos = FirebaseFirestore.instance
-        .collection('empresas/$empresaId/veiculos')
+    return FirebaseFirestore.instance
+        .collection('empresas')
+        .doc(empresaId)
+        .collection('veiculos')
         .snapshots()
         .map((querySnapshot) {
       return querySnapshot.docs.map((doc) {
         Veiculo veiculo = Veiculo.fromMap(doc.data());
         veiculo.uid = doc.reference.id;
-
-        setState(() {
-          _selectedVeiculo = veiculo;
-        });
-
+        _selectedVeiculo = veiculo;
         return veiculo;
       }).toList();
     });
-
-    return veiculos;
   }
 
   void _salvarDadosNoFirebase() async {
@@ -166,7 +162,7 @@ class AddTripScreenState extends State<AddTripScreen> {
   Future<void> _setDataSaida(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
-      initialDate: widget.trip?.dataIncio ?? _dataSaida,
+      initialDate: _dataSaida,
       firstDate: DateTime(2022),
       lastDate: DateTime(2122),
     ) as DateTime;
@@ -252,7 +248,6 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         EstadosSelect(
-                          defaultValue: widget.trip?.estadoOrigem,
                           estados: estados,
                           estadoSelecionadoOrigem: _estadoSelecionadoOrigem,
                           onEstadoChanged: (value) {
@@ -265,9 +260,8 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         CidadesSelect(
-                          defaultValue: widget.trip?.cidadeOrigem,
-                          cityList: cidades[_estadoSelecionadoOrigem] ??
-                              [], // List of cities for the selected state
+                          isEstadoSelected: _estadoSelecionadoOrigem != '',
+                          cityList: cidades[_estadoSelecionadoOrigem] ?? [],
                           selectedCity: _cidadeSelecionadaOrigem,
                           onCityChanged: (value) {
                             setState(() {
@@ -299,7 +293,6 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         EstadosSelect(
-                          defaultValue: widget.trip?.estadoDestino,
                           estados: estados,
                           estadoSelecionadoOrigem: _estadoSelecionadoDestino,
                           onEstadoChanged: (value) {
@@ -312,7 +305,6 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         CidadesSelect(
-                            defaultValue: widget.trip?.cidadeDestino,
                             cityList: cidades[_estadoSelecionadoDestino] ?? [],
                             selectedCity: _cidadeSelecionadaDestino,
                             onCityChanged: (value) {
@@ -445,20 +437,19 @@ class AddTripScreenState extends State<AddTripScreen> {
                     stream: veiculosStream(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       }
 
                       if (snapshot.hasError) {
-                        // Check if snapshot.error is not null
                         return Text("Error: ${snapshot.error}");
                       }
 
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Text("No veiculos found.");
+                        return const Text("No veiculos found.");
                       }
 
                       return DropdownButtonFormField<Veiculo>(
-                        value: _selectedVeiculo ?? snapshot.data!.first,
+                        value: _selectedVeiculo ?? snapshot.data?.first,
                         onChanged: (veiculo) {
                           setState(() {
                             _selectedVeiculo = veiculo;
@@ -466,8 +457,8 @@ class AddTripScreenState extends State<AddTripScreen> {
                         },
                         items: snapshot.data?.map((veiculo) {
                           return DropdownMenuItem<Veiculo>(
-                            value: _selectedVeiculo ?? snapshot.data!.first,
-                            key: Key(veiculo.placa),
+                            value: _selectedVeiculo ?? snapshot.data?.first,
+                            key: Key('key-${veiculo.ano}-${veiculo.placa}'),
                             child: Text(
                               '${veiculo.marca} ${veiculo.modelo}, ${veiculo.ano} - ${veiculo.placa}',
                             ),
@@ -480,8 +471,6 @@ class AddTripScreenState extends State<AddTripScreen> {
                       );
                     },
                   ),
-
-                  const SizedBox(height: 16),
 
                   const SizedBox(height: 32),
                   ElevatedButton(

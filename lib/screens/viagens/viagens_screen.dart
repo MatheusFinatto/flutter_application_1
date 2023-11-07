@@ -19,7 +19,7 @@ class ViagensScreen extends StatefulWidget {
 class ViagensScreenState extends State<ViagensScreen> {
   final TextEditingController _searchController = TextEditingController();
   final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
-  late Pessoa currentUser;
+  late Pessoa currentUser = pessoasList[0];
 
   String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
@@ -102,7 +102,7 @@ class ViagensScreenState extends State<ViagensScreen> {
   //   });
   // }
 
-  void showDeleteConfirmationDialog(BuildContext context, int index) {
+  void showDeleteConfirmationDialog(BuildContext context, viagemId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -118,7 +118,13 @@ class ViagensScreenState extends State<ViagensScreen> {
             ),
             TextButton(
               onPressed: () {
-                viagensList.removeAt(index);
+                // Excluir viagem from firebase
+                FirebaseFirestore.instance
+                    .collection('empresas')
+                    .doc(empresaId)
+                    .collection('viagens')
+                    .doc(viagemId)
+                    .delete();
                 Navigator.of(context).pop();
                 SnackBar snackBar = const SnackBar(
                   content: Text("Viagem excluída com sucesso!"),
@@ -192,7 +198,7 @@ class ViagensScreenState extends State<ViagensScreen> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -231,11 +237,6 @@ class ViagensScreenState extends State<ViagensScreen> {
               return FutureBuilder<DocumentSnapshot>(
                 future: veiculoReference?.get(),
                 builder: (context, veiculoSnapshot) {
-                  if (veiculoSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
-
                   Map<String, dynamic> veiculoData;
                   if (!veiculoSnapshot.hasData ||
                       !veiculoSnapshot.data!.exists) {
@@ -254,7 +255,7 @@ class ViagensScreenState extends State<ViagensScreen> {
                     builder: (context, responsavelSnapshot) {
                       if (responsavelSnapshot.connectionState ==
                           ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
+                        return const Center(child: CircularProgressIndicator());
                       }
 
                       if (!responsavelSnapshot.hasData ||
@@ -309,12 +310,6 @@ class ViagensScreenState extends State<ViagensScreen> {
                                                         .get(),
                                                 builder: (context,
                                                     responsavelSnapshot) {
-                                                  if (responsavelSnapshot
-                                                          .connectionState ==
-                                                      ConnectionState.waiting) {
-                                                    return const CircularProgressIndicator(); // or a loading indicator
-                                                  }
-
                                                   if (!responsavelSnapshot
                                                       .hasData) {
                                                     return const Text(
@@ -354,12 +349,6 @@ class ViagensScreenState extends State<ViagensScreen> {
                                     FutureBuilder<DocumentSnapshot>(
                                       future: viagemData['responsavel'].get(),
                                       builder: (context, responsavelSnapshot) {
-                                        if (responsavelSnapshot
-                                                .connectionState ==
-                                            ConnectionState.waiting) {
-                                          return const CircularProgressIndicator(); // or a loading indicator
-                                        }
-
                                         if (!responsavelSnapshot.hasData) {
                                           return const Text(
                                               'Responsável: N/A'); // Handle case when 'responsavel' doesn't exist
@@ -424,14 +413,14 @@ class ViagensScreenState extends State<ViagensScreen> {
                                               if (currentUser.email == email)
                                                 EditTripButton(
                                                   //TODO: remove placeholder
-                                                  trip: viagensList[index],
+                                                  trip: viagemData,
                                                 ),
                                               if (currentUser.email == email)
                                                 DeleteTripButton(
                                                   index: index,
                                                   onDelete: () =>
                                                       showDeleteConfirmationDialog(
-                                                          context, index),
+                                                          context, viagemId),
                                                 )
                                             ]);
                                       },
