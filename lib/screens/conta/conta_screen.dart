@@ -62,9 +62,10 @@ class ContaScreenState extends State<ContaScreen> {
             return const Text('No pessoa data found.');
           }
 
+          final pessoaData = snapshot.data!.data() as Map<String, dynamic>;
           return Column(
             children: [
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(
                     bottom: 20, left: 40, top: 16, right: 40),
@@ -86,16 +87,16 @@ class ContaScreenState extends State<ContaScreen> {
                         ),
                       ],
                     ),
-                    // ClipOval(
-                    //   clipBehavior: Clip.antiAlias,
-                    //   child: Image.network(
-                    //     pessoaData['imagemUrl'] ??
-                    //         'https://ojasyog.com/wp-content/uploads/2022/02/421-4212617_person-placeholder-image-transparent-hd-png-download.png',
-                    //     width: 100,
-                    //     height: 100,
-                    //     fit: BoxFit.fill,
-                    //   ),
-                    // )
+                    ClipOval(
+                      clipBehavior: Clip.antiAlias,
+                      child: Image.network(
+                        pessoaData['imagemUrl'] ??
+                            'https://ojasyog.com/wp-content/uploads/2022/02/421-4212617_person-placeholder-image-transparent-hd-png-download.png',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.fill,
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -159,9 +160,8 @@ class ContaScreenState extends State<ContaScreen> {
           .doc('pessoas/rKS4uej8PQwbIkxRLjWD')
           .get();
     } catch (e) {
-      // ignore: avoid_print
       print('Error fetching pessoa data: $e');
-      rethrow;
+      throw e;
     }
   }
 }

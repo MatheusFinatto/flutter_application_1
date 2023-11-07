@@ -6,6 +6,7 @@ import 'package:flutter_application_1/database/viagens.dart';
 import 'package:flutter_application_1/models/viagens.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/buttons/delete_trip_button.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/buttons/edit_trip_button.dart';
+import 'package:flutter_application_1/screens/viagens/add_trip_form.dart';
 
 class ViagensScreen extends StatefulWidget {
   const ViagensScreen({Key? key}) : super(key: key);
@@ -416,7 +417,12 @@ class ViagensScreenState extends State<ViagensScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add your navigation logic for adding a new trip here
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTripScreen(),
+            ),
+          );
         },
         child: const Icon(Icons.add),
       ),

@@ -45,7 +45,6 @@ class RegisterPageState extends State<RegisterPage> {
       if (password.isNotEmpty && password.length >= 6) {
         if (cpf.length >= 11) {
           if (nome.isNotEmpty) {
-            _msgErro = "";
             //instancia do auth
             FirebaseAuth auth = FirebaseAuth.instance;
             //instancia do bd
