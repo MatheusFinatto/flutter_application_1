@@ -8,15 +8,19 @@ class Pessoas {
     FirebaseAuth auth = FirebaseAuth.instance;
     final user = await auth.currentUser;
 
+    if (user == null) {
+      throw Exception('No user is currently logged in.');
+    }
+
     DocumentSnapshot snapshot =
-        await db.collection("pessoas").doc(user!.uid).get();
+        await db.collection("pessoas").doc(user.uid).get();
     Map<String, dynamic>? dado = snapshot.data() as Map<String, dynamic>?;
 
     String endereco = '';
     String telefone = '';
     String imageUrl = '';
     if (dado != null) {
-      String id = user.uid;
+      String id = user.uid; // User's document ID
       String cpf = dado['cpf'];
       String nome = dado['nome'];
       String email = dado['email'];
@@ -29,6 +33,8 @@ class Pessoas {
       if (dado['imageUrl'] != null) {
         imageUrl = dado['imageUrl'];
       }
+
+      // Return the user's document ID and Pessoa object as a map
       return Pessoa(
         id: id,
         cpf: cpf,

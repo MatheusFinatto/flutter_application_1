@@ -20,65 +20,87 @@ class ViagensScreenState extends State<ViagensScreen> {
   final TextEditingController _searchController = TextEditingController();
   final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
   late Pessoa currentUser;
-  late List<Trip> filteredViagens;
-  late List<bool> isParticipatingList;
+
   String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
   @override
   void initState() {
     super.initState();
-    filteredViagens = List.from(viagensList);
-    isParticipatingList =
-        List.generate(filteredViagens.length, (index) => false);
     getDados();
   }
 
   void getDados() async {
     Pessoas pessoas = Pessoas();
-    Pessoa pessoa = await pessoas.getUserSession();
+    Pessoa pessoa = await pessoas.getUserSession() as Pessoa;
     setState(() {
       currentUser = pessoa;
     });
   }
 
-  void onPressedButton(int index) {
-    setState(() {
-      isParticipatingList[index] = !isParticipatingList[index];
+  void onPressedButton(participantesReference, viagemId) {
+    FirebaseFirestore.instance
+        .collection('empresas')
+        .doc(empresaId)
+        .collection('viagens')
+        .doc(viagemId) // Specify the document ID for the viagem
+        .get()
+        .then((viagemSnapshot) {
+      if (viagemSnapshot.exists) {
+        // Retrieve the current document data
+        var viagemData = viagemSnapshot.data() as Map<String, dynamic>;
+
+        bool containsGivenId = participantesReference.any((reference) {
+          final String referenceId = reference.id;
+          return referenceId == currentUser.id;
+        });
+
+        // Modify the participantes array
+        List<DocumentReference> participantes =
+            (viagemData['participantes'] as List<dynamic> ?? [])
+                .map((participant) {
+                  if (participant is DocumentReference) {
+                    return participant;
+                  } else if (participant is String) {
+                    // Assuming the format is 'pessoas/userId'
+                    return FirebaseFirestore.instance.doc(participant);
+                  }
+                  return null;
+                })
+                .whereType<DocumentReference>()
+                .toList();
+
+        if (containsGivenId) {
+          participantes.remove(
+              FirebaseFirestore.instance.doc('pessoas/${currentUser.id}'));
+        } else {
+          participantes
+              .add(FirebaseFirestore.instance.doc('pessoas/${currentUser.id}'));
+        }
+
+        // Update the document with the modified data
+        viagemSnapshot.reference.update({'participantes': participantes});
+
+        SnackBar snackBar = SnackBar(
+          content: Text(!containsGivenId
+              ? "Pedido para participação enviado com sucesso!"
+              : "Pedido de participação cancelado!"),
+          duration: const Duration(seconds: 2),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        print('Document with ID $viagemId does not exist.');
+      }
     });
-
-    if (filteredViagens[index].veiculo.capacidade -
-            filteredViagens[index].participantes.length <=
-        0) {
-      return;
-    }
-
-    if (filteredViagens[index].veiculo.capacidade -
-            filteredViagens[index].participantes.length <=
-        0) {
-      return;
-    } else if (isParticipatingList[index]) {
-      filteredViagens[index].participantes.add(pessoasList[1]);
-    } else {
-      filteredViagens[index].participantes.removeLast();
-    }
-
-    SnackBar snackBar = SnackBar(
-      content: Text(isParticipatingList[index]
-          ? "Pedido para participação enviado com sucesso!"
-          : "Pedido de participação cancelado!"),
-      duration: const Duration(seconds: 2),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  void filterTrips(String query) {
-    setState(() {
-      filteredViagens = viagensList.where((trip) {
-        return trip.cidadeDestino.toLowerCase().contains(query.toLowerCase());
-      }).toList();
-    });
-  }
+  // void filterTrips(String query) {
+  //   setState(() {
+  //     filteredViagens = viagensList.where((trip) {
+  //       return trip.cidadeDestino.toLowerCase().contains(query.toLowerCase());
+  //     }).toList();
+  //   });
+  // }
 
   void showDeleteConfirmationDialog(BuildContext context, int index) {
     showDialog(
@@ -98,9 +120,6 @@ class ViagensScreenState extends State<ViagensScreen> {
               onPressed: () {
                 viagensList.removeAt(index);
                 Navigator.of(context).pop();
-                setState(() {
-                  filteredViagens = List.from(viagensList);
-                });
                 SnackBar snackBar = const SnackBar(
                   content: Text("Viagem excluída com sucesso!"),
                 );
@@ -141,25 +160,25 @@ class ViagensScreenState extends State<ViagensScreen> {
   }
 
   Widget buildSearchInput() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          labelText: 'Buscar por destino',
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _searchController.clear();
-            },
-          ),
-        ),
-        onChanged: (query) {
-          setState(() {
-            filterTrips(query);
-          });
-        },
-      ),
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
+      //     child: TextField(
+      //       controller: _searchController,
+      //       decoration: InputDecoration(
+      //         labelText: 'Buscar por destino',
+      //         suffixIcon: IconButton(
+      //           icon: const Icon(Icons.clear),
+      //           onPressed: () {
+      //             _searchController.clear();
+      //           },
+      //         ),
+      //       ),
+      //       onChanged: (query) {
+      //         setState(() {
+      //           filterTrips(query);
+      //         });
+      //       },
+      //     ),
     );
   }
 
@@ -186,13 +205,27 @@ class ViagensScreenState extends State<ViagensScreen> {
             final viagemData =
                 snapshot.data?.docs[index].data() as Map<String, dynamic>;
 
-            // Fetch and convert the 'veiculo' document reference
+            final viagemId = snapshot.data?.docs[index].id;
 
             DocumentReference? veiculoReference =
                 viagemData['veiculo'] as DocumentReference?;
 
             DocumentReference? responsavelReference =
                 viagemData['responsavel'] as DocumentReference?;
+
+            List<DocumentReference<Object?>>? participantesReference = [];
+
+            if (viagemData['participantes'] != null) {
+              final List<dynamic> dynamicList = viagemData['participantes'];
+              participantesReference =
+                  dynamicList.whereType<DocumentReference<Object?>>().toList();
+            }
+
+            bool containsGivenId = participantesReference.any((reference) {
+              final String referenceId = reference.id;
+
+              return referenceId == currentUser.id;
+            });
 
             if (veiculoReference != null || responsavelReference != null) {
               return FutureBuilder<DocumentSnapshot>(
@@ -229,16 +262,14 @@ class ViagensScreenState extends State<ViagensScreen> {
                         return const Text("No responsavel found.");
                       }
 
-                      final DateTime dataInicio = viagemData['dataInicio'] !=
-                              null
-                          ? viagemData['dataInicio'].toDate()
-                          : DateTime
-                              .now(); // Replace with the appropriate default date
+                      final DateTime dataInicio =
+                          viagemData['dataInicio'] != null
+                              ? viagemData['dataInicio'].toDate()
+                              : DateTime.now();
 
                       final DateTime dataFim = viagemData['dataFim'] != null
                           ? viagemData['dataFim'].toDate()
-                          : DateTime
-                              .now(); // Replace with the appropriate default date
+                          : DateTime.now();
 
                       final DateFormat dateTimeFormatter =
                           DateFormat('dd/MM/yyyy HH:mm');
@@ -347,28 +378,26 @@ class ViagensScreenState extends State<ViagensScreen> {
                                               if (currentUser.email != email)
                                                 ElevatedButton(
                                                   onPressed: () {
-                                                    if (filteredViagens[index]
-                                                                .veiculo
-                                                                .capacidade -
+                                                    if (veiculoData[
+                                                                'capacidade'] -
                                                             viagemData[
                                                                     'participantes']
                                                                 .length <=
                                                         0) {
                                                       return; // Disable the button
                                                     } else {
-                                                      onPressedButton(index);
+                                                      onPressedButton(
+                                                          participantesReference,
+                                                          viagemId);
                                                     }
                                                   },
-                                                  style: isParticipatingList[
-                                                          index]
+                                                  style: containsGivenId
                                                       ? ElevatedButton
                                                           .styleFrom(
                                                           backgroundColor:
                                                               Colors.red,
                                                         )
-                                                      : filteredViagens[index]
-                                                                      .veiculo
-                                                                      .capacidade -
+                                                      : veiculoData['capacidade'] -
                                                                   viagemData[
                                                                           'participantes']
                                                                       .length <=
@@ -381,23 +410,21 @@ class ViagensScreenState extends State<ViagensScreen> {
                                                             )
                                                           : null,
                                                   child: Text(
-                                                    filteredViagens[index]
-                                                                    .veiculo
-                                                                    .capacidade -
+                                                    veiculoData['capacidade'] -
                                                                 viagemData[
                                                                         'participantes']
                                                                     .length <=
                                                             0
                                                         ? 'Veículo lotado'
-                                                        : isParticipatingList[
-                                                                index]
+                                                        : containsGivenId
                                                             ? 'Desistir'
                                                             : 'Participar',
                                                   ),
                                                 ),
                                               if (currentUser.email == email)
                                                 EditTripButton(
-                                                  trip: filteredViagens[index],
+                                                  //TODO: remove placeholder
+                                                  trip: viagensList[index],
                                                 ),
                                               if (currentUser.email == email)
                                                 DeleteTripButton(
