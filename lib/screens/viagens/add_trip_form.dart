@@ -166,7 +166,7 @@ class AddTripScreenState extends State<AddTripScreen> {
   Future<void> _setDataSaida(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
-      initialDate: widget.trip?.startDate ?? _dataSaida,
+      initialDate: widget.trip?.dataIncio ?? _dataSaida,
       firstDate: DateTime(2022),
       lastDate: DateTime(2122),
     ) as DateTime;
