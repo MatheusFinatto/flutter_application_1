@@ -2,7 +2,6 @@ import 'package:flutter_application_1/models/veiculos.dart';
 
 final List<Veiculo> veiculosList = [
   Veiculo(
-    id: 1,
     marca: 'Fiat',
     modelo: 'Uno',
     placa: 'ABC1234',
@@ -11,7 +10,6 @@ final List<Veiculo> veiculosList = [
     imageUrl: 'assets/images/uno.png',
   ),
   Veiculo(
-    id: 2,
     marca: 'Fiat',
     modelo: 'Palio',
     placa: 'DEF5678',
@@ -20,7 +18,6 @@ final List<Veiculo> veiculosList = [
     imageUrl: 'assets/images/palio.png',
   ),
   Veiculo(
-    id: 3,
     marca: 'Fiat',
     modelo: 'Mobi',
     placa: 'GHI9012',
@@ -29,7 +26,6 @@ final List<Veiculo> veiculosList = [
     imageUrl: 'assets/images/mobi.png',
   ),
   Veiculo(
-    id: 4,
     marca: 'Ford',
     modelo: 'Mustang',
     placa: 'JKL3456',
@@ -38,7 +34,6 @@ final List<Veiculo> veiculosList = [
     imageUrl: 'assets/images/mustang.png',
   ),
   Veiculo(
-    id: 5,
     marca: 'Toyota',
     modelo: 'Corolla',
     placa: 'MNO7890',
@@ -47,7 +42,6 @@ final List<Veiculo> veiculosList = [
     imageUrl: 'assets/images/corolla.png',
   ),
   Veiculo(
-    id: 6,
     marca: 'Ferrari',
     modelo: 'F40',
     placa: 'PQR1234',

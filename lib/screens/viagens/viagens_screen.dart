@@ -19,9 +19,10 @@ class ViagensScreen extends StatefulWidget {
 class ViagensScreenState extends State<ViagensScreen> {
   final TextEditingController _searchController = TextEditingController();
   final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
-  Pessoa currentUser = pessoasList[0];
+  late Pessoa currentUser;
   late List<Trip> filteredViagens;
   late List<bool> isParticipatingList;
+  String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
   @override
   void initState() {
@@ -33,7 +34,7 @@ class ViagensScreenState extends State<ViagensScreen> {
   }
 
   void getDados() async {
-    Pessoas pessoas = Pessoas(); // Crie uma instância da classe Pessoas
+    Pessoas pessoas = Pessoas();
     Pessoa pessoa = await pessoas.getUserSession();
     setState(() {
       currentUser = pessoa;
@@ -48,7 +49,6 @@ class ViagensScreenState extends State<ViagensScreen> {
     if (filteredViagens[index].veiculo.capacidade -
             filteredViagens[index].participantes.length <=
         0) {
-      // veiculo is full; you can display a message or do nothing
       return;
     }
 
@@ -106,7 +106,7 @@ class ViagensScreenState extends State<ViagensScreen> {
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               },
-              child: const Text('Delete'),
+              child: const Text('Excluir'),
             ),
           ],
         );
@@ -122,318 +122,8 @@ class ViagensScreenState extends State<ViagensScreen> {
       ),
       body: Column(
         children: [
-          // Search input field
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Buscar por destino',
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                  },
-                ),
-              ),
-              onChanged: (query) {
-                setState(() {
-                  filterTrips(query);
-                });
-              },
-            ),
-          ),
-          // List of trips
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('empresas')
-                  .doc('UywGfjmMyYNRHFyx5hUN')
-                  .collection('viagens')
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Text("No viagens found.");
-                }
-
-                return ListView.builder(
-                  itemCount: snapshot.data?.docs.length,
-                  itemBuilder: (context, index) {
-                    final viagemData = snapshot.data?.docs[index].data()
-                        as Map<String, dynamic>;
-
-                    // Fetch and convert the 'veiculo' document reference
-
-                    DocumentReference? veiculoReference =
-                        viagemData['veiculo'] as DocumentReference?;
-                    print("Veiculo Ref: $veiculoReference");
-                    print("Data fim: $viagemData['dataFim']");
-
-                    var dataFim = viagemData['dataFim'] as Timestamp?;
-                    print("Data fim2333: $dataFim");
-
-                    if (dataFim != null) {
-                      // viagemData['dataFim'] = dataFim.toDate();
-                    }
-
-                    DocumentReference? responsavelReference =
-                        viagemData['responsavel'] as DocumentReference?;
-
-                    List<DocumentReference>? participantesReference = [];
-                    if (viagemData['participantes'] != null) {}
-
-                    if (veiculoReference != null ||
-                        responsavelReference != null ||
-                        participantesReference.isNotEmpty) {
-                      return FutureBuilder<DocumentSnapshot>(
-                        future: veiculoReference?.get(),
-                        builder: (context, veiculoSnapshot) {
-                          if (veiculoSnapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          }
-
-                          Map<String, dynamic> veiculoData;
-                          if (!veiculoSnapshot.hasData ||
-                              !veiculoSnapshot.data!.exists) {
-                            veiculoData = {
-                              'imageUrl':
-                                  'https://www.slazzer.com/static/images/design_templates/car_design_template/car_placeholder.png',
-                              // Add other placeholder data here
-                            };
-                          } else {
-                            veiculoData = veiculoSnapshot.data!.data()
-                                as Map<String, dynamic>;
-                          }
-
-                          return FutureBuilder<DocumentSnapshot>(
-                            future: responsavelReference?.get(),
-                            builder: (context, responsavelSnapshot) {
-                              if (responsavelSnapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              }
-
-                              if (!responsavelSnapshot.hasData ||
-                                  !responsavelSnapshot.data!.exists) {
-                                return const Text("No responsavel found.");
-                              }
-
-                              // Fetch and convert participantes data
-                              final futureList = participantesReference
-                                  .map((reference) => reference.get())
-                                  .toList();
-
-                              return FutureBuilder<List<DocumentSnapshot>>(
-                                future: Future.wait(futureList),
-                                builder: (context, participantesSnapshots) {
-                                  if (participantesSnapshots.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const CircularProgressIndicator();
-                                  }
-
-                                  if (!participantesSnapshots.hasData) {
-                                    return const Text(
-                                        "No participantes found.");
-                                  }
-
-                                  // Get the data for each participant
-                                  for (DocumentSnapshot snapshot
-                                      in participantesSnapshots.data!) {
-                                    // print(snapshot.data());
-                                  }
-
-                                  return ListTile(
-                                    subtitle: Column(
-                                      children: [
-                                        const SizedBox(height: 16),
-                                        Card(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              children: [
-                                                Image.network(
-                                                  veiculoData['imageUrl']
-                                                          as String? ??
-                                                      'https://s7d1.scene7.com/is/image/hyundai/compare-veiculo-1225x619?wid=600&fmt=webp',
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
-                                                  height: 200,
-                                                ),
-                                                const SizedBox(height: 16),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            'Origem: ${viagemData['cidadeOrigem']} - ${viagemData['estadoOrigem']}',
-                                                          ),
-                                                          Text(
-                                                            'Destino: ${viagemData['cidadeDestino']} - ${viagemData['estadoDestino']}',
-                                                          ),
-                                                          FutureBuilder<
-                                                              DocumentSnapshot>(
-                                                            future: viagemData[
-                                                                    'responsavel']
-                                                                .get(),
-                                                            builder: (context,
-                                                                responsavelSnapshot) {
-                                                              if (responsavelSnapshot
-                                                                      .connectionState ==
-                                                                  ConnectionState
-                                                                      .waiting) {
-                                                                return const CircularProgressIndicator(); // or a loading indicator
-                                                              }
-
-                                                              if (!responsavelSnapshot
-                                                                  .hasData) {
-                                                                return const Text(
-                                                                    'Responsável: N/A'); // Handle case when 'responsavel' doesn't exist
-                                                              }
-
-                                                              final responsavelData =
-                                                                  responsavelSnapshot
-                                                                          .data
-                                                                          ?.data()
-                                                                      as Map<
-                                                                          String,
-                                                                          dynamic>;
-                                                              final nome =
-                                                                  responsavelData[
-                                                                              'nome']
-                                                                          as String? ??
-                                                                      'N/A';
-
-                                                              return Text(
-                                                                'Responsável: $nome',
-                                                              );
-                                                            },
-                                                          ),
-                                                          Text(
-                                                            'Data prevista de saída: ${viagemData['dataInicio'] != null ? dateFormatter.format(viagemData['dataInicio'].toDate()) : 'Erro ao buscar dado'}',
-                                                          ),
-                                                          Text(
-                                                            'Data prevista de retorno: ${viagemData['dataFim'] != null ? dateFormatter.format(viagemData['dataFim'].toDate()) : 'Erro ao buscar dado'}',
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 10),
-                                                Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    if (currentUser !=
-                                                        filteredViagens[index]
-                                                            .responsavel
-                                                            .nome)
-                                                      ElevatedButton(
-                                                        onPressed: () {
-                                                          if (filteredViagens[
-                                                                          index]
-                                                                      .veiculo
-                                                                      .capacidade -
-                                                                  filteredViagens[
-                                                                          index]
-                                                                      .participantes
-                                                                      .length <=
-                                                              0) {
-                                                            return null; // Disable the button
-                                                          } else {
-                                                            onPressedButton(
-                                                                index); // Enable the button and handle the click
-                                                          }
-                                                        },
-                                                        style: isParticipatingList[
-                                                                index]
-                                                            ? ElevatedButton
-                                                                .styleFrom(
-                                                                backgroundColor:
-                                                                    Colors.red,
-                                                              )
-                                                            : filteredViagens[index]
-                                                                            .veiculo
-                                                                            .capacidade -
-                                                                        filteredViagens[index]
-                                                                            .participantes
-                                                                            .length <=
-                                                                    0
-                                                                ? ElevatedButton
-                                                                    .styleFrom(
-                                                                    backgroundColor:
-                                                                        Colors.grey[
-                                                                            400], // Use #ccc
-                                                                  )
-                                                                : null,
-                                                        child: Text(
-                                                          filteredViagens[index]
-                                                                          .veiculo
-                                                                          .capacidade -
-                                                                      filteredViagens[
-                                                                              index]
-                                                                          .participantes
-                                                                          .length <=
-                                                                  0
-                                                              ? 'Veículo lotado'
-                                                              : isParticipatingList[
-                                                                      index]
-                                                                  ? 'Desistir'
-                                                                  : 'Participar',
-                                                        ),
-                                                      ),
-                                                    if (currentUser ==
-                                                        filteredViagens[index]
-                                                            .responsavel
-                                                            .nome)
-                                                      EditTripButton(
-                                                        trip: filteredViagens[
-                                                            index],
-                                                      ),
-                                                    if (currentUser ==
-                                                        filteredViagens[index]
-                                                            .responsavel
-                                                            .nome)
-                                                      DeleteTripButton(
-                                                        index: index,
-                                                        onDelete: () =>
-                                                            showDeleteConfirmationDialog(
-                                                                context, index),
-                                                      ),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        },
-                      );
-                    } else {
-                      return const Text(
-                          "Há dados inconsistentes no banco de dados.");
-                    }
-                  },
-                );
-              },
-            ),
-          ),
+          buildSearchInput(),
+          buildTripsList(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -448,5 +138,294 @@ class ViagensScreenState extends State<ViagensScreen> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Widget buildSearchInput() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          labelText: 'Buscar por destino',
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              _searchController.clear();
+            },
+          ),
+        ),
+        onChanged: (query) {
+          setState(() {
+            filterTrips(query);
+          });
+        },
+      ),
+    );
+  }
+
+  Widget buildTripsList() {
+    return Expanded(
+        child: StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('empresas')
+          .doc(empresaId)
+          .collection('viagens')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Text("No viagens found.");
+        }
+
+        return ListView.builder(
+          itemCount: snapshot.data?.docs.length,
+          itemBuilder: (context, index) {
+            final viagemData =
+                snapshot.data?.docs[index].data() as Map<String, dynamic>;
+
+            // Fetch and convert the 'veiculo' document reference
+
+            DocumentReference? veiculoReference =
+                viagemData['veiculo'] as DocumentReference?;
+
+            DocumentReference? responsavelReference =
+                viagemData['responsavel'] as DocumentReference?;
+
+            if (veiculoReference != null || responsavelReference != null) {
+              return FutureBuilder<DocumentSnapshot>(
+                future: veiculoReference?.get(),
+                builder: (context, veiculoSnapshot) {
+                  if (veiculoSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+
+                  Map<String, dynamic> veiculoData;
+                  if (!veiculoSnapshot.hasData ||
+                      !veiculoSnapshot.data!.exists) {
+                    veiculoData = {
+                      'imageUrl':
+                          'https://www.slazzer.com/static/images/design_templates/car_design_template/car_placeholder.png',
+                      // Add other placeholder data here
+                    };
+                  } else {
+                    veiculoData =
+                        veiculoSnapshot.data!.data() as Map<String, dynamic>;
+                  }
+
+                  return FutureBuilder<DocumentSnapshot>(
+                    future: responsavelReference?.get(),
+                    builder: (context, responsavelSnapshot) {
+                      if (responsavelSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+
+                      if (!responsavelSnapshot.hasData ||
+                          !responsavelSnapshot.data!.exists) {
+                        return const Text("No responsavel found.");
+                      }
+
+                      final DateTime dataInicio = viagemData['dataInicio'] !=
+                              null
+                          ? viagemData['dataInicio'].toDate()
+                          : DateTime
+                              .now(); // Replace with the appropriate default date
+
+                      final DateTime dataFim = viagemData['dataFim'] != null
+                          ? viagemData['dataFim'].toDate()
+                          : DateTime
+                              .now(); // Replace with the appropriate default date
+
+                      final DateFormat dateTimeFormatter =
+                          DateFormat('dd/MM/yyyy HH:mm');
+
+                      return ListTile(
+                        subtitle: Column(
+                          children: [
+                            const SizedBox(height: 16),
+                            Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    Image.network(
+                                      veiculoData['imageUrl'] as String? ??
+                                          'https://s7d1.scene7.com/is/image/hyundai/compare-veiculo-1225x619?wid=600&fmt=webp',
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 200,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Origem: ${viagemData['cidadeOrigem']} - ${viagemData['estadoOrigem']}',
+                                              ),
+                                              Text(
+                                                'Destino: ${viagemData['cidadeDestino']} - ${viagemData['estadoDestino']}',
+                                              ),
+                                              FutureBuilder<DocumentSnapshot>(
+                                                future:
+                                                    viagemData['responsavel']
+                                                        .get(),
+                                                builder: (context,
+                                                    responsavelSnapshot) {
+                                                  if (responsavelSnapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return const CircularProgressIndicator(); // or a loading indicator
+                                                  }
+
+                                                  if (!responsavelSnapshot
+                                                      .hasData) {
+                                                    return const Text(
+                                                        'Responsável: N/A'); // Handle case when 'responsavel' doesn't exist
+                                                  }
+
+                                                  final responsavelData =
+                                                      responsavelSnapshot.data
+                                                              ?.data()
+                                                          as Map<String,
+                                                              dynamic>;
+                                                  final nome =
+                                                      responsavelData['nome']
+                                                              as String? ??
+                                                          'N/A';
+
+                                                  return Text(
+                                                    'Responsável: $nome',
+                                                  );
+                                                },
+                                              ),
+                                              Text(
+                                                'Data prevista de saída: ${dateTimeFormatter.format(dataInicio)}',
+                                              ),
+                                              Text(
+                                                'Data prevista de retorno: ${dateTimeFormatter.format(dataFim)}',
+                                              ),
+                                              Text(
+                                                'Participantes: ${viagemData['participantes'].length}',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    FutureBuilder<DocumentSnapshot>(
+                                      future: viagemData['responsavel'].get(),
+                                      builder: (context, responsavelSnapshot) {
+                                        if (responsavelSnapshot
+                                                .connectionState ==
+                                            ConnectionState.waiting) {
+                                          return const CircularProgressIndicator(); // or a loading indicator
+                                        }
+
+                                        if (!responsavelSnapshot.hasData) {
+                                          return const Text(
+                                              'Responsável: N/A'); // Handle case when 'responsavel' doesn't exist
+                                        }
+
+                                        final responsavelData =
+                                            responsavelSnapshot.data?.data()
+                                                as Map<String, dynamic>;
+                                        final email = responsavelData['email']
+                                                as String? ??
+                                            'N/A';
+
+                                        return Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              if (currentUser.email != email)
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    if (filteredViagens[index]
+                                                                .veiculo
+                                                                .capacidade -
+                                                            viagemData[
+                                                                    'participantes']
+                                                                .length <=
+                                                        0) {
+                                                      return; // Disable the button
+                                                    } else {
+                                                      onPressedButton(index);
+                                                    }
+                                                  },
+                                                  style: isParticipatingList[
+                                                          index]
+                                                      ? ElevatedButton
+                                                          .styleFrom(
+                                                          backgroundColor:
+                                                              Colors.red,
+                                                        )
+                                                      : filteredViagens[index]
+                                                                      .veiculo
+                                                                      .capacidade -
+                                                                  viagemData[
+                                                                          'participantes']
+                                                                      .length <=
+                                                              0
+                                                          ? ElevatedButton
+                                                              .styleFrom(
+                                                              backgroundColor:
+                                                                  Colors.grey[
+                                                                      400], // Use #ccc
+                                                            )
+                                                          : null,
+                                                  child: Text(
+                                                    filteredViagens[index]
+                                                                    .veiculo
+                                                                    .capacidade -
+                                                                viagemData[
+                                                                        'participantes']
+                                                                    .length <=
+                                                            0
+                                                        ? 'Veículo lotado'
+                                                        : isParticipatingList[
+                                                                index]
+                                                            ? 'Desistir'
+                                                            : 'Participar',
+                                                  ),
+                                                ),
+                                              if (currentUser.email == email)
+                                                EditTripButton(
+                                                  trip: filteredViagens[index],
+                                                ),
+                                              if (currentUser.email == email)
+                                                DeleteTripButton(
+                                                  index: index,
+                                                  onDelete: () =>
+                                                      showDeleteConfirmationDialog(
+                                                          context, index),
+                                                )
+                                            ]);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            } else {
+              return const Text("Há dados inconsistentes no banco de dados.");
+            }
+          },
+        );
+      },
+    ));
   }
 }

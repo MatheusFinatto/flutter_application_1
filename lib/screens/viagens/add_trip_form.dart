@@ -36,8 +36,9 @@ class AddTripScreenState extends State<AddTripScreen> {
 
   DateTime _dataRetorno = DateTime.now();
   TimeOfDay _horaRetorno = TimeOfDay.now();
+  String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
-  Veiculo _selectedVeiculo = veiculosList[0];
+  Veiculo? _selectedVeiculo;
 
   final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
   final List<String> estados = [];
@@ -72,20 +73,36 @@ class AddTripScreenState extends State<AddTripScreen> {
         cidadesEstado.add(cidade['nome']);
       }
       cidades[estado] = cidadesEstado;
-      setState(() {});
     }
+  }
+
+  Stream<List<Veiculo>> veiculosStream() {
+    var veiculos = FirebaseFirestore.instance
+        .collection('empresas/$empresaId/veiculos')
+        .snapshots()
+        .map((querySnapshot) {
+      return querySnapshot.docs.map((doc) {
+        Veiculo veiculo = Veiculo.fromMap(doc.data());
+        veiculo.uid = doc.reference.id;
+
+        setState(() {
+          _selectedVeiculo = veiculo;
+        });
+
+        return veiculo;
+      }).toList();
+    });
+
+    return veiculos;
   }
 
   void _salvarDadosNoFirebase() async {
     if (_formKey.currentState!.validate()) {
       final User? currentUser = FirebaseAuth.instance.currentUser;
-      print("currentUser: $currentUser");
 
       if (currentUser != null) {
         final String currentUserId = currentUser.uid;
-        const String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
-        final Veiculo selectedVeiculo = _selectedVeiculo;
         final DateTime startDateTime =
             _combineDateAndTime(_dataSaida, _horaSaida);
         final DateTime endDateTime =
@@ -95,12 +112,14 @@ class AddTripScreenState extends State<AddTripScreen> {
         final DocumentReference responsavelRef =
             FirebaseFirestore.instance.doc('pessoas/$currentUserId');
 
+        final DocumentReference veiculoRef = FirebaseFirestore.instance
+            .doc('empresas/$empresaId/veiculos/${_selectedVeiculo?.uid}');
+
         final List<DocumentReference> participantesRefs =
             _prepareParticipantesRefs(currentUserId);
 
         final Map<String, dynamic> tripData = {
-          'veiculo': FirebaseFirestore.instance
-              .doc('empresas/$empresaId/veiculos/$currentUserId'),
+          'veiculo': veiculoRef,
           'estadoOrigem': _estadoSelecionadoOrigem,
           'cidadeOrigem': _cidadeSelecionadaOrigem,
           'estadoDestino': _estadoSelecionadoDestino,
@@ -422,26 +441,44 @@ class AddTripScreenState extends State<AddTripScreen> {
                   ),
 
                   const SizedBox(height: 16),
-                  DropdownButtonFormField<Veiculo>(
-                    value: _selectedVeiculo,
-                    onChanged: (veiculo) {
-                      setState(() {
-                        _selectedVeiculo = veiculo ?? veiculosList.first;
-                      });
-                    },
-                    items: veiculosList.map((veiculo) {
-                      return DropdownMenuItem<Veiculo>(
-                        value:
-                            veiculo, // Set the value to the complete Veiculo object
-                        child: Text(
-                          '${veiculo.marca} ${veiculo.modelo}, ${veiculo.ano} - ${veiculo.placa}',
+                  StreamBuilder<List<Veiculo>>(
+                    stream: veiculosStream(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      }
+
+                      if (snapshot.hasError) {
+                        // Check if snapshot.error is not null
+                        return Text("Error: ${snapshot.error}");
+                      }
+
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Text("No veiculos found.");
+                      }
+
+                      return DropdownButtonFormField<Veiculo>(
+                        value: _selectedVeiculo ?? snapshot.data!.first,
+                        onChanged: (veiculo) {
+                          setState(() {
+                            _selectedVeiculo = veiculo;
+                          });
+                        },
+                        items: snapshot.data?.map((veiculo) {
+                          return DropdownMenuItem<Veiculo>(
+                            value: _selectedVeiculo ?? snapshot.data!.first,
+                            key: Key(veiculo.placa),
+                            child: Text(
+                              '${veiculo.marca} ${veiculo.modelo}, ${veiculo.ano} - ${veiculo.placa}',
+                            ),
+                          );
+                        }).toList(),
+                        decoration: const InputDecoration(
+                          labelText: 'Veículo',
+                          border: OutlineInputBorder(),
                         ),
                       );
-                    }).toList(),
-                    decoration: const InputDecoration(
-                      labelText: 'Veículo',
-                      border: OutlineInputBorder(),
-                    ),
+                    },
                   ),
 
                   const SizedBox(height: 16),

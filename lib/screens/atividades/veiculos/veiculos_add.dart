@@ -14,7 +14,6 @@ class VeiculosAdd extends StatefulWidget {
 }
 
 class _VeiculosAddState extends State<VeiculosAdd> {
-  final int _id = 10;
   final String _marca = "";
   final String _modelo = "";
   final String _placa = "";
@@ -36,7 +35,6 @@ class _VeiculosAddState extends State<VeiculosAdd> {
   void _addVeiculo(String id, String marca, String modelo, String placa,
       String ano, int capacidade) {
     Veiculo veiculo = Veiculo(
-      id: _id,
       marca: _marca,
       modelo: _modelo,
       placa: _placa,
