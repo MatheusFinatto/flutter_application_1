@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/screens/conta/register_page.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
-import 'package:flutter_application_1/database/pessoas.dart';
 
 class ContaScreen extends StatefulWidget {
   const ContaScreen({Key? key}) : super(key: key);
@@ -18,11 +17,11 @@ class ContaScreenState extends State<ContaScreen> {
   //instancia para autenticacao
   FirebaseAuth auth = FirebaseAuth.instance;
   void getDados() async {
-    Pessoas pessoas = Pessoas(); // Crie uma instância da classe Pessoas
-    Pessoa pessoa = await pessoas.getUserSession();
+    Pessoa user = Pessoa(); // Crie uma instância da classe Pessoas
+    Pessoa pessoa = await user.getUserSession();
     setState(() {
-      nome = pessoa.nome;
-      cpf = pessoa.cpf;
+      nome = pessoa.nome!;
+      cpf = pessoa.cpf!;
     });
   }
 

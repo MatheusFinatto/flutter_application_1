@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/atividades/empresas/empresas.dart';
 import 'package:flutter_application_1/screens/atividades/empresas/empresas_add.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
-import 'package:flutter_application_1/database/pessoas.dart';
 
 class EmpresasHome extends StatefulWidget {
   const EmpresasHome({Key? key}) : super(key: key);
@@ -24,11 +23,11 @@ class _EmpresasHomeState extends State<EmpresasHome> {
 
   void _getDados() async {
     FirebaseAuth auth = FirebaseAuth.instance;
-    Pessoas pessoas = Pessoas(); // Crie uma instância da classe Pessoas
-    Pessoa pessoa = await pessoas.getUserSession();
+    Pessoa user = Pessoa(); // Crie uma instância da classe Pessoas
+    Pessoa pessoa = await user.getUserSession();
     setState(() {
       if (auth.currentUser != null) {
-        usuarioLogado = pessoa.id;
+        usuarioLogado = pessoa.id!;
       }
     });
     setState(() {

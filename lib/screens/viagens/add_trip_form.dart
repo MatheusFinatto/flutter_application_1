@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/database/veiculos.dart';
 import 'package:flutter_application_1/models/veiculos.dart';
 import 'package:flutter_application_1/models/viagens.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/selects/cidades_select.dart';

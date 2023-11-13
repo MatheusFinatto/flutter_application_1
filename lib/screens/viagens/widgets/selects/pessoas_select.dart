@@ -35,7 +35,7 @@ class PessoasSelectState extends State<PessoasSelect> {
         ...widget.pessoas.map((pessoa) {
           return DropdownMenuItem<Pessoa>(
             value: pessoa,
-            child: Text(pessoa.nome),
+            child: Text(pessoa.nome!),
           );
         }),
       ],

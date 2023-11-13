@@ -20,6 +20,8 @@ class LoginPageState extends State<LoginPage> {
 
   bool state = false;
   bool desenv = false;
+  bool desenv2 = false;
+  bool desenv3 = false;
 
   String _msgErro = "";
 
@@ -36,7 +38,13 @@ class LoginPageState extends State<LoginPage> {
     String password = '';
 
     if (desenv) {
+      email = 'desenv@email.com';
+      password = '123456';
+    } else if (desenv2) {
       email = 'matheus@gmail.com';
+      password = '123456';
+    } else if (desenv3) {
+      email = 'desenv3@email.com';
       password = '123456';
     } else {
       email = _emailController.text;
@@ -207,7 +215,7 @@ class LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 20),
         GestureDetector(
           onTap: () {
             desenv = true;
@@ -215,6 +223,38 @@ class LoginPageState extends State<LoginPage> {
           },
           child: const Text(
             "Desenv login",
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF0000EE),
+              fontWeight: FontWeight.normal,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        GestureDetector(
+          onTap: () {
+            desenv2 = true;
+            _validaCampos();
+          },
+          child: const Text(
+            "desenv2 login",
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF0000EE),
+              fontWeight: FontWeight.normal,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        GestureDetector(
+          onTap: () {
+            desenv3 = true;
+            _validaCampos();
+          },
+          child: const Text(
+            "desenv3 login",
             style: TextStyle(
               fontSize: 14,
               color: Color(0xFF0000EE),
