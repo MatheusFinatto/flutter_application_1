@@ -1,9 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_show.dart';
 import 'package:flutter_application_1/screens/viagens/viagens_screen.dart';
 import 'package:flutter_application_1/screens/atividades/atividades_screen.dart';
 import 'package:flutter_application_1/screens/conta/conta_screen.dart';
 
+String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();
@@ -32,7 +34,9 @@ class HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   static final List<Widget> _screens = [
     const ViagensScreen(),
-    const AtividadesScreen(),
+    empresaId == ''
+        ? const AtividadesScreen()
+        : VeiculosShow(empresaId: empresaId),
     const ContaScreen(),
   ];
 
@@ -53,8 +57,8 @@ class HomePageState extends State<HomePage> {
             label: 'Viagens',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.app_registration_sharp),
-            label: 'Atividades',
+            icon: Icon(Icons.directions_car),
+            label: 'Veículos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

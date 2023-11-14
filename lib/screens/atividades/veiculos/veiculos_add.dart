@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,11 +21,12 @@ class _VeiculosAddState extends State<VeiculosAdd> {
   final TextEditingController _placaController = TextEditingController();
   final TextEditingController _anoController = TextEditingController();
   final TextEditingController _capacidadeController = TextEditingController();
+  final TextEditingController _imageUrlController = TextEditingController();
 
   File? _selectedImage;
 
   void _addVeiculo(String marca, String modelo, String placa, String ano,
-      String capacidade) async {
+      Int capacidade, String imageUrl) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
 
     db.collection("empresas").doc(widget.empresaID).collection("veiculos").add({
@@ -33,8 +35,7 @@ class _VeiculosAddState extends State<VeiculosAdd> {
       "placa": placa,
       "ano": ano,
       "capacidade": capacidade,
-      "imageUrl":
-          "https://s7d1.scene7.com/is/image/hyundai/compare-vehicle-1225x619?wid=276&hei=156&fmt=webp-alpha",
+      "imageUrl": imageUrl != '' ? imageUrl : "https://i.imgur.com/BVD0UE8.png",
     });
   }
 
@@ -67,6 +68,7 @@ class _VeiculosAddState extends State<VeiculosAdd> {
                   labelText: "Placa",
                 ),
               ),
+
               TextFormField(
                 controller: _anoController,
                 decoration: const InputDecoration(
@@ -77,6 +79,13 @@ class _VeiculosAddState extends State<VeiculosAdd> {
                 controller: _capacidadeController,
                 decoration: const InputDecoration(
                   labelText: "Capacidade",
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              TextFormField(
+                controller: _imageUrlController,
+                decoration: const InputDecoration(
+                  labelText: "URL da foto",
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -105,7 +114,8 @@ class _VeiculosAddState extends State<VeiculosAdd> {
                         _modeloController.text,
                         _placaController.text,
                         _anoController.text,
-                        _capacidadeController.text);
+                        _capacidadeController.text as Int,
+                        _imageUrlController.text);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

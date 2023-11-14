@@ -17,17 +17,26 @@ class Veiculo {
     required this.imageUrl,
   });
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Veiculo && runtimeType == other.runtimeType && uid == other.uid;
+
+  @override
+  int get hashCode => uid.hashCode;
+
   factory Veiculo.fromMap(Map<String, dynamic> map) {
-    print("Veiculo.fromMap - Received data: $map");
-    return Veiculo(
-      uid: map['uid'],
-      marca: map['marca'],
-      modelo: map['modelo'],
-      placa: map['placa'],
-      ano: map['ano'],
-      capacidade: map['capacidade'],
-      imageUrl: map['imageUrl'],
+    Veiculo veiculo = Veiculo(
+      uid: map['uid'] ?? '',
+      marca: map['marca'] ?? '',
+      modelo: map['modelo'] ?? '',
+      placa: map['placa'] ?? '',
+      ano: map['ano'] ?? '',
+      capacidade: map['capacidade'] ?? 0,
+      imageUrl: map['imageUrl'] ?? '',
     );
+
+    return veiculo;
   }
 
   // Define the toJson method to convert the Veiculo object to a JSON format.

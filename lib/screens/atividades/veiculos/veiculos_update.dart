@@ -62,7 +62,7 @@ class _VeiculosUpdateState extends State<VeiculosUpdate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Atualizar Veículo"),
+        title: const Text("Editar Veículo"),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -130,7 +130,7 @@ class _VeiculosUpdateState extends State<VeiculosUpdate> {
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [Text("Atualizar Veículo")],
+                    children: [Text("Editar Veículo")],
                   )),
             ],
           ),

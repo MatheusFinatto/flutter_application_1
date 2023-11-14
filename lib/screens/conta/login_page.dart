@@ -41,7 +41,7 @@ class LoginPageState extends State<LoginPage> {
       email = 'desenv@email.com';
       password = '123456';
     } else if (desenv2) {
-      email = 'matheus@gmail.com';
+      email = 'desenv2@email.com';
       password = '123456';
     } else if (desenv3) {
       email = 'desenv3@email.com';

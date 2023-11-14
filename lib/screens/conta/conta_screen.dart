@@ -12,12 +12,13 @@ class ContaScreen extends StatefulWidget {
 }
 
 class ContaScreenState extends State<ContaScreen> {
+  String empresaId = 'UywGfjmMyYNRHFyx5hUN';
   FirebaseFirestore db = FirebaseFirestore.instance;
   String nome = "", cpf = "";
   //instancia para autenticacao
   FirebaseAuth auth = FirebaseAuth.instance;
   void getDados() async {
-    Pessoa user = Pessoa(); // Crie uma instância da classe Pessoas
+    Pessoa user = Pessoa();
     Pessoa pessoa = await user.getUserSession();
     setState(() {
       nome = pessoa.nome!;
@@ -34,6 +35,14 @@ class ContaScreenState extends State<ContaScreen> {
         });
   }
 
+  Future<DocumentSnapshot> getEmpresaData() async {
+    // Replace 'collectionName' with the actual name of your Firestore collection
+    DocumentSnapshot empresaSnapshot =
+        await db.collection('empresas').doc(empresaId).get();
+
+    return empresaSnapshot;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +56,7 @@ class ContaScreenState extends State<ContaScreen> {
         title: const Text('Conta'),
       ),
       body: FutureBuilder<DocumentSnapshot>(
-        future: _fetchPessoaData(), // Fetch pessoa data
+        future: getEmpresaData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -61,10 +70,9 @@ class ContaScreenState extends State<ContaScreen> {
             return const Text('No pessoa data found.');
           }
 
-          final pessoaData = snapshot.data!.data() as Map<String, dynamic>;
           return Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(
                     bottom: 20, left: 40, top: 16, right: 40),
@@ -86,32 +94,41 @@ class ContaScreenState extends State<ContaScreen> {
                         ),
                       ],
                     ),
-                    // ClipOval(
-                    //   clipBehavior: Clip.antiAlias,
-                    //   child: Image.network(
-                    //     pessoaData['imagemUrl'] ??
-                    //         'https://ojasyog.com/wp-content/uploads/2022/02/421-4212617_person-placeholder-image-transparent-hd-png-download.png',
-                    //     width: 100,
-                    //     height: 100,
-                    //     fit: BoxFit.fill,
-                    //   ),
-                    // )
                   ],
                 ),
               ),
-
-              // Rest of your UI elements
               ListView(
                 shrinkWrap: true,
                 children: <Widget>[
-                  const ListTile(
-                    leading: Icon(Icons.corporate_fare_sharp),
-                    title: Text(
-                      'Empresa',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                  ),
+                  empresaId != ''
+                      ? const ListTile(
+                          leading: Icon(Icons.corporate_fare_sharp),
+                          title: Text(
+                            'Dados da Empresa',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w500),
+                          ),
+                        )
+                      : const Column(
+                          children: [
+                            ListTile(
+                              leading: Icon(Icons.domain_add),
+                              title: Text(
+                                'Crie sua empresa',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.input),
+                              title: Text(
+                                'Ingresse em uma empresa',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ],
+                        ),
                   const ListTile(
                     leading: Icon(Icons.person),
                     title: Text(
@@ -129,7 +146,7 @@ class ContaScreenState extends State<ContaScreen> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 40, left: 10),
+                    padding: const EdgeInsets.only(top: 40, left: 10),
                     child: ListTile(
                       onTap: () {
                         deslogar();
@@ -151,16 +168,5 @@ class ContaScreenState extends State<ContaScreen> {
         },
       ),
     );
-  }
-
-  Future<DocumentSnapshot> _fetchPessoaData() async {
-    try {
-      return await FirebaseFirestore.instance
-          .doc('pessoas/rKS4uej8PQwbIkxRLjWD')
-          .get();
-    } catch (e) {
-      print('Error fetching pessoa data: $e');
-      throw e;
-    }
   }
 }

@@ -92,7 +92,7 @@ class _UsersState extends State<Users> {
                               width: 8,
                             ),
                             Text(
-                              "Atualizar Usuário",
+                              "Editar Usuário",
                               style: TextStyle(
                                 fontSize: 22,
                                 fontFamily: "Montserrat",

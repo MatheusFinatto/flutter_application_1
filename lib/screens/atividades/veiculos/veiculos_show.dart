@@ -59,7 +59,7 @@ class _VeiculosShowState extends State<VeiculosShow> {
                                   children: [
                                     Image.network(
                                       veiculoData['imageUrl'] as String? ??
-                                          'https://s7d1.scene7.com/is/image/hyundai/compare-veiculo-1225x619?wid=600&fmt=webp',
+                                          'https://i.imgur.com/BVD0UE8.png',
                                       width: MediaQuery.of(context).size.width,
                                       height: 200,
                                     ),
@@ -92,20 +92,20 @@ class _VeiculosShowState extends State<VeiculosShow> {
             ),
           ),
           // Botão de adição no final da lista
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => VeiculosAdd(
-                                empresaID: widget.empresaId,
-                              )));
-                },
-                child: const Icon(Icons.add)),
-          ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VeiculosAdd(
+                empresaID: widget.empresaId,
+              ),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

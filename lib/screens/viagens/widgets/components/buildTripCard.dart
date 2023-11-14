@@ -5,19 +5,18 @@ import 'package:flutter_application_1/screens/viagens/widgets/components/buildAc
 import 'package:flutter_application_1/screens/viagens/widgets/components/buildTripDetails.dart';
 
 Widget buildTripCard(
-    DocumentReference? veiculoReference,
-    DocumentReference? responsavelReference,
-    Map<String, dynamic> viagemData,
-    String? viagemId,
-    List<DocumentReference<Object?>>? participantesReference,
-    bool containsGivenId,
-    int index,
-    currentUser,
-    onPressedButton,
-    showDeleteConfirmationDialog,
-    context,
-    empresaId,
-    bool isLoading) {
+  DocumentReference? veiculoReference,
+  DocumentReference? responsavelReference,
+  Map<String, dynamic> viagemData,
+  String? viagemId,
+  List<DocumentReference<Object?>>? participantesReference,
+  bool containsGivenId,
+  int index,
+  currentUser,
+  onPressedButton,
+  context,
+  empresaId,
+) {
   return FutureBuilder<DocumentSnapshot>(
     future: veiculoReference?.get(),
     builder: (context, veiculoSnapshot) {
@@ -92,7 +91,6 @@ Widget buildTripCard(
                             index,
                             currentUser,
                             onPressedButton,
-                            showDeleteConfirmationDialog,
                             context,
                             empresaId),
                       ],

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/atividades/empresas/empresas.dart';
-import 'package:flutter_application_1/screens/atividades/empresas/empresas_add.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
 
 class EmpresasHome extends StatefulWidget {
@@ -85,7 +84,6 @@ class _EmpresasHomeState extends State<EmpresasHome> {
     super.initState();
     _getDados();
     _getEmpresas();
-    // Chama a função ao entrar na tela
   }
 
   @override
@@ -101,44 +99,33 @@ class _EmpresasHomeState extends State<EmpresasHome> {
           ),
           if (_isLoading) const CircularProgressIndicator(),
           if (!_isLoading)
-            Expanded(
-              child: ListView.builder(
-                itemCount: empresasNomes.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Empresas(
-                              empresaUid: empresasUid[index],
+            if (empresasNomes.isEmpty)
+              const Center(
+                child: Text("Nenhuma empresa encontrada"),
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: empresasNomes.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Empresas(
+                                empresaUid: empresasUid[index],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      child: Text(empresasNomes[index]),
-                    ),
-                  );
-                },
+                          );
+                        },
+                        child: Text(empresasNomes[index]),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          const SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EmpresasAdd(
-                                userId: usuarioLogado,
-                              )));
-                },
-                child: const Icon(Icons.add)),
-          )
         ],
       ),
     );

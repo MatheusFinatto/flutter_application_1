@@ -43,7 +43,8 @@ class AddTripScreenState extends State<AddTripScreen> {
   TimeOfDay _horaRetorno = TimeOfDay.now();
   String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
-  Veiculo? _selectedVeiculo;
+  Veiculo _selectedVeiculo = Veiculo(
+      marca: '', modelo: '', placa: '', ano: '', capacidade: 0, imageUrl: '');
 
   final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
 
@@ -89,22 +90,6 @@ class AddTripScreenState extends State<AddTripScreen> {
     }
   }
 
-  Stream<List<Veiculo>> veiculosStream() {
-    return FirebaseFirestore.instance
-        .collection('empresas')
-        .doc(empresaId)
-        .collection('veiculos')
-        .snapshots()
-        .map((querySnapshot) {
-      return querySnapshot.docs.map((doc) {
-        Veiculo veiculo = Veiculo.fromMap(doc.data());
-        veiculo.uid = doc.reference.id;
-        _selectedVeiculo = veiculo;
-        return veiculo;
-      }).toList();
-    });
-  }
-
   void _salvarDadosNoFirebase() async {
     if (_formKey.currentState!.validate()) {
       final User? currentUser = FirebaseAuth.instance.currentUser;
@@ -140,7 +125,7 @@ class AddTripScreenState extends State<AddTripScreen> {
         };
 
         await _addTripToFirestore(empresaId, tripData);
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pop(context);
       }
     }
   }
@@ -447,7 +432,18 @@ class AddTripScreenState extends State<AddTripScreen> {
 
                   const SizedBox(height: 16),
                   StreamBuilder<List<Veiculo>>(
-                    stream: veiculosStream(),
+                    stream: FirebaseFirestore.instance
+                        .collection('empresas')
+                        .doc(empresaId)
+                        .collection('veiculos')
+                        .snapshots()
+                        .map((querySnapshot) {
+                      final veiculos = querySnapshot.docs.map((doc) {
+                        return Veiculo.fromMap(doc.data())
+                          ..uid = doc.reference.id;
+                      }).toList();
+                      return veiculos;
+                    }),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator();
@@ -461,16 +457,20 @@ class AddTripScreenState extends State<AddTripScreen> {
                         return const Text("No veiculos found.");
                       }
 
-                      return DropdownButtonFormField<Veiculo>(
-                        value: _selectedVeiculo ?? snapshot.data?.first,
-                        onChanged: (veiculo) {
+                      return DropdownButtonFormField<String>(
+                        value: _selectedVeiculo.uid,
+                        onChanged: (value) {
                           setState(() {
-                            _selectedVeiculo = veiculo;
+                            _selectedVeiculo = snapshot.data!.firstWhere(
+                              (veiculo) => veiculo.uid == value,
+                            );
                           });
                         },
                         items: snapshot.data?.map((veiculo) {
-                          return DropdownMenuItem<Veiculo>(
-                            value: _selectedVeiculo ?? snapshot.data?.first,
+                          print('selected veiculo ${_selectedVeiculo}');
+                          print('veiculo $veiculo');
+                          return DropdownMenuItem<String>(
+                            value: veiculo.uid,
                             key: Key('key-${veiculo.ano}-${veiculo.placa}'),
                             child: Text(
                               '${veiculo.marca} ${veiculo.modelo}, ${veiculo.ano} - ${veiculo.placa}',

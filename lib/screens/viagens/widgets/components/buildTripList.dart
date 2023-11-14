@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/components/buildTripCard.dart';
 
-Widget buildTripsList(empresaId, currentUser) {
+Widget buildTripsList(empresaId, currentUser, onPressedButton) {
   bool isLoading = false;
   return Expanded(
     child: StreamBuilder<QuerySnapshot>(
@@ -17,7 +17,7 @@ Widget buildTripsList(empresaId, currentUser) {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Text("No viagens found.");
+          return const Center(child: Text("Nenhuma viagem cadastrada!"));
         }
 
         return ListView.builder(
@@ -49,19 +49,18 @@ Widget buildTripsList(empresaId, currentUser) {
 
             if (veiculoReference != null || responsavelReference != null) {
               return buildTripCard(
-                  veiculoReference,
-                  responsavelReference,
-                  viagemData,
-                  viagemId,
-                  participantesReference,
-                  containsGivenId,
-                  index,
-                  currentUser,
-                  null,
-                  null,
-                  empresaId,
-                  null,
-                  isLoading);
+                veiculoReference,
+                responsavelReference,
+                viagemData,
+                viagemId,
+                participantesReference,
+                containsGivenId,
+                index,
+                currentUser,
+                onPressedButton,
+                context,
+                empresaId,
+              );
             } else {
               return const Text("Há dados inconsistentes no banco de dados.");
             }

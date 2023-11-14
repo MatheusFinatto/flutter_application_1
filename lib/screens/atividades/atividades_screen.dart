@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_show.dart';
 import 'empresas/empresas_home.dart';
 
 class AtividadesScreen extends StatefulWidget {
@@ -7,6 +8,8 @@ class AtividadesScreen extends StatefulWidget {
   @override
   State<AtividadesScreen> createState() => _ServicesHomeState();
 }
+
+String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
 class _ServicesHomeState extends State<AtividadesScreen> {
   @override
@@ -20,11 +23,6 @@ class _ServicesHomeState extends State<AtividadesScreen> {
         child: Center(
           child: Column(
             children: [
-              // titulo
-              // users
-              // viagens
-              // veiculos
-              // empresas
               const Padding(
                 padding:
                     EdgeInsets.only(left: 18, right: 18, top: 50, bottom: 50),
@@ -41,7 +39,7 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                   /*Padding(
                     padding: const EdgeInsets.only(bottom: 50.0),
                     child: SizedBox(
-                      width: 250,
+                      width: 300,
                       height: 80,
                       child: ElevatedButton(
                         // Usuários
@@ -60,7 +58,7 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                           ),
                         ),
                         child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Icon(
                               Icons.person,
@@ -72,10 +70,9 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                             Text(
                               "Usuários",
                               style: TextStyle(
-                                fontSize: 20,
-                                fontFamily: "Montserrat",
-                                fontWeight: FontWeight.w500,
+
                                 color: Color.fromARGB(255, 0, 0, 0),
+                                fontSize: 14
                               ),
                             ),
                           ],
@@ -83,15 +80,21 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                       ),
                     ),
                   ),*/
-                  /*Padding(
+                  Padding(
                     padding: const EdgeInsets.only(bottom: 50.0),
                     child: SizedBox(
-                      width: 250,
+                      width: 300,
                       height: 80,
                       child: ElevatedButton(
                         onPressed: () {
-                          _getData();
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> VeiculosShow(empresaId: _empresaID,)));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => VeiculosShow(
+                                empresaId: empresaId,
+                              ),
+                            ),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -102,33 +105,30 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                           ),
                         ),
                         child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Icon(
                               Icons.directions_car,
                               size: 50,
                             ),
                             SizedBox(
-                              width: 8, // Espaçamento entre o ícone e o rótulo
+                              width: 8,
                             ),
                             Text(
-                              "Veículos",
+                              "Cadastro de veículos",
                               style: TextStyle(
-                                fontSize: 20,
-                                fontFamily: "Montserrat",
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 0, 0, 0),
-                              ),
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 14),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    ),*/
+                  ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 30),
+                    padding: const EdgeInsets.only(bottom: 50),
                     child: SizedBox(
-                      width: 250,
+                      width: 300,
                       height: 80, // Defina a largura desejada aqui
                       child: ElevatedButton(
                         onPressed: () {
@@ -146,23 +146,59 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                           ),
                         ),
                         child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Icon(
-                              Icons.business,
+                              Icons.add_business,
                               size: 50,
                             ),
                             SizedBox(
                                 width:
                                     8), // Espaçamento entre o ícone e o rótulo
                             Text(
-                              "Empresas",
+                              "Criar empresa",
                               style: TextStyle(
-                                fontSize: 20,
-                                fontFamily: "Montserrat",
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 0, 0, 0),
-                              ),
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 30),
+                    child: SizedBox(
+                      width: 300,
+                      height: 80, // Defina a largura desejada aqui
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const EmpresasHome()));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 217, 217, 217),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.business_outlined,
+                              size: 50,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              "Ingressar em uma empresa",
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 14),
                             ),
                           ],
                         ),

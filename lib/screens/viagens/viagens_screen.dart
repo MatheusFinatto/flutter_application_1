@@ -27,7 +27,7 @@ class ViagensScreenState extends State<ViagensScreen> {
 
   void getDados() async {
     Pessoa user = Pessoa();
-    Pessoa pessoa = await user.getUserSession() as Pessoa;
+    Pessoa pessoa = await user.getUserSession();
     setState(() {
       currentUser = pessoa;
     });
@@ -38,7 +38,7 @@ class ViagensScreenState extends State<ViagensScreen> {
         .collection('empresas')
         .doc(empresaId)
         .collection('viagens')
-        .doc(viagemId) // Specify the document ID for the viagem
+        .doc(viagemId)
         .get()
         .then((viagemSnapshot) {
       if (viagemSnapshot.exists) {
@@ -98,7 +98,7 @@ class ViagensScreenState extends State<ViagensScreen> {
       ),
       body: Column(
         children: [
-          buildTripsList(empresaId, currentUser),
+          buildTripsList(empresaId, currentUser, onPressedButton),
         ],
       ),
       floatingActionButton: FloatingActionButton(

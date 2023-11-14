@@ -50,7 +50,7 @@ class _EmpresasUpdateState extends State<EmpresasUpdate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Atualizar Empresa"),
+        title: const Text("Editar Empresa"),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -102,7 +102,7 @@ class _EmpresasUpdateState extends State<EmpresasUpdate> {
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [Text("Atualizar Empresa")],
+                    children: [Text("Editar Empresa")],
                   )),
             ],
           ),

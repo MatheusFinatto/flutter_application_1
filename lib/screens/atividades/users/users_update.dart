@@ -8,7 +8,6 @@ class UsersUpdate extends StatefulWidget {
 }
 
 class _UsersUpdateState extends State<UsersUpdate> {
-
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _cpfController = TextEditingController();
   final TextEditingController _nomeController = TextEditingController();
@@ -25,7 +24,7 @@ class _UsersUpdateState extends State<UsersUpdate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Atualizar Usuário"),
+        title: const Text("Editar Usuário"),
         backgroundColor: const Color.fromARGB(255, 88, 150, 237),
       ),
       body: SafeArea(
@@ -78,7 +77,7 @@ class _UsersUpdateState extends State<UsersUpdate> {
                       backgroundColor: const Color.fromARGB(255, 88, 150, 237)),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [Text("Atualizar Usuário")],
+                    children: [Text("Editar Usuário")],
                   ))
             ],
           ),
