@@ -13,7 +13,6 @@ class VeiculosShow extends StatefulWidget {
 
 class _VeiculosShowState extends State<VeiculosShow> {
   FirebaseFirestore db = FirebaseFirestore.instance;
-  String? veiculoID = "";
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +35,8 @@ class _VeiculosShowState extends State<VeiculosShow> {
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Text(
-                      "Nenhum veículo encontrado.",
-                      style: TextStyle(fontSize: 16),
-                    ); // Exibir uma mensagem se não houver veículos.
+                    return const Center(
+                        child: Text("Nenhum veículo cadastrado!"));
                   }
 
                   return ListView.builder(
@@ -47,7 +44,9 @@ class _VeiculosShowState extends State<VeiculosShow> {
                     itemBuilder: (context, index) {
                       final veiculoData = snapshot.data?.docs[index].data()
                           as Map<String, dynamic>;
-                      veiculoID = snapshot.data?.docs[index].id;
+
+                      final veiculoID = snapshot.data?.docs[index].id;
+                      print('veiculoID $veiculoID');
                       return ListTile(
                         subtitle: Column(
                           children: [
@@ -74,8 +73,8 @@ class _VeiculosShowState extends State<VeiculosShow> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        buildEditButton(),
-                                        buildDeleteButton(context),
+                                        buildEditButton(veiculoID),
+                                        buildDeleteButton(context, veiculoID),
                                       ],
                                     )
                                   ],
@@ -110,18 +109,20 @@ class _VeiculosShowState extends State<VeiculosShow> {
     );
   }
 
-  Widget buildEditButton() {
+  Widget buildEditButton(veiculoID) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
       child: ElevatedButton(
         onPressed: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => VeiculosUpdate(
-                        empresaID: widget.empresaId,
-                        veiculoID: veiculoID,
-                      )));
+            context,
+            MaterialPageRoute(
+              builder: (context) => VeiculosUpdate(
+                empresaID: widget.empresaId,
+                veiculoID: veiculoID,
+              ),
+            ),
+          );
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color.fromARGB(255, 60, 141, 130),
@@ -138,7 +139,7 @@ class _VeiculosShowState extends State<VeiculosShow> {
     );
   }
 
-  Widget buildDeleteButton(BuildContext context) {
+  Widget buildDeleteButton(BuildContext context, veiculoID) {
     return ElevatedButton(
       onPressed: () {
         showDialog(

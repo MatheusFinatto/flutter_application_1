@@ -26,7 +26,7 @@ class _VeiculosAddState extends State<VeiculosAdd> {
   File? _selectedImage;
 
   void _addVeiculo(String marca, String modelo, String placa, String ano,
-      Int capacidade, String imageUrl) async {
+      int capacidade, String imageUrl) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
 
     db.collection("empresas").doc(widget.empresaID).collection("veiculos").add({
@@ -109,12 +109,14 @@ class _VeiculosAddState extends State<VeiculosAdd> {
               const SizedBox(height: 40), // Espaço entre os campos
               ElevatedButton(
                   onPressed: () {
+                    int capacidade = int.parse(_capacidadeController.text);
+
                     _addVeiculo(
                         _marcaController.text,
                         _modeloController.text,
                         _placaController.text,
                         _anoController.text,
-                        _capacidadeController.text as Int,
+                        capacidade,
                         _imageUrlController.text);
                   },
                   child: const Row(

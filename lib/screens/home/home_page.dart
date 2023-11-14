@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_show.dart';
 import 'package:flutter_application_1/screens/viagens/viagens_screen.dart';
-import 'package:flutter_application_1/screens/atividades/atividades_screen.dart';
 import 'package:flutter_application_1/screens/conta/conta_screen.dart';
 
 String empresaId = 'UywGfjmMyYNRHFyx5hUN';
@@ -34,9 +33,7 @@ class HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   static final List<Widget> _screens = [
     const ViagensScreen(),
-    empresaId == ''
-        ? const AtividadesScreen()
-        : VeiculosShow(empresaId: empresaId),
+    VeiculosShow(empresaId: empresaId),
     const ContaScreen(),
   ];
 

@@ -14,13 +14,12 @@ class DeleteTripButton extends StatelessWidget {
         onDelete();
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red, // Change the button's background color
+        backgroundColor: Colors.red,
       ),
       child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-              'Excluir'), // Change the text to "Excluir" (Delete in Portuguese)
+          Text('Excluir'),
           SizedBox(width: 2),
           Icon(Icons.delete, size: 14),
         ],

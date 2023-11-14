@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/screens/atividades/empresas/empresas_add.dart';
 import 'package:flutter_application_1/screens/conta/register_page.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
 
@@ -109,17 +110,35 @@ class ContaScreenState extends State<ContaScreen> {
                                 fontSize: 20, fontWeight: FontWeight.w500),
                           ),
                         )
-                      : const Column(
+                      : Column(
                           children: [
                             ListTile(
-                              leading: Icon(Icons.domain_add),
-                              title: Text(
-                                'Crie sua empresa',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w500),
+                              leading: const Icon(Icons.domain_add),
+                              title: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const EmpresasAdd(
+                                        userId: '',
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: const Row(children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 10),
+                                    child: Text(
+                                      'Crie sua empresa',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ]),
                               ),
                             ),
-                            ListTile(
+                            const ListTile(
                               leading: Icon(Icons.input),
                               title: Text(
                                 'Ingresse em uma empresa',

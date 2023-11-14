@@ -215,66 +215,37 @@ class LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
-        const SizedBox(height: 20),
-        GestureDetector(
-          onTap: () {
+        const SizedBox(height: 120),
+        ElevatedButton(
+          onPressed: () {
             desenv = true;
             _validaCampos();
           },
           child: const Text(
-            "Desenv login",
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF0000EE),
-              fontWeight: FontWeight.normal,
-              decoration: TextDecoration.underline,
-            ),
+            "Login como Ednaldo Pereira",
           ),
         ),
         const SizedBox(height: 20),
-        GestureDetector(
-          onTap: () {
+        ElevatedButton(
+          onPressed: () {
             desenv2 = true;
             _validaCampos();
           },
           child: const Text(
-            "desenv2 login",
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF0000EE),
-              fontWeight: FontWeight.normal,
-              decoration: TextDecoration.underline,
-            ),
+            "Login como Vin Diesel Brasileiro",
           ),
         ),
         const SizedBox(height: 20),
-        GestureDetector(
-          onTap: () {
+        ElevatedButton(
+          onPressed: () {
             desenv3 = true;
             _validaCampos();
           },
           child: const Text(
-            "desenv3 login",
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF0000EE),
-              fontWeight: FontWeight.normal,
-              decoration: TextDecoration.underline,
-            ),
+            "Login como Shrek Segundo",
           ),
         ),
       ],
     );
   }
-
-  // void _onRegisterPressed() {
-  //   if (_formKey.currentState!.validate()) {
-  //     // Form is valid, perform registration
-  //     Navigator.of(context).push(
-  //       MaterialPageRoute(
-  //         builder: (context) => const HomePage(),
-  //       ),
-  //     );
-  //   }
-  // }
 }
