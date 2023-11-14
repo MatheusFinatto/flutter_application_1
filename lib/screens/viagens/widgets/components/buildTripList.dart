@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/components/buildTripCard.dart';
 
 Widget buildTripsList(empresaId, currentUser) {
+  bool isLoading = false;
   return Expanded(
     child: StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -11,7 +12,7 @@ Widget buildTripsList(empresaId, currentUser) {
           .collection('viagens')
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.connectionState == ConnectionState.waiting || isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -48,19 +49,19 @@ Widget buildTripsList(empresaId, currentUser) {
 
             if (veiculoReference != null || responsavelReference != null) {
               return buildTripCard(
-                veiculoReference,
-                responsavelReference,
-                viagemData,
-                viagemId,
-                participantesReference,
-                containsGivenId,
-                index,
-                currentUser,
-                null,
-                null,
-                empresaId,
-                null,
-              );
+                  veiculoReference,
+                  responsavelReference,
+                  viagemData,
+                  viagemId,
+                  participantesReference,
+                  containsGivenId,
+                  index,
+                  currentUser,
+                  null,
+                  null,
+                  empresaId,
+                  null,
+                  isLoading);
             } else {
               return const Text("Há dados inconsistentes no banco de dados.");
             }

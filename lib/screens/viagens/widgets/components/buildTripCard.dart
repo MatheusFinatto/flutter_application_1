@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/components/buildActionButtons.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/components/buildTripDetails.dart';
-import 'package:intl/intl.dart';
 
 Widget buildTripCard(
     DocumentReference? veiculoReference,
@@ -16,7 +16,8 @@ Widget buildTripCard(
     onPressedButton,
     showDeleteConfirmationDialog,
     context,
-    empresaId) {
+    empresaId,
+    bool isLoading) {
   return FutureBuilder<DocumentSnapshot>(
     future: veiculoReference?.get(),
     builder: (context, veiculoSnapshot) {
@@ -30,12 +31,21 @@ Widget buildTripCard(
         future: responsavelReference?.get(),
         builder: (context, responsavelSnapshot) {
           if (responsavelSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (!responsavelSnapshot.hasData ||
-              !responsavelSnapshot.data!.exists) {
-            return const Text("No responsavel found.");
+            return const ListTile(
+              subtitle: Column(
+                children: [
+                  SizedBox(height: 16),
+                  Card(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(8, 120, 8, 120),
+                      child: Column(
+                        children: [Center(child: CircularProgressIndicator())],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
 
           final DateTime dataInicio = viagemData['dataInicio'] != null
