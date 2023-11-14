@@ -24,11 +24,17 @@ class AddTripScreen extends StatefulWidget {
 class AddTripScreenState extends State<AddTripScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+// Estado and Cidade variables for Origem
   String _estadoSelecionadoOrigem = '';
   String _cidadeSelecionadaOrigem = '';
+  final List<String> estadosOrigem = [];
+  final Map<String, List<String>> cidadesOrigem = {};
 
+  // Estado and Cidade variables for Destino
   String _estadoSelecionadoDestino = '';
   String _cidadeSelecionadaDestino = '';
+  final List<String> estadosDestino = [];
+  final Map<String, List<String>> cidadesDestino = {};
 
   DateTime _dataSaida = DateTime.now();
   TimeOfDay _horaSaida = TimeOfDay.now();
@@ -40,8 +46,6 @@ class AddTripScreenState extends State<AddTripScreen> {
   Veiculo? _selectedVeiculo;
 
   final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
-  final List<String> estados = [];
-  final Map<String, List<String>> cidades = {};
 
   @override
   void initState() {
@@ -55,14 +59,15 @@ class AddTripScreenState extends State<AddTripScreen> {
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       for (var estado in data) {
-        estados.add(estado['sigla']);
+        estadosOrigem.add(estado['sigla']);
+        estadosDestino.add(estado['sigla']);
       }
 
       setState(() {});
     }
   }
 
-  Future<void> _fetchCidadesFromAPI(String estado) async {
+  Future<void> _fetchCidadesFromAPI(String estado, bool isOrigem) async {
     final response = await http.get(Uri.parse(
         'https://servicodados.ibge.gov.br/api/v1/localidades/estados/$estado/municipios'));
     if (response.statusCode == 200) {
@@ -71,7 +76,16 @@ class AddTripScreenState extends State<AddTripScreen> {
       for (var cidade in data) {
         cidadesEstado.add(cidade['nome']);
       }
-      cidades[estado] = cidadesEstado;
+
+      if (isOrigem) {
+        setState(() {
+          cidadesOrigem[estado] = cidadesEstado;
+        });
+      } else {
+        setState(() {
+          cidadesDestino[estado] = cidadesEstado;
+        });
+      }
     }
   }
 
@@ -247,20 +261,20 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         EstadosSelect(
-                          estados: estados,
+                          estados: estadosOrigem,
                           estadoSelecionadoOrigem: _estadoSelecionadoOrigem,
                           onEstadoChanged: (value) {
                             setState(() {
                               _estadoSelecionadoOrigem = value;
                               _cidadeSelecionadaOrigem = '';
-                              _fetchCidadesFromAPI(value);
+                              _fetchCidadesFromAPI(value, true);
                             });
                           },
                         ),
                         const SizedBox(height: 16),
                         CidadesSelect(
-                          isEstadoSelected: _estadoSelecionadoOrigem != '',
-                          cityList: cidades[_estadoSelecionadoOrigem] ?? [],
+                          cityList:
+                              cidadesOrigem[_estadoSelecionadoOrigem] ?? [],
                           selectedCity: _cidadeSelecionadaOrigem,
                           onCityChanged: (value) {
                             setState(() {
@@ -271,10 +285,8 @@ class AddTripScreenState extends State<AddTripScreen> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // "Destino" section
+                  // Destino section
                   Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
@@ -292,25 +304,27 @@ class AddTripScreenState extends State<AddTripScreen> {
                         ),
                         const SizedBox(height: 16),
                         EstadosSelect(
-                          estados: estados,
+                          estados: estadosDestino,
                           estadoSelecionadoOrigem: _estadoSelecionadoDestino,
                           onEstadoChanged: (value) {
                             setState(() {
                               _estadoSelecionadoDestino = value;
                               _cidadeSelecionadaDestino = '';
-                              _fetchCidadesFromAPI(value);
+                              _fetchCidadesFromAPI(value, false);
                             });
                           },
                         ),
                         const SizedBox(height: 16),
                         CidadesSelect(
-                            cityList: cidades[_estadoSelecionadoDestino] ?? [],
-                            selectedCity: _cidadeSelecionadaDestino,
-                            onCityChanged: (value) {
-                              setState(() {
-                                _cidadeSelecionadaDestino = value;
-                              });
-                            })
+                          cityList:
+                              cidadesDestino[_estadoSelecionadoDestino] ?? [],
+                          selectedCity: _cidadeSelecionadaDestino,
+                          onCityChanged: (value) {
+                            setState(() {
+                              _cidadeSelecionadaDestino = value;
+                            });
+                          },
+                        ),
                       ],
                     ),
                   ),

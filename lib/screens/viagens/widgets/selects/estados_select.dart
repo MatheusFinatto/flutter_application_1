@@ -38,8 +38,7 @@ class EstadosSelectState extends State<EstadosSelect> {
     return DropdownButtonFormField<String>(
       value: widget.estadoSelecionadoOrigem.isNotEmpty
           ? widget.estadoSelecionadoOrigem
-          : widget
-              .defaultValue, // Set the default value to null if no match found
+          : widget.defaultValue,
       onChanged: (value) {
         setState(() {
           widget.onEstadoChanged(value!);
