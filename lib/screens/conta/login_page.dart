@@ -242,7 +242,7 @@ class LoginPageState extends State<LoginPage> {
             _validaCampos();
           },
           child: const Text(
-            "Login como Shrek Segundo",
+            "Login como Michael Scott",
           ),
         ),
       ],

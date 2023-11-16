@@ -15,7 +15,7 @@ class ContaScreen extends StatefulWidget {
 class ContaScreenState extends State<ContaScreen> {
   String empresaId = 'UywGfjmMyYNRHFyx5hUN';
   FirebaseFirestore db = FirebaseFirestore.instance;
-  String nome = "", cpf = "";
+  String nome = "", cpf = "", imagem = "";
   //instancia para autenticacao
   FirebaseAuth auth = FirebaseAuth.instance;
   void getDados() async {
@@ -24,6 +24,8 @@ class ContaScreenState extends State<ContaScreen> {
     setState(() {
       nome = pessoa.nome!;
       cpf = pessoa.cpf!;
+      imagem = pessoa.imageUrl!;
+      print('imagem $imagem');
     });
   }
 
@@ -79,14 +81,32 @@ class ContaScreenState extends State<ContaScreen> {
                     bottom: 20, left: 40, top: 16, right: 40),
                 child: Row(
                   // Display pessoa data
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    ClipOval(
+                      child: Image.network(
+                        imagem == ''
+                            ? 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+                            : imagem,
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.scaleDown,
+                      ),
+                    ),
+                    const SizedBox(width: 20),
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          nome,
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900),
+                        Container(
+                          width: 190, // Set the desired maximum width
+                          child: Text(
+                            nome,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         Text(
                           cpf,
