@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_show.dart';
 import 'empresas/empresas_home.dart';
 
 class AtividadesScreen extends StatefulWidget {
@@ -8,8 +7,6 @@ class AtividadesScreen extends StatefulWidget {
   @override
   State<AtividadesScreen> createState() => _ServicesHomeState();
 }
-
-String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
 class _ServicesHomeState extends State<AtividadesScreen> {
   @override
@@ -36,95 +33,6 @@ class _ServicesHomeState extends State<AtividadesScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  /*Padding(
-                    padding: const EdgeInsets.only(bottom: 50.0),
-                    child: SizedBox(
-                      width: 300,
-                      height: 80,
-                      child: ElevatedButton(
-                        // Usuários
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Users()));
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 217, 217, 217),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Icon(
-                              Icons.person,
-                              size: 50,
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              "Usuários",
-                              style: TextStyle(
-
-                                color: Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 14
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),*/
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 50.0),
-                    child: SizedBox(
-                      width: 300,
-                      height: 80,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => VeiculosShow(
-                                empresaId: empresaId,
-                              ),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 217, 217, 217),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Icon(
-                              Icons.directions_car,
-                              size: 50,
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              "Cadastro de veículos",
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 0, 0, 0),
-                                  fontSize: 14),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 50),
                     child: SizedBox(

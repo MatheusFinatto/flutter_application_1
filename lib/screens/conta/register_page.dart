@@ -6,7 +6,7 @@ import 'package:flutter_application_1/screens/home/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => RegisterPageState();
@@ -70,7 +70,7 @@ class RegisterPageState extends State<RegisterPage> {
                       _msgErro = "Sucesso ao logar",
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => const HomePage()),
+                          MaterialPageRoute(builder: (context) => HomePage()),
                           (route) => false)
                     })
                 .onError((error, stackTrace) => {_msgErro = error.toString()});
@@ -103,13 +103,13 @@ class RegisterPageState extends State<RegisterPage> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 100, 10, 50),
+            padding: EdgeInsets.fromLTRB(10, 100, 10, 50),
             child: Column(
               children: [
                 _buildHeaderText(),
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
                 _buildInputs(),
-                const SizedBox(height: 70),
+                SizedBox(height: 70),
                 _buildRegisterButton(),
               ],
             ),
@@ -131,7 +131,7 @@ class RegisterPageState extends State<RegisterPage> {
             decoration: TextDecoration.none,
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Text(
           "Vamos começar nos conhecendo :)",
           style: GoogleFonts.inter(
@@ -149,7 +149,7 @@ class RegisterPageState extends State<RegisterPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: TextFormField(
             controller: _nameController,
             decoration: InputDecoration(
@@ -167,7 +167,7 @@ class RegisterPageState extends State<RegisterPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: TextFormField(
             controller: _emailController,
             decoration: InputDecoration(
@@ -186,7 +186,7 @@ class RegisterPageState extends State<RegisterPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: TextFormField(
             controller: _cpfController,
             decoration: InputDecoration(
@@ -205,7 +205,7 @@ class RegisterPageState extends State<RegisterPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: TextFormField(
             controller: _passwordController,
             obscureText: true,
@@ -225,7 +225,7 @@ class RegisterPageState extends State<RegisterPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: TextFormField(
             controller: _confirmPasswordController,
             obscureText: true,
@@ -245,7 +245,7 @@ class RegisterPageState extends State<RegisterPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 12.0),
+          padding: EdgeInsets.only(top: 12.0),
           child: Text(_msgErro),
         )
       ],
@@ -257,25 +257,25 @@ class RegisterPageState extends State<RegisterPage> {
       children: [
         ElevatedButton(
           style: ButtonStyle(
-            fixedSize: MaterialStateProperty.all(const Size(380, 50)),
+            fixedSize: MaterialStateProperty.all(Size(380, 50)),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             )),
           ),
           onPressed: _createAccount,
-          child: const Text('Cadastrar', style: TextStyle(fontSize: 16)),
+          child: Text('Cadastrar', style: TextStyle(fontSize: 16)),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         GestureDetector(
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const LoginPage(),
+                builder: (context) => LoginPage(),
               ),
             );
             //Navigator.pushReplacementNamed(context, '/login');
           },
-          child: const Text(
+          child: Text(
             "Já possuo uma conta",
             style: TextStyle(
               fontSize: 14,
@@ -294,7 +294,7 @@ class RegisterPageState extends State<RegisterPage> {
   //     // Form is valid, perform registration
   //     Navigator.of(context).push(
   //       MaterialPageRoute(
-  //         builder: (context) => const HomePage(),
+  //         builder: (context) =>  HomePage(),
   //       ),
   //     );
   //   }

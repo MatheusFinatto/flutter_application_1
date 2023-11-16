@@ -7,20 +7,20 @@ import 'package:google_fonts/google_fonts.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MainApp());
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Taix",
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: SplashScreen(),
       routes: {
-        '/home': (context) => const HomePage(),
+        '/home': (context) => HomePage(),
       },
       theme: ThemeData(
         textTheme: GoogleFonts.montserratTextTheme(

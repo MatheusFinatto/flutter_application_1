@@ -9,6 +9,7 @@ class Pessoa {
   final String? telefone;
   final String? email;
   final String? imageUrl;
+  final String empresaId;
 
   Pessoa({
     this.id,
@@ -18,6 +19,7 @@ class Pessoa {
     this.telefone,
     this.email,
     this.imageUrl,
+    required this.empresaId,
   });
 
   factory Pessoa.fromMap(Map<String, dynamic> map) {
@@ -29,6 +31,7 @@ class Pessoa {
       telefone: map['telefone'],
       email: map['email'],
       imageUrl: map['imageUrl'],
+      empresaId: map['empresaId'],
     );
   }
 
@@ -41,6 +44,7 @@ class Pessoa {
       'telefone': telefone,
       'email': email,
       'imageUrl': imageUrl,
+      'empresaId': empresaId,
     };
   }
 
@@ -70,6 +74,8 @@ class Pessoa {
       if (dado['imageUrl'] != null) {
         imageUrl = dado['imageUrl'];
       }
+      dado['empresaId'] ?? (dado['empresaId'] = 'null');
+
       return Pessoa(
         id: id,
         cpf: cpf,
@@ -78,6 +84,7 @@ class Pessoa {
         telefone: telefone,
         email: email,
         imageUrl: imageUrl,
+        empresaId: dado['empresaId'],
       );
     } else {
       throw Exception('Dados não encontrados no Firestore.');

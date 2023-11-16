@@ -1,20 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:flutter_application_1/screens/atividades/empresas/empresas_update.dart';
 import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_show.dart';
 
 class Empresas extends StatefulWidget {
-  final String empresaUid;
+  final String empresaId;
 
-  const Empresas({super.key, required this.empresaUid});
+  const Empresas({super.key, required this.empresaId});
 
   @override
   State<Empresas> createState() => _EmpresasState();
 }
 
 class _EmpresasState extends State<Empresas> {
-  bool _isLoading = true;
   FirebaseFirestore db = FirebaseFirestore.instance;
+  String nome = "", cpf = "", imagem = "", empresaId = "null";
+  void getDados() async {
+    Pessoa user = Pessoa(empresaId: 'null');
+    Pessoa pessoa = await user.getUserSession();
+    setState(() {
+      nome = pessoa.nome!;
+      cpf = pessoa.cpf!;
+      imagem = pessoa.imageUrl!;
+      empresaId = pessoa.empresaId;
+      print('empresaId $empresaId');
+    });
+  }
+
+  bool _isLoading = true;
 
   String _empresaNome = "";
   String _empresaCNPJ = "";
@@ -24,7 +38,7 @@ class _EmpresasState extends State<Empresas> {
 
   _getEmpresaData() async {
     DocumentSnapshot snapshot =
-        await db.collection("empresas").doc(widget.empresaUid).get();
+        await db.collection("empresas").doc(empresaId).get();
 
     setState(() {
       if (snapshot.data() != null) {
@@ -48,15 +62,16 @@ class _EmpresasState extends State<Empresas> {
       }
     });
 
+    @override
+    void initState() {
+      super.initState();
+      getDados();
+      _getEmpresaData();
+    }
+
     setState(() {
       _isLoading = false;
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _getEmpresaData(); // Chama a função ao entrar na tela
   }
 
   @override
@@ -90,7 +105,7 @@ class _EmpresasState extends State<Empresas> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => EmpresasUpdate(
-                                    empresaId: widget.empresaUid,
+                                    empresaId: empresaId,
                                   )));
                     },
                     child: const Row(children: [
@@ -146,11 +161,11 @@ class _EmpresasState extends State<Empresas> {
               ElevatedButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => VeiculosShow(
-                                  empresaId: widget.empresaUid,
-                                )));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VeiculosShow(),
+                      ),
+                    );
                   },
                   child: const Text("Veículos da Empresa")),
               const SizedBox(
@@ -176,9 +191,8 @@ class _EmpresasState extends State<Empresas> {
                             child: const Text('Excluir'),
                             onPressed: () {
                               FirebaseFirestore db = FirebaseFirestore.instance;
-                              DocumentReference empresasRef = db
-                                  .collection("empresas")
-                                  .doc(widget.empresaUid);
+                              DocumentReference empresasRef =
+                                  db.collection("empresas").doc(empresaId);
                               empresasRef.delete();
                               Navigator.of(context).pop();
                             },

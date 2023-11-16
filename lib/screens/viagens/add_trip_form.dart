@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:flutter_application_1/models/veiculos.dart';
 import 'package:flutter_application_1/models/viagens.dart';
 import 'package:flutter_application_1/screens/viagens/widgets/selects/cidades_select.dart';
@@ -41,17 +42,33 @@ class AddTripScreenState extends State<AddTripScreen> {
 
   DateTime _dataRetorno = DateTime.now();
   TimeOfDay _horaRetorno = TimeOfDay.now();
-  String empresaId = 'UywGfjmMyYNRHFyx5hUN';
 
   Veiculo _selectedVeiculo = Veiculo(
       marca: '', modelo: '', placa: '', ano: '', capacidade: 0, imageUrl: '');
 
   final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
 
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  String nome = "", cpf = "", imagem = "", empresaId = "null";
+  //instancia para autenticacao
+  FirebaseAuth auth = FirebaseAuth.instance;
+  void getDados() async {
+    Pessoa user = Pessoa(empresaId: 'null');
+    Pessoa pessoa = await user.getUserSession();
+    setState(() {
+      nome = pessoa.nome!;
+      cpf = pessoa.cpf!;
+      imagem = pessoa.imageUrl!;
+      empresaId = pessoa.empresaId;
+      print('empresaId $empresaId');
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _fetchEstadosFromAPI();
+    getDados();
   }
 
   Future<void> _fetchEstadosFromAPI() async {

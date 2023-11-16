@@ -13,7 +13,7 @@ class EmpresasHome extends StatefulWidget {
 
 class _EmpresasHomeState extends State<EmpresasHome> {
   final List<String> empresasNomes = [];
-  final List<String> empresasUid = [];
+  final List<String> empresaId = [];
   final List<String> funcionariosUid = [];
 
   bool _isLoading = true;
@@ -22,7 +22,7 @@ class _EmpresasHomeState extends State<EmpresasHome> {
 
   void _getDados() async {
     FirebaseAuth auth = FirebaseAuth.instance;
-    Pessoa user = Pessoa(); // Crie uma instância da classe Pessoas
+    Pessoa user = Pessoa(empresaId: 'null');
     Pessoa pessoa = await user.getUserSession();
     setState(() {
       if (auth.currentUser != null) {
@@ -63,7 +63,7 @@ class _EmpresasHomeState extends State<EmpresasHome> {
                   empresasNomes.add(nomeDaEmpresa);
                 });
                 setState(() {
-                  empresasUid.add(uidEmpresa);
+                  empresaId.add(uidEmpresa);
                 });
               }
             }
@@ -115,7 +115,7 @@ class _EmpresasHomeState extends State<EmpresasHome> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => Empresas(
-                                empresaUid: empresasUid[index],
+                                empresaId: empresaId[index],
                               ),
                             ),
                           );

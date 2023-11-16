@@ -15,9 +15,7 @@ class ViagensScreen extends StatefulWidget {
 class ViagensScreenState extends State<ViagensScreen> {
   final TextEditingController _searchController = TextEditingController();
   final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
-  late Pessoa currentUser = Pessoa();
-
-  String empresaId = 'UywGfjmMyYNRHFyx5hUN';
+  late Pessoa currentUser = Pessoa(empresaId: 'null');
 
   @override
   void initState() {
@@ -26,7 +24,7 @@ class ViagensScreenState extends State<ViagensScreen> {
   }
 
   void getDados() async {
-    Pessoa user = Pessoa();
+    Pessoa user = Pessoa(empresaId: '');
     Pessoa pessoa = await user.getUserSession();
     setState(() {
       currentUser = pessoa;
@@ -36,7 +34,7 @@ class ViagensScreenState extends State<ViagensScreen> {
   void onPressedButton(participantesReference, viagemId) {
     FirebaseFirestore.instance
         .collection('empresas')
-        .doc(empresaId)
+        .doc(currentUser.empresaId)
         .collection('viagens')
         .doc(viagemId)
         .get()
@@ -78,8 +76,8 @@ class ViagensScreenState extends State<ViagensScreen> {
 
         SnackBar snackBar = SnackBar(
           content: Text(!containsGivenId
-              ? "Pedido para participação enviado com sucesso!"
-              : "Pedido de participação cancelado!"),
+              ? "Participação registrada com sucesso!"
+              : "Participação cancelada com sucesso!"),
           duration: const Duration(seconds: 2),
         );
 
@@ -98,7 +96,7 @@ class ViagensScreenState extends State<ViagensScreen> {
       ),
       body: Column(
         children: [
-          buildTripsList(empresaId, currentUser, onPressedButton),
+          buildTripsList(currentUser.empresaId, currentUser, onPressedButton),
         ],
       ),
       floatingActionButton: FloatingActionButton(

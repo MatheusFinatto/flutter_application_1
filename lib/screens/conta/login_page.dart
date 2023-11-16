@@ -5,7 +5,7 @@ import 'package:flutter_application_1/screens/home/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => LoginPageState();
@@ -62,7 +62,7 @@ class LoginPageState extends State<LoginPage> {
             // Navegar para a tela inicial e remover esta página para não poder voltar
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
+              MaterialPageRoute(builder: (context) => HomePage()),
               (route) => false,
             );
           },
@@ -90,13 +90,13 @@ class LoginPageState extends State<LoginPage> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 100, 10, 50),
+            padding: EdgeInsets.fromLTRB(10, 100, 10, 50),
             child: Column(
               children: [
                 _buildHeaderText(),
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
                 _buildInputs(),
-                const SizedBox(height: 70),
+                SizedBox(height: 70),
                 _buildRegisterButton(),
               ],
             ),
@@ -118,7 +118,7 @@ class LoginPageState extends State<LoginPage> {
             decoration: TextDecoration.none,
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Text(
           "Faça o seu login",
           style: GoogleFonts.inter(
@@ -136,7 +136,7 @@ class LoginPageState extends State<LoginPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: TextFormField(
             controller: _emailController,
             decoration: InputDecoration(
@@ -155,7 +155,7 @@ class LoginPageState extends State<LoginPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: TextFormField(
             controller: _passwordController,
             obscureText: true,
@@ -175,7 +175,7 @@ class LoginPageState extends State<LoginPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 12.0),
+          padding: EdgeInsets.only(top: 12.0),
           child: Text(_msgErro),
         )
       ],
@@ -187,25 +187,25 @@ class LoginPageState extends State<LoginPage> {
       children: [
         ElevatedButton(
           style: ButtonStyle(
-            fixedSize: MaterialStateProperty.all(const Size(380, 50)),
+            fixedSize: MaterialStateProperty.all(Size(380, 50)),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             )),
           ),
           onPressed: _validaCampos,
-          child: const Text('Entrar', style: TextStyle(fontSize: 16)),
+          child: Text('Entrar', style: TextStyle(fontSize: 16)),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         GestureDetector(
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const RegisterPage(),
+                builder: (context) => RegisterPage(),
               ),
             );
             //Navigator.pushReplacementNamed(context, '/login');
           },
-          child: const Text(
+          child: Text(
             "Não possuo uma conta",
             style: TextStyle(
               fontSize: 14,
@@ -215,33 +215,33 @@ class LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
-        const SizedBox(height: 120),
+        SizedBox(height: 120),
         ElevatedButton(
           onPressed: () {
             desenv = true;
             _validaCampos();
           },
-          child: const Text(
+          child: Text(
             "Login como Ednaldo Pereira",
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
             desenv2 = true;
             _validaCampos();
           },
-          child: const Text(
+          child: Text(
             "Login como Vin Diesel Brasileiro",
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
             desenv3 = true;
             _validaCampos();
           },
-          child: const Text(
+          child: Text(
             "Login como Michael Scott",
           ),
         ),

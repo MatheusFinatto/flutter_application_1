@@ -6,34 +6,35 @@ import 'package:flutter_application_1/screens/conta/register_page.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
 
 class ContaScreen extends StatefulWidget {
-  const ContaScreen({Key? key}) : super(key: key);
+  ContaScreen({Key? key}) : super(key: key);
 
   @override
   ContaScreenState createState() => ContaScreenState();
 }
 
 class ContaScreenState extends State<ContaScreen> {
-  String empresaId = 'UywGfjmMyYNRHFyx5hUN';
   FirebaseFirestore db = FirebaseFirestore.instance;
-  String nome = "", cpf = "", imagem = "";
-  //instancia para autenticacao
+  String nome = "", email = "", imagem = "", empresaId = "null";
+  bool _isLoading = true;
+
   FirebaseAuth auth = FirebaseAuth.instance;
-  void getDados() async {
-    Pessoa user = Pessoa();
+  Future<void> getDados() async {
+    Pessoa user = Pessoa(empresaId: 'null');
     Pessoa pessoa = await user.getUserSession();
     setState(() {
       nome = pessoa.nome!;
-      cpf = pessoa.cpf!;
+      email = pessoa.email!;
       imagem = pessoa.imageUrl!;
-      print('imagem $imagem');
+      empresaId = pessoa.empresaId;
     });
+    _isLoading = false;
   }
 
   void deslogar() async {
     await auth.signOut().then((value) => {
           Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const RegisterPage()),
+              MaterialPageRoute(builder: (context) => RegisterPage()),
               (route) => false)
         });
   }
@@ -59,18 +60,15 @@ class ContaScreenState extends State<ContaScreen> {
         title: const Text('Conta'),
       ),
       body: FutureBuilder<DocumentSnapshot>(
-        future: getEmpresaData(),
+        future: empresaId == 'null' ? null : getEmpresaData(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if ((snapshot.connectionState == ConnectionState.waiting) ||
+              _isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
-          }
-
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return const Text('No pessoa data found.');
           }
 
           return Column(
@@ -109,7 +107,7 @@ class ContaScreenState extends State<ContaScreen> {
                           ),
                         ),
                         Text(
-                          cpf,
+                          email,
                           style: const TextStyle(
                               fontSize: 15, fontWeight: FontWeight.w500),
                         ),
@@ -121,87 +119,122 @@ class ContaScreenState extends State<ContaScreen> {
               ListView(
                 shrinkWrap: true,
                 children: <Widget>[
-                  empresaId != ''
-                      ? const ListTile(
-                          leading: Icon(Icons.corporate_fare_sharp),
-                          title: Text(
-                            'Dados da Empresa',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w500),
-                          ),
-                        )
-                      : Column(
-                          children: [
-                            ListTile(
-                              leading: const Icon(Icons.domain_add),
-                              title: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const EmpresasAdd(
-                                        userId: '',
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: const Row(children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(right: 10),
-                                    child: Text(
-                                      'Crie sua empresa',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                ]),
-                              ),
-                            ),
-                            const ListTile(
-                              leading: Icon(Icons.input),
-                              title: Text(
-                                'Ingresse em uma empresa',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                          ],
-                        ),
-                  const ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text(
-                      'Alterar dados',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  const ListTile(
-                    leading: Icon(Icons.settings),
-                    title: Text(
-                      'Configurações',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 40, left: 10),
-                    child: ListTile(
-                      onTap: () {
-                        deslogar();
-                      },
-                      title: const Text(
-                        'Encerrar sessão',
+                  if (empresaId != 'null') ...[
+                    const ListTile(
+                      leading: Icon(Icons.corporate_fare_sharp),
+                      title: Text(
+                        'Dados da Empresa',
                         style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text(
+                        'Alterar dados',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.settings),
+                      title: Text(
+                        'Configurações',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 40, left: 10),
+                      child: ListTile(
+                        onTap: () {
+                          deslogar();
+                        },
+                        title: const Text(
+                          'Encerrar sessão',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ] else ...[
+                    ListTile(
+                      leading: const Icon(Icons.domain_add),
+                      title: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EmpresasAdd(
+                                userId: '',
+                              ),
+                            ),
+                          ).then(
+                            (value) => setState(
+                              () {
+                                getDados();
+                              },
+                            ),
+                          );
+                        },
+                        child: const Row(children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Text(
+                              'Crie sua empresa',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.input),
+                      title: Text(
+                        'Ingresse em uma empresa',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text(
+                        'Alterar dados',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.settings),
+                      title: Text(
+                        'Configurações',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 40, left: 10),
+                      child: ListTile(
+                        onTap: () {
+                          deslogar();
+                        },
+                        title: const Text(
+                          'Encerrar sessão',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ),
+              )
             ],
           );
         },

@@ -6,7 +6,7 @@ import 'package:flutter_application_1/screens/home/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  SplashScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -21,11 +21,11 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToMainScreen() async {
-    await Future.delayed(const Duration(seconds: 3)); // Atraso de 3 segundos
+    await Future.delayed(Duration(seconds: 3)); // Atraso de 3 segundos
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (context) => const RegisterPage()), // Tela principal do app
+          builder: (context) => RegisterPage()), // Tela principal do app
     );
   }
 

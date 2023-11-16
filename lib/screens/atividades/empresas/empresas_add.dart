@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_application_1/models/pessoas.dart';
+import 'package:flutter_application_1/screens/conta/conta_screen.dart';
 
 class EmpresasAdd extends StatefulWidget {
   final String userId;
@@ -9,6 +13,29 @@ class EmpresasAdd extends StatefulWidget {
 }
 
 class _EmpresasAddState extends State<EmpresasAdd> {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  String id = "", nome = "", email = "", imagem = "", empresaId = "null";
+
+  FirebaseAuth auth = FirebaseAuth.instance;
+  void getDados() async {
+    Pessoa user = Pessoa(empresaId: 'null');
+    Pessoa pessoa = await user.getUserSession();
+    setState(() {
+      id = pessoa.id!;
+      nome = pessoa.nome!;
+      email = pessoa.email!;
+      imagem = pessoa.imageUrl!;
+      empresaId = pessoa.empresaId;
+    });
+    print('id $id');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDados();
+  }
+
   final TextEditingController _cnpjController = TextEditingController();
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _enderecoController = TextEditingController();
@@ -17,30 +44,76 @@ class _EmpresasAddState extends State<EmpresasAdd> {
 
   bool _isLoading = false;
 
+  void _showSuccessMessage(text) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Sucesso!"),
+          content: Text(text),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showErrorMessage(text) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Erro"),
+          content: Text(text),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _createEmpresa(String cnpj, String nome, String endereco,
       String telefone, String email, String userId) async {
-    if ((cnpj.length >= 14) && (nome.isNotEmpty)) {
+    if (cnpj.length < 14) {
+      _showErrorMessage('Por favor, insira um CNPJ válido.');
+    } else if (nome.isEmpty) {
+      _showErrorMessage('Por favor, insira um nome para a empresa.');
+    } else {
       FirebaseFirestore db = FirebaseFirestore.instance;
 
-      DocumentReference empresaRef = db.collection("pessoas").doc(userId);
-
-      var data = {
+      // Add the empresa to the "empresas" collection and get the DocumentReference
+      DocumentReference empresaRef = await db.collection("empresas").add({
         "nome": nome,
         "cnpj": cnpj,
         "enderecoMatriz": endereco,
         "telefone": telefone,
         "email": email,
-        "funcionarios": [empresaRef]
-      };
-      await db.collection("empresas").add(data);
-
-      CollectionReference veiculosRef = empresaRef.collection("veiculos");
-
-      veiculosRef.add({
-        "marca": "",
-        "modelo": "",
-        // Adicione outros campos do veículo
       });
+
+      await db.collection("pessoas").doc(userId).update({
+        "empresaId": empresaRef.id,
+      });
+      // Delay the navigation to ContaScreen by scheduling the callback after the current frame
+      SchedulerBinding.instance!.addPostFrameCallback((_) {
+        _isLoading = false;
+
+        Navigator.pop(context, true);
+        // Show the success message after the navigation
+        _showSuccessMessage('Empresa criada com sucesso!');
+      });
+      _isLoading = false;
     }
     _isLoading = false;
   }
@@ -98,7 +171,7 @@ class _EmpresasAddState extends State<EmpresasAdd> {
                           _enderecoController.text,
                           _telefoneController.text,
                           _emailController.text,
-                          widget.userId);
+                          id);
                     },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,

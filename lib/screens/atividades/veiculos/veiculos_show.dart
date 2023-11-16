@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_add.dart';
 import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_update.dart';
 
 class VeiculosShow extends StatefulWidget {
-  final String empresaId;
-  const VeiculosShow({super.key, required this.empresaId});
+  const VeiculosShow({super.key});
 
   @override
   State<VeiculosShow> createState() => _VeiculosShowState();
@@ -13,6 +13,24 @@ class VeiculosShow extends StatefulWidget {
 
 class _VeiculosShowState extends State<VeiculosShow> {
   FirebaseFirestore db = FirebaseFirestore.instance;
+  String nome = "", cpf = "", imagem = "", empresaId = "null";
+  void getDados() async {
+    Pessoa user = Pessoa(empresaId: 'null');
+    Pessoa pessoa = await user.getUserSession();
+    setState(() {
+      nome = pessoa.nome!;
+      cpf = pessoa.cpf!;
+      imagem = pessoa.imageUrl!;
+      empresaId = pessoa.empresaId;
+      print('empresaId $empresaId');
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDados();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +44,12 @@ class _VeiculosShowState extends State<VeiculosShow> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('empresas')
-                    .doc(widget.empresaId)
+                    .doc(empresaId)
                     .collection('veiculos')
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator(); // Mostrar um indicador de carregamento enquanto aguarda os dados.
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -99,7 +117,7 @@ class _VeiculosShowState extends State<VeiculosShow> {
             context,
             MaterialPageRoute(
               builder: (context) => VeiculosAdd(
-                empresaID: widget.empresaId,
+                empresaID: empresaId,
               ),
             ),
           );
@@ -118,7 +136,7 @@ class _VeiculosShowState extends State<VeiculosShow> {
             context,
             MaterialPageRoute(
               builder: (context) => VeiculosUpdate(
-                empresaID: widget.empresaId,
+                empresaID: empresaId,
                 veiculoID: veiculoID,
               ),
             ),
@@ -162,7 +180,7 @@ class _VeiculosShowState extends State<VeiculosShow> {
                     FirebaseFirestore db = FirebaseFirestore.instance;
                     DocumentReference veiculosRef = db
                         .collection("empresas")
-                        .doc(widget.empresaId)
+                        .doc(empresaId)
                         .collection("veiculos")
                         .doc(veiculoID);
                     veiculosRef.delete();
