@@ -12,18 +12,66 @@ class EmpresaConvite extends StatefulWidget {
 class _EmpresaConviteState extends State<EmpresaConvite> {
   TextEditingController _conviteController = new TextEditingController();
 
-  void _ingressarEmpresa() {
-    User? user = FirebaseAuth.instance.currentUser;
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    if (user != null) {
-      String userId = user.uid;
-      DocumentReference ref = db.collection("pessoas").doc("$userId");
-      ref.set("empresaId: $_conviteController");
+  void _ingressarEmpresa(BuildContext context) async {
+  User? user = FirebaseAuth.instance.currentUser;
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
-      // Aqui você pode fazer algo com userId e idDaEmpresa, como salvar no banco de dados, etc.
+  if (user != null) {
+    String userId = user.uid;
+    String empresaId = _conviteController.text; // Obtém o texto do controller
+
+    // Referência ao documento do usuário
+    DocumentReference userDocRef = db.collection("pessoas").doc(userId);
+
+    // Verifica se o empresaId existe na coleção empresas
+    bool empresaExiste = await _verificarEmpresaExistente(empresaId);
+
+    if (empresaExiste) {
+      // Criação do mapa com os dados a serem atualizados
+      Map<String, dynamic> data = {
+        "empresaId": empresaId, // Utiliza o texto do controller
+      };
+
+      userDocRef.update(data).then((_) {
+        _exibirPopUp(context, 'Sucesso ao ingressar na empresa!');
+      }).catchError((error) {
+        _exibirPopUp(context, 'Erro ao ingressar na empresa: $error');
+      });
     } else {
-      // Usuário não autenticado, talvez exibir uma mensagem de erro
+      _exibirPopUp(context, 'Empresa não encontrada');
     }
+  } else {
+    _exibirPopUp(context, 'Usuário não logado');
+  }
+}
+
+  Future<bool> _verificarEmpresaExistente(String empresaId) async {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  // Realiza uma consulta na coleção 'empresas' para verificar se existe um documento com o mesmo uid
+  DocumentSnapshot documentSnapshot = await db.collection('empresas').doc(empresaId).get();
+
+  return documentSnapshot.exists;
+}
+
+  void _exibirPopUp(BuildContext context, String mensagem) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Status'),
+          content: Text(mensagem),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Fechar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -46,7 +94,7 @@ class _EmpresaConviteState extends State<EmpresaConvite> {
               const SizedBox(height: 20), // Espaço entre os campos
               ElevatedButton(
                   onPressed: () {
-                    _ingressarEmpresa();
+                    _ingressarEmpresa(context);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
