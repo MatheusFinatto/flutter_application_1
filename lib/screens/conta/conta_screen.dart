@@ -1,7 +1,9 @@
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/screens/atividades/empresas/empresas_add.dart';
+import 'package:flutter_application_1/screens/conta/config_screen.dart';
 import 'package:flutter_application_1/screens/conta/register_page.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
 
@@ -14,7 +16,7 @@ class ContaScreen extends StatefulWidget {
 
 class ContaScreenState extends State<ContaScreen> {
   FirebaseFirestore db = FirebaseFirestore.instance;
-  String nome = "", email = "", imagem = "", empresaId = "null";
+  String nome = "", email = "", imagem = "", empresaId = "null", pessoaId="null";
   bool _isLoading = true;
 
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -26,6 +28,22 @@ class ContaScreenState extends State<ContaScreen> {
       email = pessoa.email!;
       imagem = pessoa.imageUrl!;
       empresaId = pessoa.empresaId;
+      pessoaId = pessoa.id!;
+    });
+    _isLoading = false;
+  }
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    Pessoa user = Pessoa(empresaId: 'null');
+    Pessoa pessoa = await user.getUserSession();
+    setState(() {
+      nome = pessoa.nome!;
+      email = pessoa.email!;
+      imagem = pessoa.imageUrl!;
+      empresaId = pessoa.empresaId;
+      pessoaId = pessoa.id!;
     });
     _isLoading = false;
   }
@@ -123,23 +141,23 @@ class ContaScreenState extends State<ContaScreen> {
                     const ListTile(
                       leading: Icon(Icons.corporate_fare_sharp),
                       title: Text(
-                        'Dados da Empresa',
+                        'Empresa',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w500),
                       ),
                     ),
-                    const ListTile(
-                      leading: Icon(Icons.person),
-                      title: Text(
+                     ListTile(
+                      onTap: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ConfigScreen(pessoaId: pessoaId),
+                          ),
+                        );
+                      },
+                      leading:const Icon(Icons.person),
+                      title: const  Text(
                         'Alterar dados',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                    const ListTile(
-                      leading: Icon(Icons.settings),
-                      title: Text(
-                        'Configurações',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w500),
                       ),
@@ -242,3 +260,10 @@ class ContaScreenState extends State<ContaScreen> {
     );
   }
 }
+
+
+
+
+
+
+
