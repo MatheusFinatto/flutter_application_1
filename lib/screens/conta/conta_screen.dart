@@ -1,12 +1,15 @@
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/screens/atividades/empresas/empresas_add.dart';
+import 'package:flutter_application_1/screens/atividades/empresas/empresas_convite.dart';
+import 'package:flutter_application_1/screens/conta/config_screen.dart';
 import 'package:flutter_application_1/screens/conta/register_page.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
-import 'package:flutter_application_1/database/pessoas.dart';
 
 class ContaScreen extends StatefulWidget {
-  const ContaScreen({Key? key}) : super(key: key);
+  ContaScreen({Key? key}) : super(key: key);
 
   @override
   ContaScreenState createState() => ContaScreenState();
@@ -14,25 +17,53 @@ class ContaScreen extends StatefulWidget {
 
 class ContaScreenState extends State<ContaScreen> {
   FirebaseFirestore db = FirebaseFirestore.instance;
-  String nome = "", cpf = "";
-  //instancia para autenticacao
+  String nome = "", email = "", imagem = "", empresaId = "null", pessoaId="null";
+  bool _isLoading = true;
+
   FirebaseAuth auth = FirebaseAuth.instance;
-  void getDados() async {
-    Pessoas pessoas = Pessoas(); // Crie uma instância da classe Pessoas
-    Pessoa pessoa = await pessoas.getUserSession();
+  Future<void> getDados() async {
+    Pessoa user = Pessoa(empresaId: 'null');
+    Pessoa pessoa = await user.getUserSession();
     setState(() {
-      nome = pessoa.nome;
-      cpf = pessoa.cpf;
+      nome = pessoa.nome!;
+      email = pessoa.email!;
+      imagem = pessoa.imageUrl!;
+      empresaId = pessoa.empresaId;
+      pessoaId = pessoa.id!;
     });
+    _isLoading = false;
+  }
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    Pessoa user = Pessoa(empresaId: 'null');
+    Pessoa pessoa = await user.getUserSession();
+    setState(() {
+      nome = pessoa.nome!;
+      email = pessoa.email!;
+      imagem = pessoa.imageUrl!;
+      empresaId = pessoa.empresaId;
+      pessoaId = pessoa.id!;
+    });
+    _isLoading = false;
   }
 
   void deslogar() async {
     await auth.signOut().then((value) => {
           Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const RegisterPage()),
+              MaterialPageRoute(builder: (context) => RegisterPage()),
               (route) => false)
         });
+  }
+
+  Future<DocumentSnapshot> getEmpresaData() async {
+    // Replace 'collectionName' with the actual name of your Firestore collection
+    DocumentSnapshot empresaSnapshot =
+        await db.collection('empresas').doc(empresaId).get();
+
+    return empresaSnapshot;
   }
 
   @override
@@ -48,120 +79,195 @@ class ContaScreenState extends State<ContaScreen> {
         title: const Text('Conta'),
       ),
       body: FutureBuilder<DocumentSnapshot>(
-        future: _fetchPessoaData(), // Fetch pessoa data
+        future: empresaId == 'null' ? null : getEmpresaData(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+          if ((snapshot.connectionState == ConnectionState.waiting) ||
+              _isLoading) {
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           }
 
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return const Text('No pessoa data found.');
-          }
-
-          final pessoaData = snapshot.data!.data() as Map<String, dynamic>;
           return Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(
                     bottom: 20, left: 40, top: 16, right: 40),
                 child: Row(
                   // Display pessoa data
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    ClipOval(
+                      child: Image.network(
+                        imagem == ''
+                            ? 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+                            : imagem,
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.scaleDown,
+                      ),
+                    ),
+                    const SizedBox(width: 20),
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          nome,
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900),
+                        Container(
+                          width: 190, // Set the desired maximum width
+                          child: Text(
+                            nome,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         Text(
-                          cpf,
+                          email,
                           style: const TextStyle(
                               fontSize: 15, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
-                    ClipOval(
-                      clipBehavior: Clip.antiAlias,
-                      child: Image.network(
-                        pessoaData['imagemUrl'] ??
-                            'https://ojasyog.com/wp-content/uploads/2022/02/421-4212617_person-placeholder-image-transparent-hd-png-download.png',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.fill,
-                      ),
-                    )
                   ],
                 ),
               ),
-
-              // Rest of your UI elements
               ListView(
                 shrinkWrap: true,
                 children: <Widget>[
-                  const ListTile(
-                    leading: Icon(Icons.corporate_fare_sharp),
-                    title: Text(
-                      'Empresa',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  const ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text(
-                      'Alterar dados',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  const ListTile(
-                    leading: Icon(Icons.settings),
-                    title: Text(
-                      'Configurações',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 40, left: 10),
-                    child: ListTile(
-                      onTap: () {
-                        deslogar();
-                      },
-                      title: const Text(
-                        'Encerrar sessão',
+                  if (empresaId == 'null') ...[
+                    const ListTile(
+                      leading: Icon(Icons.corporate_fare_sharp),
+                      title: Text(
+                        'Empresa',
                         style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                     ListTile(
+                      onTap: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ConfigScreen(pessoaId: pessoaId),
+                          ),
+                        );
+                      },
+                      leading:const Icon(Icons.person),
+                      title: const  Text(
+                        'Alterar dados',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 40, left: 10),
+                      child: ListTile(
+                        onTap: () {
+                          deslogar();
+                        },
+                        title: const Text(
+                          'Encerrar sessão',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ] else ...[
+                    ListTile(
+                      leading: const Icon(Icons.domain_add),
+                      title: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EmpresasAdd(
+                                userId: '',
+                              ),
+                            ),
+                          ).then(
+                            (value) => setState(
+                              () {
+                                getDados();
+                              },
+                            ),
+                          );
+                        },
+                        child: const Row(children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Text(
+                              'Crie sua empresa',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.input),
+                      title: const Text(
+                        'Ingresse em uma empresa',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> EmpresaConvite()));
+                      },
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text(
+                        'Alterar dados',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.settings),
+                      title: Text(
+                        'Configurações',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 40, left: 10),
+                      child: ListTile(
+                        onTap: () {
+                          deslogar();
+                        },
+                        title: const Text(
+                          'Encerrar sessão',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ),
+              )
             ],
           );
         },
       ),
     );
   }
-
-  Future<DocumentSnapshot> _fetchPessoaData() async {
-    try {
-      return await FirebaseFirestore.instance
-          .doc('pessoas/rKS4uej8PQwbIkxRLjWD')
-          .get();
-    } catch (e) {
-      print('Error fetching pessoa data: $e');
-      throw e;
-    }
-  }
 }
+
+
+
+
+
+
+
