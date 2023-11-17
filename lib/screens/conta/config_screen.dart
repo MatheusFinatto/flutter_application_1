@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/conta/conta_screen.dart';
-import 'package:image_picker/image_picker.dart';
-
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_application_1/helpers/showSuccessMessage.dart';
+import 'package:flutter_application_1/models/pessoas.dart';
 
 class ConfigScreen extends StatefulWidget {
   final String pessoaId;
@@ -16,46 +16,56 @@ class ConfigScreen extends StatefulWidget {
 
 class _ConfigScreenState extends State<ConfigScreen> {
   final TextEditingController _nomeController = TextEditingController();
-  final TextEditingController _cpfController = TextEditingController();
-  final TextEditingController _enderecoController = TextEditingController();
-  final TextEditingController _telefoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _imgUrlController = TextEditingController();
-  
+
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  String nome = "", email = "", imagem = "";
+
+  void getDados() async {
+    Pessoa user = Pessoa(empresaId: 'null');
+    Pessoa pessoa = await user.getUserSession();
+    setState(() {
+      _nomeController.text = pessoa.nome ?? "";
+      _emailController.text = pessoa.email ?? "";
+      _imgUrlController.text = pessoa.imageUrl ?? "";
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDados();
+  }
+
   void _updatePessoa(
     String nome,
-    String cpf,
-    String endereco,
-    String telefone,
+    String email,
     String imageUrl,
   ) {
     FirebaseFirestore db = FirebaseFirestore.instance;
 
-    DocumentReference pessoaRef =
-        db.collection("pessoas").doc(widget.pessoaId);
+    DocumentReference pessoaRef = db.collection("pessoas").doc(widget.pessoaId);
 
     Map<String, dynamic> dataAtualizada = {};
     if (nome.isNotEmpty) {
       dataAtualizada["nome"] = nome;
     }
 
-    if (cpf.isNotEmpty) {
-      dataAtualizada["cpf"] = cpf;
+    if (email.isNotEmpty) {
+      dataAtualizada["email"] = email;
     }
 
-    if (endereco.isNotEmpty) {
-      dataAtualizada["endereco"] = endereco;
-    }
-
-    if (telefone.isNotEmpty) {
-      dataAtualizada["telefone"] = telefone;
-    }
-
-      if (imageUrl.isNotEmpty) {
+    if (imageUrl.isNotEmpty) {
       dataAtualizada["imageUrl"] = imageUrl;
     }
 
-    pessoaRef.update(dataAtualizada).then((value) {
-    }).catchError((error) {});
+    pessoaRef.update(dataAtualizada).then((value) {}).catchError((error) {});
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Navigator.pop(context, true);
+      showSuccessMessage('Usuário alterado com sucesso!', context);
+    });
   }
 
   @override
@@ -76,39 +86,21 @@ class _ConfigScreenState extends State<ConfigScreen> {
                 ),
               ),
               TextFormField(
-                controller: _cpfController,
+                controller: _emailController,
                 decoration: const InputDecoration(
-                  labelText: "CPF",
+                  labelText: "Email",
                 ),
               ),
               TextFormField(
-                controller: _enderecoController,
-                decoration: const InputDecoration(
-                  labelText: "Endereço",
-                ),
-              ),
-              TextFormField(
-                controller: _telefoneController,
-                decoration: const InputDecoration(
-                  labelText: "Telefone",
-                ),
-              ),
-             TextFormField(
                 controller: _imgUrlController,
                 decoration: const InputDecoration(
-                  labelText: "Image de perfil",
+                  labelText: "Imagem de perfil",
                 ),
               ),
-        
               ElevatedButton(
                 onPressed: () {
-                  _updatePessoa(
-                    _nomeController.text,
-                    _cpfController.text,
-                    _enderecoController.text,
-                    _telefoneController.text,
-                    _imgUrlController.text
-                  );
+                  _updatePessoa(_nomeController.text, _emailController.text,
+                      _imgUrlController.text);
                 },
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +113,4 @@ class _ConfigScreenState extends State<ConfigScreen> {
       ),
     );
   }
-
 }
-
-

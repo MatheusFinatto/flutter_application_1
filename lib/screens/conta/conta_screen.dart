@@ -1,7 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/helpers/showErrorMessage.dart';
+import 'package:flutter_application_1/helpers/showSuccessMessage.dart';
+import 'package:flutter_application_1/screens/atividades/empresas/empresas.dart';
 import 'package:flutter_application_1/screens/atividades/empresas/empresas_add.dart';
 import 'package:flutter_application_1/screens/conta/config_screen.dart';
 import 'package:flutter_application_1/screens/conta/register_page.dart';
@@ -15,8 +17,14 @@ class ContaScreen extends StatefulWidget {
 }
 
 class ContaScreenState extends State<ContaScreen> {
+  TextEditingController _empresaIdController = TextEditingController();
   FirebaseFirestore db = FirebaseFirestore.instance;
-  String nome = "", email = "", imagem = "", empresaId = "null", pessoaId="null";
+  String nome = "",
+      email = "",
+      imagem = "",
+      empresaId = "null",
+      pessoaId = "null";
+
   bool _isLoading = true;
 
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -69,6 +77,28 @@ class ContaScreenState extends State<ContaScreen> {
   void initState() {
     super.initState();
     getDados();
+  }
+
+  Future<void> _ingressarEmpresa(context) async {
+    String informedEmpresaId = _empresaIdController.text;
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    DocumentSnapshot empresaDoc =
+        await db.collection('empresas').doc(informedEmpresaId).get();
+
+    Map<String, dynamic>? empresaData =
+        empresaDoc.data() as Map<String, dynamic>?;
+
+    if (empresaData != null) {
+      await db
+          .collection('pessoas')
+          .doc(pessoaId)
+          .update({'empresaId': informedEmpresaId});
+
+      showSuccessMessage("Sucesso ao ingressar na empresa!", context);
+    } else {
+      showErrorMessage('Empresa não encontrada.', context);
+    }
   }
 
   @override
@@ -138,25 +168,40 @@ class ContaScreenState extends State<ContaScreen> {
                 shrinkWrap: true,
                 children: <Widget>[
                   if (empresaId != 'null') ...[
-                    const ListTile(
-                      leading: Icon(Icons.corporate_fare_sharp),
-                      title: Text(
+                    ListTile(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Empresas(),
+                          ),
+                        ).then(
+                          (value) => setState(
+                            () {
+                              getDados();
+                            },
+                          ),
+                        );
+                      },
+                      leading: const Icon(Icons.corporate_fare_sharp),
+                      title: const Text(
                         'Empresa',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w500),
                       ),
                     ),
-                     ListTile(
-                      onTap: (){
+                    ListTile(
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ConfigScreen(pessoaId: pessoaId),
+                            builder: (context) =>
+                                ConfigScreen(pessoaId: pessoaId),
                           ),
                         );
                       },
-                      leading:const Icon(Icons.person),
-                      title: const  Text(
+                      leading: const Icon(Icons.person),
+                      title: const Text(
                         'Alterar dados',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w500),
@@ -180,56 +225,107 @@ class ContaScreenState extends State<ContaScreen> {
                     ),
                   ] else ...[
                     ListTile(
-                      leading: const Icon(Icons.domain_add),
-                      title: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const EmpresasAdd(
-                                userId: '',
-                              ),
-                            ),
-                          ).then(
-                            (value) => setState(
-                              () {
-                                getDados();
-                              },
-                            ),
-                          );
-                        },
-                        child: const Row(children: [
-                          Padding(
-                            padding: EdgeInsets.only(right: 10),
-                            child: Text(
-                              'Crie sua empresa',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w500),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const EmpresasAdd(
+                              userId: '',
                             ),
                           ),
-                        ]),
+                        ).then(
+                          (value) => setState(
+                            () {
+                              getDados();
+                            },
+                          ),
+                        );
+                      },
+                      leading: const Icon(Icons.domain_add),
+                      title: const Text(
+                        'Crie sua empresa',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
                       ),
                     ),
-                    const ListTile(
-                      leading: Icon(Icons.input),
-                      title: Text(
+                    ListTile(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Informe o código da empresa'),
+                              content: Container(
+                                height: 200.0,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextFormField(
+                                        controller: _empresaIdController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'Código da empresa',
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16.0),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          _ingressarEmpresa(context)
+                                              .then((value) => {
+                                                    Navigator.popUntil(
+                                                        context,
+                                                        (route) =>
+                                                            route.isFirst),
+                                                    setState(
+                                                      () {
+                                                        getDados();
+                                                      },
+                                                    ),
+                                                  });
+                                          ;
+                                        },
+                                        child: const Text('Ingressar'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ).then(
+                          (value) => setState(
+                            () {
+                              getDados();
+                            },
+                          ),
+                        );
+                      },
+                      leading: const Icon(Icons.person),
+                      title: const Text(
                         'Ingresse em uma empresa',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w500),
                       ),
                     ),
-                    const ListTile(
-                      leading: Icon(Icons.person),
-                      title: Text(
+                    ListTile(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ConfigScreen(pessoaId: pessoaId),
+                          ),
+                        ).then(
+                          (value) => setState(
+                            () {
+                              getDados();
+                            },
+                          ),
+                        );
+                      },
+                      leading: const Icon(Icons.person),
+                      title: const Text(
                         'Alterar dados',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                    const ListTile(
-                      leading: Icon(Icons.settings),
-                      title: Text(
-                        'Configurações',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w500),
                       ),
@@ -260,10 +356,3 @@ class ContaScreenState extends State<ContaScreen> {
     );
   }
 }
-
-
-
-
-
-
-

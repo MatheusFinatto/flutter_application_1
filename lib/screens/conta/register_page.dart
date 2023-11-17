@@ -35,6 +35,45 @@ class RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
+  bool validateCPF(String cpf) {
+    String cleanedCPF = cpf.replaceAll(RegExp(r'[^\d]'), '');
+    if (cleanedCPF.length != 11) {
+      return false;
+    }
+
+    if (RegExp(r'^(\d)\1*$').hasMatch(cleanedCPF)) {
+      return false;
+    }
+
+    int sum = 0;
+    for (int i = 0; i < 9; i++) {
+      sum += int.parse(cleanedCPF[i]) * (10 - i);
+    }
+
+    int firstDigit = (sum * 10) % 11;
+    if (firstDigit == 10) {
+      firstDigit = 0;
+    }
+
+    if (firstDigit != int.parse(cleanedCPF[9])) {
+      return false;
+    }
+
+    sum = 0;
+    for (int i = 0; i < 10; i++) {
+      sum += int.parse(cleanedCPF[i]) * (11 - i);
+    }
+    int secondDigit = (sum * 10) % 11;
+    if (secondDigit == 10) {
+      secondDigit = 0;
+    }
+    if (secondDigit != int.parse(cleanedCPF[10])) {
+      return false;
+    }
+
+    return true;
+  }
+
   _createAccount() {
     String email = _emailController.text;
     String password = _passwordController.text;
@@ -43,7 +82,7 @@ class RegisterPageState extends State<RegisterPage> {
 
     if (email.isNotEmpty && email.contains("@")) {
       if (password.isNotEmpty && password.length >= 6) {
-        if (cpf.length >= 11) {
+        if (validateCPF(cpf)) {
           if (nome.isNotEmpty) {
             _msgErro = "";
             //instancia do auth
@@ -246,7 +285,8 @@ class RegisterPageState extends State<RegisterPage> {
         ),
         Padding(
           padding: EdgeInsets.only(top: 12.0),
-          child: Text(_msgErro),
+          child:
+              Text(_msgErro, style: TextStyle(color: Colors.red, fontSize: 16)),
         )
       ],
     );

@@ -114,9 +114,7 @@ class _EmpresasHomeState extends State<EmpresasHome> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Empresas(
-                                empresaId: empresaId[index],
-                              ),
+                              builder: (context) => Empresas(),
                             ),
                           );
                         },

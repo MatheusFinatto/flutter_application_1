@@ -59,7 +59,6 @@ class LoginPageState extends State<LoginPage> {
             // Sucesso
             _msgErro = "Sucesso ao logar";
 
-            // Navegar para a tela inicial e remover esta página para não poder voltar
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => HomePage()),

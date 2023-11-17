@@ -2,47 +2,49 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:flutter_application_1/screens/atividades/empresas/empresas_update.dart';
-import 'package:flutter_application_1/screens/atividades/veiculos/veiculos_show.dart';
 
 class Empresas extends StatefulWidget {
-  final String empresaId;
-
-  const Empresas({super.key, required this.empresaId});
+  const Empresas({super.key});
 
   @override
   State<Empresas> createState() => _EmpresasState();
 }
 
 class _EmpresasState extends State<Empresas> {
+  bool _isLoading = true;
+
   FirebaseFirestore db = FirebaseFirestore.instance;
-  String nome = "", cpf = "", imagem = "", empresaId = "null";
+  String id = "", nome = "", cpf = "", imagem = "", empresaId = "null";
   void getDados() async {
     Pessoa user = Pessoa(empresaId: 'null');
     Pessoa pessoa = await user.getUserSession();
     setState(() {
+      id = pessoa.id!;
       nome = pessoa.nome!;
       cpf = pessoa.cpf!;
       imagem = pessoa.imageUrl!;
       empresaId = pessoa.empresaId;
-      print('empresaId $empresaId');
     });
+    _getEmpresaData(empresaId);
+    _isLoading = false;
   }
 
-  bool _isLoading = true;
-
+  String _empresaId = "";
   String _empresaNome = "";
   String _empresaCNPJ = "";
   String _empresaEndereco = "";
   String _empresaTelefone = "";
   String _empresaEmail = "";
 
-  _getEmpresaData() async {
+  _getEmpresaData(empresaId) async {
     DocumentSnapshot snapshot =
         await db.collection("empresas").doc(empresaId).get();
 
     setState(() {
       if (snapshot.data() != null) {
         final data = snapshot.data() as Map<String, dynamic>;
+
+        _empresaId = snapshot.id;
 
         if (data["nome"] != null) {
           _empresaNome = data["nome"];
@@ -61,28 +63,38 @@ class _EmpresasState extends State<Empresas> {
         }
       }
     });
+  }
 
-    @override
-    void initState() {
-      super.initState();
-      getDados();
-      _getEmpresaData();
-    }
-
-    setState(() {
-      _isLoading = false;
-    });
+  @override
+  void initState() {
+    _isLoading = true;
+    super.initState();
+    getDados();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_empresaNome)),
+      appBar: AppBar(title: Text("Dados da empresa")),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(children: [
+                  const Text(
+                    'Código da empresa: ',
+                    style: TextStyle(fontSize: 25),
+                  ),
+                  Text(
+                    '$_empresaId',
+                    style: const TextStyle(fontSize: 20),
+                  )
+                ]),
+              ),
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.all(18.0),
@@ -158,16 +170,6 @@ class _EmpresasState extends State<Empresas> {
                     const SizedBox(height: 20),
                   ],
                 ),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => VeiculosShow(),
-                      ),
-                    );
-                  },
-                  child: const Text("Veículos da Empresa")),
               const SizedBox(
                 height: 20,
               ),
@@ -177,9 +179,9 @@ class _EmpresasState extends State<Empresas> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: const Text('Confirmação de Exclusão'),
+                        title: const Text('Confirmação de saída'),
                         content: const Text(
-                            'Tem certeza de que deseja excluir este item?'),
+                            'Tem certeza de que deseja sair da empresa?'),
                         actions: <Widget>[
                           TextButton(
                             child: const Text('Cancelar'),
@@ -188,13 +190,20 @@ class _EmpresasState extends State<Empresas> {
                             },
                           ),
                           TextButton(
-                            child: const Text('Excluir'),
-                            onPressed: () {
+                            child: const Text('Sair'),
+                            onPressed: () async {
                               FirebaseFirestore db = FirebaseFirestore.instance;
-                              DocumentReference empresasRef =
-                                  db.collection("empresas").doc(empresaId);
-                              empresasRef.delete();
-                              Navigator.of(context).pop();
+
+                              await db
+                                  .collection('pessoas')
+                                  .doc(id)
+                                  .update({'empresaId': 'null'});
+
+                              // getDados();
+
+                              // Navigate back twice
+                              Navigator.popUntil(
+                                  context, (route) => route.isFirst);
                             },
                           ),
                         ],
@@ -208,7 +217,7 @@ class _EmpresasState extends State<Empresas> {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Excluir Empresa'),
+                    Text('Sair da empresa'),
                     SizedBox(width: 2),
                     Icon(Icons.delete, size: 14),
                   ],
