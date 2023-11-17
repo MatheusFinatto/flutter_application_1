@@ -20,6 +20,8 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final TextEditingController _imageUrlController = TextEditingController();
+  final TextEditingController _empresaIdController = TextEditingController();
 
   bool state = false;
 
@@ -148,7 +150,6 @@ class RegisterPageState extends State<RegisterPage> {
                 _buildHeaderText(),
                 SizedBox(height: 30),
                 _buildInputs(),
-                SizedBox(height: 70),
                 _buildRegisterButton(),
               ],
             ),
@@ -284,6 +285,34 @@ class RegisterPageState extends State<RegisterPage> {
           ),
         ),
         Padding(
+          padding: EdgeInsets.all(8.0),
+          child: TextFormField(
+            controller: _imageUrlController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: "Insira a URL da sua foto (opcional)",
+              border: OutlineInputBorder(
+                borderRadius:
+                    BorderRadius.circular(50.0), // Adjust the radius as needed
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: TextFormField(
+            controller: _empresaIdController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: "Código da empresa (opcional)",
+              border: OutlineInputBorder(
+                borderRadius:
+                    BorderRadius.circular(50.0), // Adjust the radius as needed
+              ),
+            ),
+          ),
+        ),
+        Padding(
           padding: EdgeInsets.only(top: 12.0),
           child:
               Text(_msgErro, style: TextStyle(color: Colors.red, fontSize: 16)),
@@ -315,7 +344,7 @@ class RegisterPageState extends State<RegisterPage> {
             );
             //Navigator.pushReplacementNamed(context, '/login');
           },
-          child: Text(
+          child: const Text(
             "Já possuo uma conta",
             style: TextStyle(
               fontSize: 14,
