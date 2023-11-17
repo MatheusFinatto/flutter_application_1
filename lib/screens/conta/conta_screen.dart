@@ -198,6 +198,12 @@ class ContaScreenState extends State<ContaScreen> {
                             builder: (context) =>
                                 ConfigScreen(pessoaId: pessoaId),
                           ),
+                        ).then(
+                          (value) => setState(
+                            () {
+                              getDados();
+                            },
+                          ),
                         );
                       },
                       leading: const Icon(Icons.person),
