@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_application_1/helpers/showSuccessMessage.dart';
 import 'package:image_picker/image_picker.dart';
 
 class VeiculosAdd extends StatefulWidget {
@@ -36,6 +38,12 @@ class _VeiculosAddState extends State<VeiculosAdd> {
       "ano": ano,
       "capacidade": capacidade,
       "imageUrl": imageUrl != '' ? imageUrl : "https://i.imgur.com/BVD0UE8.png",
+    });
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Navigator.pop(context, true);
+      // Show the success message after the navigation
+      showSuccessMessage('Veiculo adicionado com sucesso!', context);
     });
   }
 

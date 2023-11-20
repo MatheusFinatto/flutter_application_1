@@ -306,8 +306,7 @@ class RegisterPageState extends State<RegisterPage> {
             decoration: InputDecoration(
               labelText: "Código da empresa (opcional)",
               border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(50.0), // Adjust the radius as needed
+                borderRadius: BorderRadius.circular(50.0),
               ),
             ),
           ),
@@ -342,7 +341,6 @@ class RegisterPageState extends State<RegisterPage> {
                 builder: (context) => LoginPage(),
               ),
             );
-            //Navigator.pushReplacementNamed(context, '/login');
           },
           child: const Text(
             "Já possuo uma conta",
@@ -357,15 +355,4 @@ class RegisterPageState extends State<RegisterPage> {
       ],
     );
   }
-
-  // void _onRegisterPressed() {
-  //   if (_formKey.currentState!.validate()) {
-  //     // Form is valid, perform registration
-  //     Navigator.of(context).push(
-  //       MaterialPageRoute(
-  //         builder: (context) =>  HomePage(),
-  //       ),
-  //     );
-  //   }
-  // }
 }

@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_application_1/helpers/showErrorMessage.dart';
+import 'package:flutter_application_1/helpers/showSuccessMessage.dart';
 import 'package:flutter_application_1/models/pessoas.dart';
 import 'package:flutter_application_1/screens/conta/conta_screen.dart';
 
@@ -44,52 +46,12 @@ class _EmpresasAddState extends State<EmpresasAdd> {
 
   bool _isLoading = false;
 
-  void _showSuccessMessage(text) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Sucesso!"),
-          content: Text(text),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showErrorMessage(text) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Erro"),
-          content: Text(text),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _createEmpresa(String cnpj, String nome, String endereco,
       String telefone, String email, String userId) async {
     if (cnpj.length < 14) {
-      _showErrorMessage('Por favor, insira um CNPJ válido.');
+      showErrorMessage('Por favor, insira um CNPJ válido.', context);
     } else if (nome.isEmpty) {
-      _showErrorMessage('Por favor, insira um nome para a empresa.');
+      showErrorMessage('Por favor, insira um nome para a empresa.', context);
     } else {
       FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -111,7 +73,7 @@ class _EmpresasAddState extends State<EmpresasAdd> {
 
         Navigator.pop(context, true);
         // Show the success message after the navigation
-        _showSuccessMessage('Empresa criada com sucesso!');
+        showSuccessMessage('Empresa criada com sucesso!', context);
       });
       _isLoading = false;
     }
