@@ -448,58 +448,70 @@ class AddTripScreenState extends State<AddTripScreen> {
                   ),
 
                   const SizedBox(height: 16),
-                  StreamBuilder<List<Veiculo>>(
-                    stream: FirebaseFirestore.instance
-                        .collection('empresas')
-                        .doc(empresaId)
-                        .collection('veiculos')
-                        .snapshots()
-                        .map((querySnapshot) {
-                      final veiculos = querySnapshot.docs.map((doc) {
-                        return Veiculo.fromMap(doc.data())
-                          ..uid = doc.reference.id;
-                      }).toList();
-                      return veiculos;
-                    }),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      }
 
-                      if (snapshot.hasError) {
-                        return Text("Error: ${snapshot.error}");
-                      }
+                  Row(
+                    children: [
+                      Expanded(
+                        child: StreamBuilder<List<Veiculo>>(
+                          stream: FirebaseFirestore.instance
+                              .collection('empresas')
+                              .doc(empresaId)
+                              .collection('veiculos')
+                              .snapshots()
+                              .map((querySnapshot) {
+                            final veiculos = querySnapshot.docs.map((doc) {
+                              return Veiculo.fromMap(doc.data())
+                                ..uid = doc.reference.id;
+                            }).toList();
+                            return veiculos;
+                          }),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
 
-                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Text("No veiculos found.");
-                      }
+                            if (snapshot.hasError) {
+                              return Text("Error: ${snapshot.error}");
+                            }
 
-                      return DropdownButtonFormField<String>(
-                        value: _selectedVeiculo.uid,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedVeiculo = snapshot.data!.firstWhere(
-                              (veiculo) => veiculo.uid == value,
+                            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return const Text("No veiculos found.");
+                            }
+
+                            return DropdownButtonFormField<String>(
+                              value: _selectedVeiculo.uid,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedVeiculo = snapshot.data!.firstWhere(
+                                    (veiculo) => veiculo.uid == value,
+                                  );
+                                });
+                              },
+                              items: snapshot.data?.map((veiculo) {
+                                return DropdownMenuItem<String>(
+                                  value: veiculo.uid,
+                                  key: Key(
+                                      'key-${veiculo.ano}-${veiculo.placa}'),
+                                  child: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.8,
+                                    child: Text(
+                                      '${veiculo.marca} ${veiculo.modelo}, ${veiculo.ano} - ${veiculo.placa}',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              decoration: const InputDecoration(
+                                labelText: 'Veículo',
+                                border: OutlineInputBorder(),
+                              ),
                             );
-                          });
-                        },
-                        items: snapshot.data?.map((veiculo) {
-                          print('selected veiculo ${_selectedVeiculo}');
-                          print('veiculo $veiculo');
-                          return DropdownMenuItem<String>(
-                            value: veiculo.uid,
-                            key: Key('key-${veiculo.ano}-${veiculo.placa}'),
-                            child: Text(
-                              '${veiculo.marca} ${veiculo.modelo}, ${veiculo.ano} - ${veiculo.placa}',
-                            ),
-                          );
-                        }).toList(),
-                        decoration: const InputDecoration(
-                          labelText: 'Veículo',
-                          border: OutlineInputBorder(),
+                          },
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 32),
